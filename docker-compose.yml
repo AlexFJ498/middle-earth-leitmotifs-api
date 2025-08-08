@@ -1,0 +1,40 @@
+services:
+  api:
+    image: middle-earth-leitmotifs-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      MELA_HOST: ${MELA_HOST}
+      MELA_PORT: ${MELA_PORT}
+      MELA_DBUSER: ${MELA_DBUSER}
+      MELA_DBPASSWORD: ${MELA_DBPASSWORD}
+      MELA_DBHOST: ${MELA_DBHOST}
+      MELA_DBPORT: ${MELA_DBPORT}
+      MELA_DBNAME: ${MELA_DBNAME}
+      MELA_DBTIMEOUT: ${MELA_DBTIMEOUT}
+    container_name: middle-earth-leitmotifs-api
+    depends_on:
+      - postgres
+    ports:
+      - "8080:${MELA_PORT}"
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:${MELA_DBPORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      POSTGRES_USER: ${MELA_DBUSER}
+      POSTGRES_PASSWORD: ${MELA_DBPASSWORD}
+      POSTGRES_DB: ${MELA_DBNAME}
+
+volumes:
+  pgdata:

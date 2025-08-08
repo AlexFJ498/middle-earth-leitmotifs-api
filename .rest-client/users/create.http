@@ -1,0 +1,9 @@
+POST {{host}}/users
+Accept: application/json
+Content-Type: application/json
+
+{
+    "id": "4e9d5c87-3a8f-4b4d-a72f-0173f5d4e695",
+    "name": "John Doe 4",
+    "email": "john.doe4@example.com"
+}
