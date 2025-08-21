@@ -2,7 +2,6 @@ package authenticating
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
@@ -18,7 +17,6 @@ type LoginService struct {
 
 // NewLoginService creates a new instance of LoginService.
 func NewLoginService(userRepository domain.UserRepository, jwtKey auth.JWTKey, exp time.Duration) LoginService {
-	fmt.Println(jwtKey, exp)
 	return LoginService{
 		userRepository: userRepository,
 		jwtKey:         jwtKey,

@@ -79,6 +79,6 @@ func Run() error {
 	// 	creating.NewIncreaseUsersCounterOnUserCreated(increasingUserCounterService),
 	// )
 
-	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus, queryBus)
+	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus, queryBus, cfg.Jwtkey)
 	return srv.Run(ctx)
 }

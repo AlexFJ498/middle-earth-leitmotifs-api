@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-const userID = "123e4567-e89b-12d3-a456-426614174000"
 const userName = "Test User"
 const userEmail = "testuser@example.com"
 const userPassword = "password123"

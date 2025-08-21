@@ -9,9 +9,11 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/health"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/session"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/jwt"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/query"
 	"github.com/gin-gonic/gin"
@@ -24,17 +26,21 @@ type Server struct {
 	// shutdownTimeout is the duration to wait for graceful shutdown.
 	shutdownTimeout time.Duration
 
+	// jwtKey is the key used to sign the JWT tokens.
+	jwtKey auth.JWTKey
+
 	// deps
 	commandBus command.Bus
 	queryBus   query.Bus
 }
 
-func New(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus, queryBus query.Bus) (context.Context, Server) {
+func New(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus, queryBus query.Bus, jwtKey auth.JWTKey) (context.Context, Server) {
 	srv := Server{
 		httpAddr: fmt.Sprintf("%s:%d", host, port),
 		engine:   gin.New(),
 
 		shutdownTimeout: shutdownTimeout,
+		jwtKey:          jwtKey,
 
 		commandBus: commandBus,
 		queryBus:   queryBus,
@@ -68,8 +74,16 @@ func (s *Server) Run(ctx context.Context) error {
 func (s *Server) registerRoutes() {
 	s.engine.Use(gin.Recovery())
 	s.engine.GET("/health", health.CheckHandler())
-	s.engine.POST("/users", users.CreateUserHandler(s.commandBus))
+
+	// Public routes
 	s.engine.POST("/login", session.LoginHandler(s.queryBus))
+
+	// Protected routes
+	auth := s.engine.Group("")
+	auth.Use(jwt.Middleware(s.jwtKey))
+	{
+		auth.POST("/users", users.CreateUserHandler(s.commandBus))
+	}
 }
 
 func serverContext(ctx context.Context) context.Context {
