@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/dto"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command/commandmocks"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -16,19 +17,19 @@ import (
 
 const usersRoute = "/users"
 
-func TestCreateHandler(t *testing.T) {
+func TestCreateUserHandler(t *testing.T) {
 	commandBus := new(commandmocks.Bus)
 	commandBus.On("Dispatch", mock.Anything, mock.AnythingOfType("creating.UserCommand")).Return(nil)
 	defer commandBus.AssertExpectations(t)
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.POST(usersRoute, CreateHandler(commandBus))
+	r.POST(usersRoute, CreateUserHandler(commandBus))
 
 	t.Run("Given invalid request, should return 400", func(t *testing.T) {
-		createUserReq := createRequest{
-			Name:  "John Doe",
-			Email: "john.doe@example.com",
+		createUserReq := dto.UserCreateRequest{
+			Email:    "john.doe@example.com",
+			Password: "securepassword",
 		}
 
 		b, err := json.Marshal(createUserReq)
@@ -47,10 +48,10 @@ func TestCreateHandler(t *testing.T) {
 	})
 
 	t.Run("Given valid request, should return 201", func(t *testing.T) {
-		createUserReq := createRequest{
-			ID:    "550e8400-e29b-41d4-a716-446655440000",
-			Name:  "John Doe",
-			Email: "john.doe@example.com",
+		createUserReq := dto.UserCreateRequest{
+			Name:     "John Doe",
+			Email:    "john.doe@example.com",
+			Password: "securepassword",
 		}
 
 		b, err := json.Marshal(createUserReq)

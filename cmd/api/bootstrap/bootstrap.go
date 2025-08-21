@@ -7,7 +7,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/authenticating"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/creating"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/bus/inmemory"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/storage/sqldb"
@@ -30,6 +32,10 @@ type config struct {
 	Dbport     int
 	Dbname     string
 	Dbtimeout  time.Duration
+
+	// Login configuration
+	Jwtkey     auth.JWTKey
+	Jwtexpires time.Duration
 }
 
 func Run() error {
@@ -54,6 +60,7 @@ func Run() error {
 
 	var (
 		commandBus = inmemory.NewCommandBus()
+		queryBus   = inmemory.NewQueryBus()
 		eventBus   = inmemory.NewEventBus()
 	)
 
@@ -62,6 +69,9 @@ func Run() error {
 	creatingUserService := creating.NewUserService(userRepository, eventBus)
 	commandBus.Register(creating.UserCommandType, creating.NewUserCommandHandler(creatingUserService))
 
+	authenticatingService := authenticating.NewLoginService(userRepository, cfg.Jwtkey, cfg.Jwtexpires)
+	queryBus.Register(authenticating.LoginQueryType, authenticating.NewLoginQueryHandler(authenticatingService))
+
 	// At the moment, this is not implemented. It shows how an inmemory event bus can be used to handle events.
 	// increasingUserCounterService := increasing.NewUserCounterIncreaserService()
 	// eventBus.Subscribe(
@@ -69,6 +79,6 @@ func Run() error {
 	// 	creating.NewIncreaseUsersCounterOnUserCreated(increasingUserCounterService),
 	// )
 
-	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus)
+	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus, queryBus)
 	return srv.Run(ctx)
 }

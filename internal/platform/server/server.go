@@ -10,8 +10,10 @@ import (
 	"time"
 
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/health"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/session"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/query"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,9 +26,10 @@ type Server struct {
 
 	// deps
 	commandBus command.Bus
+	queryBus   query.Bus
 }
 
-func New(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus) (context.Context, Server) {
+func New(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus, queryBus query.Bus) (context.Context, Server) {
 	srv := Server{
 		httpAddr: fmt.Sprintf("%s:%d", host, port),
 		engine:   gin.New(),
@@ -34,6 +37,7 @@ func New(ctx context.Context, host string, port uint, shutdownTimeout time.Durat
 		shutdownTimeout: shutdownTimeout,
 
 		commandBus: commandBus,
+		queryBus:   queryBus,
 	}
 
 	srv.registerRoutes()
@@ -64,7 +68,8 @@ func (s *Server) Run(ctx context.Context) error {
 func (s *Server) registerRoutes() {
 	s.engine.Use(gin.Recovery())
 	s.engine.GET("/health", health.CheckHandler())
-	s.engine.POST("/users", users.CreateHandler(s.commandBus))
+	s.engine.POST("/users", users.CreateUserHandler(s.commandBus))
+	s.engine.POST("/login", session.LoginHandler(s.queryBus))
 }
 
 func serverContext(ctx context.Context) context.Context {

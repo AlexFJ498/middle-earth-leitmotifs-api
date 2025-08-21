@@ -14,6 +14,62 @@ type UserRepository struct {
 	mock.Mock
 }
 
+// Find provides a mock function with given fields: ctx, id
+func (_m *UserRepository) Find(ctx context.Context, id domain.UserID) (domain.User, error) {
+	ret := _m.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Find")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.UserID) (domain.User, error)); ok {
+		return rf(ctx, id)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, domain.UserID) domain.User); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, domain.UserID) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FindByEmail provides a mock function with given fields: ctx, email
+func (_m *UserRepository) FindByEmail(ctx context.Context, email domain.UserEmail) (domain.User, error) {
+	ret := _m.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindByEmail")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.UserEmail) (domain.User, error)); ok {
+		return rf(ctx, email)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, domain.UserEmail) domain.User); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, domain.UserEmail) error); ok {
+		r1 = rf(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Save provides a mock function with given fields: ctx, user
 func (_m *UserRepository) Save(ctx context.Context, user domain.User) error {
 	ret := _m.Called(ctx, user)

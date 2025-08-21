@@ -13,6 +13,9 @@ import (
 var ErrInvalidUserID = errors.New("invalid user ID")
 var ErrInvalidUserName = errors.New("invalid user name")
 var ErrInvalidUserEmail = errors.New("invalid user email")
+var ErrInvalidUserPassword = errors.New("invalid user password")
+var ErrUserAlreadyExists = errors.New("user already exists")
+var ErrUserNotFound = errors.New("user not found")
 
 // UserID represents the unique identifier for a user.
 type UserID struct {
@@ -29,15 +32,30 @@ type UserEmail struct {
 	value string
 }
 
+// Password represents the hashed password of a user.
+type UserPassword struct {
+	value string
+}
+
 // NewUserID creates a new UserID instance.
-func NewUserID(value string) (UserID, error) {
-	v, err := uuid.Parse(value)
+func NewUserID() (UserID, error) {
+	v, err := uuid.NewRandom()
 	if err != nil {
 		return UserID{}, fmt.Errorf("%w: %w", ErrInvalidUserID, err)
 	}
 
 	return UserID{
 		value: v.String(),
+	}, nil
+}
+
+func NewUserIDFromString(id string) (UserID, error) {
+	if id == "" {
+		return UserID{}, ErrInvalidUserID
+	}
+
+	return UserID{
+		value: id,
 	}, nil
 }
 
@@ -70,7 +88,7 @@ func NewUserEmail(value string) (UserEmail, error) {
 
 	// Validate email format
 	if _, err := mail.ParseAddress(value); err != nil {
-		return UserEmail{}, fmt.Errorf("%w: %s", ErrInvalidUserEmail, err)
+		return UserEmail{}, ErrInvalidUserEmail
 	}
 
 	return UserEmail{
@@ -83,25 +101,44 @@ func (email UserEmail) String() string {
 	return email.value
 }
 
+// NewUserPassword creates a new UserPassword instance.
+func NewUserPassword(value string) (UserPassword, error) {
+	if value == "" {
+		return UserPassword{}, ErrInvalidUserPassword
+	}
+
+	return UserPassword{
+		value: value,
+	}, nil
+}
+
+// String returns the string representation of the UserPassword.
+func (password UserPassword) String() string {
+	return password.value
+}
+
 // UserRepository defines the interface for user persistence operations.
 type UserRepository interface {
 	Save(ctx context.Context, user User) error
+	Find(ctx context.Context, id UserID) (User, error)
+	FindByEmail(ctx context.Context, email UserEmail) (User, error)
 }
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=UserRepository
 
 // User represents a user in the system.
 type User struct {
-	id    UserID
-	name  UserName
-	email UserEmail
+	id       UserID
+	name     UserName
+	email    UserEmail
+	password UserPassword
 
 	events []event.Event
 }
 
 // NewUser creates a new User instance.
-func NewUser(id, name, email string) (User, error) {
-	idVO, err := NewUserID(id)
+func NewUser(name, email, password string) (User, error) {
+	idVO, err := NewUserID()
 	if err != nil {
 		return User{}, err
 	}
@@ -116,13 +153,51 @@ func NewUser(id, name, email string) (User, error) {
 		return User{}, err
 	}
 
+	passwordVO, err := NewUserPassword(password)
+	if err != nil {
+		return User{}, err
+	}
+
 	user := User{
-		id:    idVO,
-		name:  nameVO,
-		email: emailVO,
+		id:       idVO,
+		name:     nameVO,
+		email:    emailVO,
+		password: passwordVO,
 	}
 
 	user.Record(NewUserCreatedEvent(idVO.String(), nameVO.String(), emailVO.String()))
+
+	return user, nil
+}
+
+// NewUserWithID creates a new User instance with the given ID.
+func NewUserWithID(id, name, email, password string) (User, error) {
+	idVO, err := NewUserIDFromString(id)
+	if err != nil {
+		return User{}, err
+	}
+
+	nameVO, err := NewUserName(name)
+	if err != nil {
+		return User{}, err
+	}
+
+	emailVO, err := NewUserEmail(email)
+	if err != nil {
+		return User{}, err
+	}
+
+	passwordVO, err := NewUserPassword(password)
+	if err != nil {
+		return User{}, err
+	}
+
+	user := User{
+		id:       idVO,
+		name:     nameVO,
+		email:    emailVO,
+		password: passwordVO,
+	}
 
 	return user, nil
 }
@@ -140,6 +215,11 @@ func (u User) Name() UserName {
 // Email returns the user's email.
 func (u User) Email() UserEmail {
 	return u.email
+}
+
+// Password returns the user's password.
+func (u User) Password() UserPassword {
+	return u.password
 }
 
 // Record adds an event to the user's event list.

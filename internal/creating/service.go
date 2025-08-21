@@ -1,14 +1,15 @@
 package creating
 
-// UserService is the default implementation of the UserService interface
-// returned by creating.NewUserService.
 import (
 	"context"
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/dto"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/event"
 )
 
+// UserService is the default implementation of the UserService interface
 type UserService struct {
 	userRepository domain.UserRepository
 	eventBus       event.Bus
@@ -23,15 +24,24 @@ func NewUserService(userRepository domain.UserRepository, eventBus event.Bus) Us
 }
 
 // CreateUser implements the UserService interface for creating a new user.
-func (s UserService) CreateUser(ctx context.Context, id, name, email string) error {
-	user, err := domain.NewUser(id, name, email)
+func (s UserService) CreateUser(ctx context.Context, dto dto.UserCreateRequest) error {
+	// Hash the user's password
+	hashedPassword, err := auth.HashPassword(dto.Password)
 	if err != nil {
 		return err
 	}
 
+	// Create a new user object
+	user, err := domain.NewUser(dto.Name, dto.Email, hashedPassword)
+	if err != nil {
+		return err
+	}
+
+	// Save the user to the database
 	if err := s.userRepository.Save(ctx, user); err != nil {
 		return err
 	}
 
+	// Publish user events
 	return s.eventBus.Publish(ctx, user.PullEvents())
 }

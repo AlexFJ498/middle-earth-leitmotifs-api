@@ -6,30 +6,21 @@ import (
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/creating"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/dto"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 	"github.com/gin-gonic/gin"
 )
 
-type createRequest struct {
-	ID    string `json:"id" binding:"required"`
-	Name  string `json:"name" binding:"required"`
-	Email string `json:"email" binding:"required,email"`
-}
-
-// CreateHandler returns a handler function that processes user creation requests.
-func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
+// CreateUserHandler returns a handler function that processes user creation requests.
+func CreateUserHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req createRequest
-		if err := ctx.ShouldBindJSON(&req); err != nil {
+		var dto dto.UserCreateRequest
+		if err := ctx.ShouldBindJSON(&dto); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		err := commandBus.Dispatch(ctx, creating.NewUserCommand(
-			req.ID,
-			req.Name,
-			req.Email,
-		))
+		err := commandBus.Dispatch(ctx, creating.NewUserCommand(dto))
 
 		if err != nil {
 			switch {
@@ -37,6 +28,9 @@ func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 				errors.Is(err, domain.ErrInvalidUserName),
 				errors.Is(err, domain.ErrInvalidUserEmail):
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			case errors.Is(err, domain.ErrUserAlreadyExists):
+				ctx.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 				return
 			default:
 				ctx.JSON(http.StatusInternalServerError, err.Error())

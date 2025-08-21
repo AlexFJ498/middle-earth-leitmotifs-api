@@ -3,6 +3,7 @@ package creating
 import (
 	"context"
 
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/dto"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 )
 
@@ -10,17 +11,13 @@ const UserCommandType command.Type = "command.create.user"
 
 // UserCommand is the command dispatched to create a new user.
 type UserCommand struct {
-	ID    string
-	Name  string
-	Email string
+	dto dto.UserCreateRequest
 }
 
 // NewUserCommand creates a new UserCommand instance.
-func NewUserCommand(id, name, email string) UserCommand {
+func NewUserCommand(dto dto.UserCreateRequest) UserCommand {
 	return UserCommand{
-		ID:    id,
-		Name:  name,
-		Email: email,
+		dto: dto,
 	}
 }
 
@@ -48,5 +45,5 @@ func (h UserCommandHandler) Handle(ctx context.Context, cmd command.Command) err
 		return nil
 	}
 
-	return h.service.CreateUser(ctx, userCmd.ID, userCmd.Name, userCmd.Email)
+	return h.service.CreateUser(ctx, userCmd.dto)
 }
