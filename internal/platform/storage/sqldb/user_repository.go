@@ -71,7 +71,7 @@ func (r *UserRepository) Save(ctx context.Context, user domain.User) error {
 
 	row := toDTO(user)
 	query, args := userSQLStruct.InsertInto(sqlUserTable, row).Build()
-	fmt.Println(query, args)
+
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
@@ -89,7 +89,6 @@ func (r *UserRepository) Find(ctx context.Context, id domain.UserID) (domain.Use
 	sb := userSQLStruct.SelectFrom(sqlUserTable)
 	sb.Where(sb.Equal("id", id.String()))
 	query, args := sb.Build()
-	fmt.Println(query, args)
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
@@ -124,4 +123,33 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email domain.UserEmail
 	}
 
 	return toDomain(userDTO)
+}
+
+func (r *UserRepository) FindAll(ctx context.Context) ([]domain.User, error) {
+	sb := userSQLStruct.SelectFrom(sqlUserTable)
+	query, args := sb.Build()
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer cancel()
+
+	rows, err := r.db.QueryContext(ctxTimeout, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find users: %v", err)
+	}
+	defer rows.Close()
+
+	var users []domain.User
+	for rows.Next() {
+		var userDTO UserDB
+		if err := rows.Scan(userSQLStruct.Addr(&userDTO)...); err != nil {
+			return nil, fmt.Errorf("failed to scan user: %v", err)
+		}
+		user, err := toDomain(userDTO)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert user: %v", err)
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }

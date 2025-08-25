@@ -138,6 +138,7 @@ type UserRepository interface {
 	Save(ctx context.Context, user User) error
 	Find(ctx context.Context, id UserID) (User, error)
 	FindByEmail(ctx context.Context, email UserEmail) (User, error)
+	FindAll(ctx context.Context) ([]User, error)
 }
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=UserRepository

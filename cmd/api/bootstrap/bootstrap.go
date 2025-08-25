@@ -9,6 +9,7 @@ import (
 
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/authenticating"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/creating"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/listing"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/bus/inmemory"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server"
@@ -71,6 +72,9 @@ func Run() error {
 
 	authenticatingService := authenticating.NewLoginService(userRepository, cfg.Jwtkey, cfg.Jwtexpires)
 	queryBus.Register(authenticating.LoginQueryType, authenticating.NewLoginQueryHandler(authenticatingService))
+
+	listingService := listing.NewUserService(userRepository)
+	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingService))
 
 	// At the moment, this is not implemented. It shows how an inmemory event bus can be used to handle events.
 	// increasingUserCounterService := increasing.NewUserCounterIncreaserService()

@@ -84,6 +84,7 @@ func (s *Server) registerRoutes() {
 	auth.Use(jwt.Middleware(s.jwtKey), admin.Middleware())
 	{
 		auth.POST("/users", users.CreateUserHandler(s.commandBus))
+		auth.GET("/users", users.ListHandler(s.queryBus))
 	}
 }
 

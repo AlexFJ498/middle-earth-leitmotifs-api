@@ -11,3 +11,11 @@ type UserResponse struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
+
+func NewUserResponse(id, name, email string) UserResponse {
+	return UserResponse{
+		ID:    id,
+		Name:  name,
+		Email: email,
+	}
+}

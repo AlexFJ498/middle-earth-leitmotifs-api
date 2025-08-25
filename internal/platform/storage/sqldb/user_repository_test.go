@@ -18,6 +18,7 @@ const userEmail = "test@example.com"
 const userPassword = "password123"
 
 const querySelectUserByEmail = "SELECT users.id, users.name, users.email, users.password, users.is_admin FROM users WHERE email = $1"
+const querySelectAllUsers = "SELECT users.id, users.name, users.email, users.password, users.is_admin FROM users"
 
 func TestUserRepositorySaveRepositoryError(t *testing.T) {
 	user, err := domain.NewUserWithID(userID, name, userEmail, userPassword, false)
@@ -142,4 +143,54 @@ func TestUserRepositoryFindByEmailSuccess(t *testing.T) {
 	_, err = repo.FindByEmail(context.Background(), emailObj)
 	assert.NoError(t, sqlMock.ExpectationsWereMet())
 	assert.NoError(t, err)
+}
+
+func TestUserRepositoryFindAllSuccess(t *testing.T) {
+	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+
+	sqlMock.ExpectQuery(
+		querySelectAllUsers).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}).
+			AddRow(userID, name, userEmail, userPassword, false).
+			AddRow("223e4567-e89b-12d3-a456-426614174001", "Another User", "another.user@example.com", "password123", false))
+
+	repo := NewUserRepository(db, 1*time.Second)
+
+	users, err := repo.FindAll(context.Background())
+	assert.NoError(t, sqlMock.ExpectationsWereMet())
+	assert.NoError(t, err)
+	assert.Len(t, users, 2)
+}
+
+func TestUserRepositoryFindAllEmpty(t *testing.T) {
+	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+
+	sqlMock.ExpectQuery(
+		querySelectAllUsers).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}))
+
+	repo := NewUserRepository(db, 1*time.Second)
+
+	users, err := repo.FindAll(context.Background())
+	assert.NoError(t, sqlMock.ExpectationsWereMet())
+	assert.NoError(t, err)
+	assert.Len(t, users, 0)
+}
+
+func TestUserRepositoryFindAllQueryError(t *testing.T) {
+	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+
+	sqlMock.ExpectQuery(
+		querySelectAllUsers).
+		WillReturnError(errors.New("query error"))
+
+	repo := NewUserRepository(db, 1*time.Second)
+
+	users, err := repo.FindAll(context.Background())
+	assert.NoError(t, sqlMock.ExpectationsWereMet())
+	assert.Error(t, err)
+	assert.Len(t, users, 0)
 }
