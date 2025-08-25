@@ -1,0 +1,6 @@
+@id = 123
+@uuid = 47d19bba-e8db-42e4-8375-7597f1907a3a
+
+DELETE {{host}}/movies/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}

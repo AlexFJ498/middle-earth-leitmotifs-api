@@ -1,0 +1,8 @@
+POST {{host}}/movies
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "The Lord of the Rings"
+}

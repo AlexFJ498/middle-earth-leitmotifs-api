@@ -7,7 +7,10 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 )
 
-const UserCommandType command.Type = "command.create.user"
+const (
+	UserCommandType  command.Type = "command.create.user"
+	MovieCommandType command.Type = "command.create.movie"
+)
 
 // UserCommand is the command dispatched to create a new user.
 type UserCommand struct {
@@ -46,4 +49,43 @@ func (h UserCommandHandler) Handle(ctx context.Context, cmd command.Command) err
 	}
 
 	return h.service.CreateUser(ctx, userCmd.dto)
+}
+
+// MovieCommand is the command dispatched to create a new movie.
+type MovieCommand struct {
+	dto dto.MovieCreateRequest
+}
+
+// NewMovieCommand creates a new MovieCommand instance.
+func NewMovieCommand(dto dto.MovieCreateRequest) MovieCommand {
+	return MovieCommand{
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c MovieCommand) Type() command.Type {
+	return MovieCommandType
+}
+
+// MovieCommandHandler is the handler responsible for creating movies.
+type MovieCommandHandler struct {
+	service MovieService
+}
+
+// NewMovieCommandHandler creates a new MovieCommandHandler instance.
+func NewMovieCommandHandler(service MovieService) MovieCommandHandler {
+	return MovieCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the MovieCommand to create a new movie.
+func (h MovieCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	movieCmd, ok := cmd.(MovieCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.CreateMovie(ctx, movieCmd.dto)
 }

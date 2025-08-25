@@ -45,3 +45,25 @@ func (s UserService) CreateUser(ctx context.Context, dto dto.UserCreateRequest) 
 	// Publish user events
 	return s.eventBus.Publish(ctx, user.PullEvents())
 }
+
+// MovieService is the service for managing movies.
+type MovieService struct {
+	movieRepository domain.MovieRepository
+}
+
+// NewMovieService returns a new MovieService instance.
+func NewMovieService(movieRepository domain.MovieRepository) MovieService {
+	return MovieService{
+		movieRepository: movieRepository,
+	}
+}
+
+// CreateMovie implements the MovieService interface for creating a new movie.
+func (s MovieService) CreateMovie(ctx context.Context, dto dto.MovieCreateRequest) error {
+	movie, err := domain.NewMovie(dto.Name)
+	if err != nil {
+		return err
+	}
+
+	return s.movieRepository.Save(ctx, movie)
+}

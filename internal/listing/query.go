@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	UsersQueryType = "query.listing.users"
+	UsersQueryType  = "query.listing.users"
+	MoviesQueryType = "query.listing.movies"
 )
 
 // UsersQuery represents a query for listing all users.
@@ -38,4 +39,34 @@ func NewUsersQueryHandler(userService UserService) UsersQueryHandler {
 // Handle handles the users query.
 func (h UsersQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
 	return h.userService.ListUsers(ctx)
+}
+
+// MoviesQuery represents a query for listing all movies.
+type MoviesQuery struct{}
+
+// NewMoviesQuery creates a new MoviesQuery instance.
+func NewMoviesQuery() MoviesQuery {
+	return MoviesQuery{}
+}
+
+// Type returns the query type.
+func (q MoviesQuery) Type() query.Type {
+	return MoviesQueryType
+}
+
+// MoviesQueryHandler handles the movies query.
+type MoviesQueryHandler struct {
+	movieService MovieService
+}
+
+// NewMoviesQueryHandler creates a new MoviesQueryHandler instance.
+func NewMoviesQueryHandler(movieService MovieService) MoviesQueryHandler {
+	return MoviesQueryHandler{
+		movieService: movieService,
+	}
+}
+
+// Handle handles the movies query.
+func (h MoviesQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
+	return h.movieService.ListMovies(ctx)
 }

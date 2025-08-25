@@ -59,6 +59,11 @@ func NewUserIDFromString(id string) (UserID, error) {
 		return UserID{}, ErrInvalidUserID
 	}
 
+	_, err := uuid.Parse(id)
+	if err != nil {
+		return UserID{}, ErrInvalidUserID
+	}
+
 	return UserID{
 		value: id,
 	}, nil

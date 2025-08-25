@@ -37,3 +37,33 @@ func (s UserService) ListUsers(ctx context.Context) ([]dto.UserResponse, error) 
 
 	return userResponses, nil
 }
+
+// MovieService is the service for managing movies.
+type MovieService struct {
+	movieRepository domain.MovieRepository
+}
+
+// NewMovieService returns a new MovieService instance.
+func NewMovieService(movieRepository domain.MovieRepository) MovieService {
+	return MovieService{
+		movieRepository: movieRepository,
+	}
+}
+
+// ListMovies implements the MovieService interface for listing all movies.
+func (s MovieService) ListMovies(ctx context.Context) ([]dto.MovieResponse, error) {
+	movies, err := s.movieRepository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	movieResponses := make([]dto.MovieResponse, 0, len(movies))
+	for _, movie := range movies {
+		movieResponses = append(movieResponses, dto.NewMovieResponse(
+			movie.ID().String(),
+			movie.Name().String(),
+		))
+	}
+
+	return movieResponses, nil
+}

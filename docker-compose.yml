@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      MELA_ENV: ${MELA_ENV}
       MELA_HOST: ${MELA_HOST}
       MELA_PORT: ${MELA_PORT}
       MELA_DBUSER: ${MELA_DBUSER}
@@ -30,7 +31,6 @@ services:
       - "5432:${MELA_DBPORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     environment:
       POSTGRES_USER: ${MELA_DBUSER}
       POSTGRES_PASSWORD: ${MELA_DBPASSWORD}

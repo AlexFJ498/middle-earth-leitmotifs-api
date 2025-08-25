@@ -9,6 +9,7 @@ import (
 
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/authenticating"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/creating"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/deleting"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/listing"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/bus/inmemory"
@@ -66,15 +67,22 @@ func Run() error {
 	)
 
 	userRepository := sqldb.NewUserRepository(db, cfg.Dbtimeout)
-
-	creatingUserService := creating.NewUserService(userRepository, eventBus)
-	commandBus.Register(creating.UserCommandType, creating.NewUserCommandHandler(creatingUserService))
+	movieRepository := sqldb.NewMovieRepository(db, cfg.Dbtimeout)
 
 	authenticatingService := authenticating.NewLoginService(userRepository, cfg.Jwtkey, cfg.Jwtexpires)
 	queryBus.Register(authenticating.LoginQueryType, authenticating.NewLoginQueryHandler(authenticatingService))
 
-	listingService := listing.NewUserService(userRepository)
-	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingService))
+	creatingUserService := creating.NewUserService(userRepository, eventBus)
+	commandBus.Register(creating.UserCommandType, creating.NewUserCommandHandler(creatingUserService))
+	commandBus.Register(creating.MovieCommandType, creating.NewMovieCommandHandler(creating.NewMovieService(sqldb.NewMovieRepository(db, cfg.Dbtimeout))))
+
+	listingUserService := listing.NewUserService(userRepository)
+	listingMovieService := listing.NewMovieService(movieRepository)
+	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingUserService))
+	queryBus.Register(listing.MoviesQueryType, listing.NewMoviesQueryHandler(listingMovieService))
+
+	deletingMovieService := deleting.NewMovieService(movieRepository)
+	commandBus.Register(deleting.MovieCommandType, deleting.NewMovieCommandHandler(deletingMovieService))
 
 	// At the moment, this is not implemented. It shows how an inmemory event bus can be used to handle events.
 	// increasingUserCounterService := increasing.NewUserCounterIncreaserService()

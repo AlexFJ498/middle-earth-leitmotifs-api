@@ -1,4 +1,4 @@
-package users
+package movies
 
 import (
 	"net/http"
@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListHandler handles the listing of users.
+// ListHandler handles the listing of movies.
 func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		users, err := queryBus.Ask(ctx, listing.NewUsersQuery())
+		movies, err := queryBus.Ask(ctx, listing.NewMoviesQuery())
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, users)
+		ctx.JSON(http.StatusOK, movies)
 	}
 }

@@ -11,6 +11,7 @@ import (
 
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/health"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/movies"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/session"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/admin"
@@ -83,8 +84,12 @@ func (s *Server) registerRoutes() {
 	auth := s.engine.Group("")
 	auth.Use(jwt.Middleware(s.jwtKey), admin.Middleware())
 	{
-		auth.POST("/users", users.CreateUserHandler(s.commandBus))
+		auth.POST("/users", users.CreateHandler(s.commandBus))
 		auth.GET("/users", users.ListHandler(s.queryBus))
+
+		auth.POST("/movies", movies.CreateHandler(s.commandBus))
+		auth.GET("/movies", movies.ListHandler(s.queryBus))
+		auth.DELETE("/movies/:id", movies.DeleteHandler(s.commandBus))
 	}
 }
 

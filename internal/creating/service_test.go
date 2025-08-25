@@ -12,12 +12,17 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-const userName = "Test User"
-const userEmail = "testuser@example.com"
-const userPassword = "password123"
+const (
+	userName       = "Test User"
+	userEmail      = "testuser@example.com"
+	userPassword   = "password123"
+	domainUserType = "domain.User"
 
-const domainUserType = "domain.User"
-const eventEventSliceType = "[]event.Event"
+	movieName       = "Test Movie"
+	domainMovieType = "domain.Movie"
+
+	eventEventSliceType = "[]event.Event"
+)
 
 func TestUserServiceCreateUserRepositoryError(t *testing.T) {
 	dto := dto.UserCreateRequest{
@@ -79,4 +84,34 @@ func TestUserServiceCreateUserEventBusError(t *testing.T) {
 
 	err := service.CreateUser(context.Background(), dto)
 	assert.Error(t, err)
+}
+
+func TestMovieServiceCreateMovieRepositoryError(t *testing.T) {
+	dto := dto.MovieCreateRequest{
+		Name: movieName,
+	}
+
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	movieRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainMovieType)).Return(errors.New("repository error")).Once()
+	defer movieRepositoryMock.AssertExpectations(t)
+
+	service := NewMovieService(movieRepositoryMock)
+
+	err := service.CreateMovie(context.Background(), dto)
+	assert.Error(t, err)
+}
+
+func TestMovieServiceCreateMovieSuccess(t *testing.T) {
+	dto := dto.MovieCreateRequest{
+		Name: movieName,
+	}
+
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	movieRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainMovieType)).Return(nil).Once()
+	defer movieRepositoryMock.AssertExpectations(t)
+
+	service := NewMovieService(movieRepositoryMock)
+
+	err := service.CreateMovie(context.Background(), dto)
+	assert.NoError(t, err)
 }

@@ -11,6 +11,17 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 )
 
+type UserDB struct {
+	ID       string `db:"id"`
+	Name     string `db:"name"`
+	Email    string `db:"email"`
+	Password string `db:"password"`
+	IsAdmin  bool   `db:"is_admin"`
+}
+
+var sqlUserTable = "users"
+var userSQLStruct = sqlbuilder.NewStruct(new(UserDB)).For(defaultFlavor)
+
 // UserRepository implements the UserRepository interface for SQL.
 type UserRepository struct {
 	db        *sql.DB
@@ -25,18 +36,7 @@ func NewUserRepository(db *sql.DB, dbTimeout time.Duration) *UserRepository {
 	}
 }
 
-type UserDB struct {
-	ID       string `db:"id"`
-	Name     string `db:"name"`
-	Email    string `db:"email"`
-	Password string `db:"password"`
-	IsAdmin  bool   `db:"is_admin"`
-}
-
-var sqlUserTable = "users"
-var userSQLStruct = sqlbuilder.NewStruct(new(UserDB)).For(defaultFlavor)
-
-func toDTO(user domain.User) UserDB {
+func userToDTO(user domain.User) UserDB {
 	return UserDB{
 		ID:       user.ID().String(),
 		Name:     user.Name().String(),
@@ -46,7 +46,7 @@ func toDTO(user domain.User) UserDB {
 	}
 }
 
-func toDomain(dto UserDB) (domain.User, error) {
+func userToDomain(dto UserDB) (domain.User, error) {
 	return domain.NewUserWithID(
 		dto.ID,
 		dto.Name,
@@ -69,7 +69,7 @@ func (r *UserRepository) Save(ctx context.Context, user domain.User) error {
 		return fmt.Errorf("failed to check if user exists: %v", err)
 	}
 
-	row := toDTO(user)
+	row := userToDTO(user)
 	query, args := userSQLStruct.InsertInto(sqlUserTable, row).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
@@ -85,7 +85,6 @@ func (r *UserRepository) Save(ctx context.Context, user domain.User) error {
 
 // Find retrieves a user by ID from the SQL database.
 func (r *UserRepository) Find(ctx context.Context, id domain.UserID) (domain.User, error) {
-
 	sb := userSQLStruct.SelectFrom(sqlUserTable)
 	sb.Where(sb.Equal("id", id.String()))
 	query, args := sb.Build()
@@ -101,7 +100,7 @@ func (r *UserRepository) Find(ctx context.Context, id domain.UserID) (domain.Use
 		return domain.User{}, fmt.Errorf("failed to find user: %v", err)
 	}
 
-	return toDomain(userDTO)
+	return userToDomain(userDTO)
 }
 
 func (r *UserRepository) FindByEmail(ctx context.Context, email domain.UserEmail) (domain.User, error) {
@@ -122,7 +121,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email domain.UserEmail
 		return domain.User{}, fmt.Errorf("failed to find user: %v", err)
 	}
 
-	return toDomain(userDTO)
+	return userToDomain(userDTO)
 }
 
 func (r *UserRepository) FindAll(ctx context.Context) ([]domain.User, error) {
@@ -144,7 +143,7 @@ func (r *UserRepository) FindAll(ctx context.Context) ([]domain.User, error) {
 		if err := rows.Scan(userSQLStruct.Addr(&userDTO)...); err != nil {
 			return nil, fmt.Errorf("failed to scan user: %v", err)
 		}
-		user, err := toDomain(userDTO)
+		user, err := userToDomain(userDTO)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert user: %v", err)
 		}

@@ -24,7 +24,7 @@ func TestCreateUserHandler(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.POST(usersRoute, CreateUserHandler(commandBus))
+	r.POST(usersRoute, CreateHandler(commandBus))
 
 	t.Run("Given invalid request, should return 400", func(t *testing.T) {
 		createUserReq := dto.UserCreateRequest{
