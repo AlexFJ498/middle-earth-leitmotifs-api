@@ -31,8 +31,8 @@ func (s UserService) CreateUser(ctx context.Context, dto dto.UserCreateRequest) 
 		return err
 	}
 
-	// Create a new user object
-	user, err := domain.NewUser(dto.Name, dto.Email, hashedPassword)
+	// Create a new user object. The isAdmin field is always set to false.
+	user, err := domain.NewUser(dto.Name, dto.Email, hashedPassword, false)
 	if err != nil {
 		return err
 	}

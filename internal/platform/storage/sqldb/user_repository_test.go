@@ -17,10 +17,10 @@ const name = "Test User"
 const userEmail = "test@example.com"
 const userPassword = "password123"
 
-const querySelectUserByEmail = "SELECT users.id, users.name, users.email, users.password FROM users WHERE email = $1"
+const querySelectUserByEmail = "SELECT users.id, users.name, users.email, users.password, users.is_admin FROM users WHERE email = $1"
 
 func TestUserRepositorySaveRepositoryError(t *testing.T) {
-	user, err := domain.NewUserWithID(userID, name, userEmail, userPassword)
+	user, err := domain.NewUserWithID(userID, name, userEmail, userPassword, false)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -28,11 +28,11 @@ func TestUserRepositorySaveRepositoryError(t *testing.T) {
 
 	sqlMock.ExpectQuery(querySelectUserByEmail).
 		WithArgs(userEmail).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password"}))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}))
 
 	sqlMock.ExpectExec(
-		"INSERT INTO users (id, name, email, password) VALUES ($1, $2, $3, $4)").
-		WithArgs(userID, name, userEmail, userPassword).
+		"INSERT INTO users (id, name, email, password, is_admin) VALUES ($1, $2, $3, $4, $5)").
+		WithArgs(userID, name, userEmail, userPassword, false).
 		WillReturnError(errors.New("database error"))
 
 	repo := NewUserRepository(db, 1*time.Second)
@@ -43,7 +43,7 @@ func TestUserRepositorySaveRepositoryError(t *testing.T) {
 }
 
 func TestUserRepositorySaveSuccess(t *testing.T) {
-	user, err := domain.NewUserWithID(userID, name, userEmail, userPassword)
+	user, err := domain.NewUserWithID(userID, name, userEmail, userPassword, false)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -51,11 +51,11 @@ func TestUserRepositorySaveSuccess(t *testing.T) {
 
 	sqlMock.ExpectQuery(querySelectUserByEmail).
 		WithArgs(userEmail).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password"}))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}))
 
 	sqlMock.ExpectExec(
-		"INSERT INTO users (id, name, email, password) VALUES ($1, $2, $3, $4)").
-		WithArgs(userID, name, userEmail, userPassword).
+		"INSERT INTO users (id, name, email, password, is_admin) VALUES ($1, $2, $3, $4, $5)").
+		WithArgs(userID, name, userEmail, userPassword, false).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	repo := NewUserRepository(db, 1*time.Second)
@@ -70,9 +70,9 @@ func TestUserRepositoryFindUserNotFound(t *testing.T) {
 	require.NoError(t, err)
 
 	sqlMock.ExpectQuery(
-		"SELECT users.id, users.name, users.email, users.password FROM users WHERE id = $1").
+		"SELECT users.id, users.name, users.email, users.password, users.is_admin FROM users WHERE id = $1").
 		WithArgs(userID).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password"}))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}))
 
 	repo := NewUserRepository(db, 1*time.Second)
 
@@ -86,7 +86,7 @@ func TestUserRepositoryFindUserNotFound(t *testing.T) {
 }
 
 func TestUserRepositorySaveUserExistsError(t *testing.T) {
-	user, err := domain.NewUserWithID(userID, name, userEmail, userPassword)
+	user, err := domain.NewUserWithID(userID, name, userEmail, userPassword, false)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -94,8 +94,8 @@ func TestUserRepositorySaveUserExistsError(t *testing.T) {
 
 	sqlMock.ExpectQuery(querySelectUserByEmail).
 		WithArgs(userEmail).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password"}).
-			AddRow(userID, name, userEmail, userPassword))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}).
+			AddRow(userID, name, userEmail, userPassword, false))
 
 	repo := NewUserRepository(db, 1*time.Second)
 
@@ -112,7 +112,7 @@ func TestUserRepositoryFindByEmailNotFound(t *testing.T) {
 
 	sqlMock.ExpectQuery(querySelectUserByEmail).
 		WithArgs(userEmail).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password"}))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}))
 
 	repo := NewUserRepository(db, 1*time.Second)
 
@@ -131,8 +131,8 @@ func TestUserRepositoryFindByEmailSuccess(t *testing.T) {
 
 	sqlMock.ExpectQuery(querySelectUserByEmail).
 		WithArgs(userEmail).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password"}).
-			AddRow(userID, name, userEmail, userPassword))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email", "password", "is_admin"}).
+			AddRow(userID, name, userEmail, userPassword, false))
 
 	repo := NewUserRepository(db, 1*time.Second)
 

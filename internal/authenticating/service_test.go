@@ -66,7 +66,7 @@ func TestLoginServiceLoginUserPasswordError(t *testing.T) {
 func TestLoginServiceLoginUserSuccess(t *testing.T) {
 	password := "password123"
 	hashedPassword, _ := auth.HashPassword(password)
-	user, _ := domain.NewUser("name", email, hashedPassword)
+	user, _ := domain.NewUser("name", email, hashedPassword, false)
 
 	emailVO, err := domain.NewUserEmail(email)
 	assert.NoError(t, err)

@@ -30,6 +30,7 @@ type UserDB struct {
 	Name     string `db:"name"`
 	Email    string `db:"email"`
 	Password string `db:"password"`
+	IsAdmin  bool   `db:"is_admin"`
 }
 
 var sqlUserTable = "users"
@@ -41,6 +42,7 @@ func toDTO(user domain.User) UserDB {
 		Name:     user.Name().String(),
 		Email:    user.Email().String(),
 		Password: user.Password().String(),
+		IsAdmin:  user.IsAdmin().Bool(),
 	}
 }
 
@@ -50,6 +52,7 @@ func toDomain(dto UserDB) (domain.User, error) {
 		dto.Name,
 		dto.Email,
 		dto.Password,
+		dto.IsAdmin,
 	)
 }
 

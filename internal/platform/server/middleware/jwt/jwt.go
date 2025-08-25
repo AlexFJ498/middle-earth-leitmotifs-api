@@ -35,6 +35,8 @@ func Middleware(jwtKey auth.JWTKey) gin.HandlerFunc {
 		// Store the claims in the context
 		c.Set("userID", claims["id"])
 		c.Set("email", claims["email"])
+		c.Set("name", claims["name"])
+		c.Set("is_admin", claims["is_admin"])
 		c.Next()
 	}
 }

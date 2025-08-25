@@ -32,9 +32,11 @@ func CheckPassword(hash, password string) error {
 
 func GenerateJWTKey(user domain.User, key JWTKey, exp time.Duration) (string, error) {
 	claims := jwt.MapClaims{
-		"id":    user.ID().String(),
-		"email": user.Email().String(),
-		"exp":   time.Now().Add(exp).Unix(),
+		"id":       user.ID().String(),
+		"email":    user.Email().String(),
+		"name":     user.Name().String(),
+		"is_admin": user.IsAdmin().Bool(),
+		"exp":      time.Now().Add(exp).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -13,6 +13,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/health"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/session"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/admin"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/jwt"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/query"
@@ -80,7 +81,7 @@ func (s *Server) registerRoutes() {
 
 	// Protected routes
 	auth := s.engine.Group("")
-	auth.Use(jwt.Middleware(s.jwtKey))
+	auth.Use(jwt.Middleware(s.jwtKey), admin.Middleware())
 	{
 		auth.POST("/users", users.CreateUserHandler(s.commandBus))
 	}

@@ -37,6 +37,11 @@ type UserPassword struct {
 	value string
 }
 
+// UserIsAdmin represents the admin status of a user.
+type UserIsAdmin struct {
+	value bool
+}
+
 // NewUserID creates a new UserID instance.
 func NewUserID() (UserID, error) {
 	v, err := uuid.NewRandom()
@@ -117,6 +122,17 @@ func (password UserPassword) String() string {
 	return password.value
 }
 
+// NewUserIsAdmin creates a new UserIsAdmin instance.
+func NewUserIsAdmin(value bool) (UserIsAdmin, error) {
+	return UserIsAdmin{
+		value: value,
+	}, nil
+}
+
+func (isAdmin UserIsAdmin) Bool() bool {
+	return isAdmin.value
+}
+
 // UserRepository defines the interface for user persistence operations.
 type UserRepository interface {
 	Save(ctx context.Context, user User) error
@@ -132,12 +148,13 @@ type User struct {
 	name     UserName
 	email    UserEmail
 	password UserPassword
+	isAdmin  UserIsAdmin
 
 	events []event.Event
 }
 
 // NewUser creates a new User instance.
-func NewUser(name, email, password string) (User, error) {
+func NewUser(name, email, password string, isAdmin bool) (User, error) {
 	idVO, err := NewUserID()
 	if err != nil {
 		return User{}, err
@@ -158,11 +175,17 @@ func NewUser(name, email, password string) (User, error) {
 		return User{}, err
 	}
 
+	isAdminVO, err := NewUserIsAdmin(isAdmin)
+	if err != nil {
+		return User{}, err
+	}
+
 	user := User{
 		id:       idVO,
 		name:     nameVO,
 		email:    emailVO,
 		password: passwordVO,
+		isAdmin:  isAdminVO,
 	}
 
 	user.Record(NewUserCreatedEvent(idVO.String(), nameVO.String(), emailVO.String()))
@@ -171,7 +194,7 @@ func NewUser(name, email, password string) (User, error) {
 }
 
 // NewUserWithID creates a new User instance with the given ID.
-func NewUserWithID(id, name, email, password string) (User, error) {
+func NewUserWithID(id, name, email, password string, isAdmin bool) (User, error) {
 	idVO, err := NewUserIDFromString(id)
 	if err != nil {
 		return User{}, err
@@ -192,11 +215,17 @@ func NewUserWithID(id, name, email, password string) (User, error) {
 		return User{}, err
 	}
 
+	isAdminVO, err := NewUserIsAdmin(isAdmin)
+	if err != nil {
+		return User{}, err
+	}
+
 	user := User{
 		id:       idVO,
 		name:     nameVO,
 		email:    emailVO,
 		password: passwordVO,
+		isAdmin:  isAdminVO,
 	}
 
 	return user, nil
@@ -220,6 +249,11 @@ func (u User) Email() UserEmail {
 // Password returns the user's password.
 func (u User) Password() UserPassword {
 	return u.password
+}
+
+// IsAdmin returns the user's admin status.
+func (u User) IsAdmin() UserIsAdmin {
+	return u.isAdmin
 }
 
 // Record adds an event to the user's event list.
