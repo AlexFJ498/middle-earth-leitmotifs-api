@@ -68,6 +68,7 @@ type MovieRepository interface {
 	Find(ctx context.Context, id MovieID) (Movie, error)
 	FindAll(ctx context.Context) ([]Movie, error)
 	Delete(ctx context.Context, id MovieID) error
+	Update(ctx context.Context, movie Movie) error
 }
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=MovieRepository

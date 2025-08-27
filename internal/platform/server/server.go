@@ -89,6 +89,7 @@ func (s *Server) registerRoutes() {
 
 		auth.POST("/movies", movies.CreateHandler(s.commandBus))
 		auth.GET("/movies", movies.ListHandler(s.queryBus))
+		auth.PUT("/movies/:id", movies.UpdateHandler(s.commandBus))
 		auth.DELETE("/movies/:id", movies.DeleteHandler(s.commandBus))
 	}
 }

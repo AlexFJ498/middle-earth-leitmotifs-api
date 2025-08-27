@@ -15,6 +15,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/bus/inmemory"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/storage/sqldb"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/updating"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
@@ -80,6 +81,9 @@ func Run() error {
 	listingMovieService := listing.NewMovieService(movieRepository)
 	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingUserService))
 	queryBus.Register(listing.MoviesQueryType, listing.NewMoviesQueryHandler(listingMovieService))
+
+	updatingMovieService := updating.NewMovieService(movieRepository)
+	commandBus.Register(updating.MovieCommandType, updating.NewMovieCommandHandler(updatingMovieService))
 
 	deletingMovieService := deleting.NewMovieService(movieRepository)
 	commandBus.Register(deleting.MovieCommandType, deleting.NewMovieCommandHandler(deletingMovieService))

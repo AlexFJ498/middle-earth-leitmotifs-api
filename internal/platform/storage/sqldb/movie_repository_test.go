@@ -179,3 +179,21 @@ func TestMovieRepositoryDeleteSuccess(t *testing.T) {
 	assert.NoError(t, sqlMock.ExpectationsWereMet())
 	assert.NoError(t, err)
 }
+
+func TestMovieRepositoryUpdateError(t *testing.T) {
+	movie, err := domain.NewMovieWithID(movieID, movieName)
+	require.NoError(t, err)
+
+	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+
+	sqlMock.ExpectExec("UPDATE movies SET name = $1 WHERE id = $2").
+		WithArgs(movieName, movieID).
+		WillReturnError(errors.New("update error"))
+
+	repo := NewMovieRepository(db, 1*time.Second)
+
+	err = repo.Update(context.Background(), movie)
+	assert.NoError(t, sqlMock.ExpectationsWereMet())
+	assert.Error(t, err)
+}

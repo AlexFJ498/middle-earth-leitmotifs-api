@@ -4,5 +4,5 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "name": "The Lord of the Rings"
+    "name": "The Lord of the Rings: The Return of the King"
 }

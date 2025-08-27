@@ -1,0 +1,10 @@
+@id = 123
+@uuid = d7a2fd2b-2e90-4972-9a6e-5b36d36d3299
+
+PUT {{host}}/movies/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "The Lord of the Rings: The Fellowship of the Ring"
+}

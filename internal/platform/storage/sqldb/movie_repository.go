@@ -132,3 +132,28 @@ func (r *MovieRepository) Delete(ctx context.Context, id domain.MovieID) error {
 
 	return nil
 }
+
+func (r *MovieRepository) Update(ctx context.Context, movie domain.Movie) error {
+	row := movieToDTO(movie)
+	sb := movieSQLStruct.Update(sqlMovieTable, row)
+	sb.Where(sb.Equal("id", row.ID))
+	query, args := sb.Build()
+	fmt.Println(query, args)
+	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer cancel()
+
+	result, err := r.db.ExecContext(ctxTimeout, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update movie: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %v", err)
+	}
+	if rowsAffected == 0 {
+		return domain.ErrMovieNotFound
+	}
+
+	return nil
+}

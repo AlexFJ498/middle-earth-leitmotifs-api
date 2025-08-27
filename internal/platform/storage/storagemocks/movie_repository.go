@@ -108,6 +108,24 @@ func (_m *MovieRepository) Save(ctx context.Context, movie domain.Movie) error {
 	return r0
 }
 
+// Update provides a mock function with given fields: ctx, movie
+func (_m *MovieRepository) Update(ctx context.Context, movie domain.Movie) error {
+	ret := _m.Called(ctx, movie)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Movie) error); ok {
+		r0 = rf(ctx, movie)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewMovieRepository creates a new instance of MovieRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMovieRepository(t interface {
