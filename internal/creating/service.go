@@ -67,3 +67,25 @@ func (s MovieService) CreateMovie(ctx context.Context, dto dto.MovieCreateReques
 
 	return s.movieRepository.Save(ctx, movie)
 }
+
+// GroupService is the service for managing groups.
+type GroupService struct {
+	groupRepository domain.GroupRepository
+}
+
+// NewGroupService returns a new GroupService instance.
+func NewGroupService(groupRepository domain.GroupRepository) GroupService {
+	return GroupService{
+		groupRepository: groupRepository,
+	}
+}
+
+// CreateGroup implements the GroupService interface for creating a new group.
+func (s GroupService) CreateGroup(ctx context.Context, dto dto.GroupCreateRequest) error {
+	group, err := domain.NewGroup(dto.Name)
+	if err != nil {
+		return err
+	}
+
+	return s.groupRepository.Save(ctx, group)
+}

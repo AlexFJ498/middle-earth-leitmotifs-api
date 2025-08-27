@@ -67,3 +67,33 @@ func (s MovieService) ListMovies(ctx context.Context) ([]dto.MovieResponse, erro
 
 	return movieResponses, nil
 }
+
+// GroupService is the service for managing groups.
+type GroupService struct {
+	groupRepository domain.GroupRepository
+}
+
+// NewGroupService returns a new GroupService instance.
+func NewGroupService(groupRepository domain.GroupRepository) GroupService {
+	return GroupService{
+		groupRepository: groupRepository,
+	}
+}
+
+// ListGroups implements the GroupService interface for listing all groups.
+func (s GroupService) ListGroups(ctx context.Context) ([]dto.GroupResponse, error) {
+	groups, err := s.groupRepository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	groupResponses := make([]dto.GroupResponse, 0, len(groups))
+	for _, group := range groups {
+		groupResponses = append(groupResponses, dto.NewGroupResponse(
+			group.ID().String(),
+			group.Name().String(),
+		))
+	}
+
+	return groupResponses, nil
+}

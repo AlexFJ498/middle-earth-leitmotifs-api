@@ -9,6 +9,7 @@ import (
 
 const (
 	MovieCommandType command.Type = "command.update.movie"
+	GroupCommandType command.Type = "command.update.group"
 )
 
 // MovieCommand is the command dispatched to update a new movie.
@@ -50,4 +51,45 @@ func (h MovieCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	}
 
 	return h.service.UpdateMovie(ctx, movieCmd.id, movieCmd.dto)
+}
+
+// GroupCommand is the command dispatched to update a new group.
+type GroupCommand struct {
+	id  string
+	dto dto.GroupUpdateRequest
+}
+
+// NewGroupCommand updates a new GroupCommand instance.
+func NewGroupCommand(id string, dto dto.GroupUpdateRequest) GroupCommand {
+	return GroupCommand{
+		id:  id,
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c GroupCommand) Type() command.Type {
+	return GroupCommandType
+}
+
+// GroupCommandHandler is the handler responsible for updating groups.
+type GroupCommandHandler struct {
+	service GroupService
+}
+
+// NewGroupCommandHandler updates a new GroupCommandHandler instance.
+func NewGroupCommandHandler(service GroupService) GroupCommandHandler {
+	return GroupCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the GroupCommand to update a group.
+func (h GroupCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	groupCmd, ok := cmd.(GroupCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.UpdateGroup(ctx, groupCmd.id, groupCmd.dto)
 }

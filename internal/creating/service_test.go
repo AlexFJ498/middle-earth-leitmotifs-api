@@ -21,7 +21,11 @@ const (
 	movieName       = "Test Movie"
 	domainMovieType = "domain.Movie"
 
+	groupName       = "Test Group"
+	domainGroupType = "domain.Group"
+
 	eventEventSliceType = "[]event.Event"
+	repositoryErrorMsg  = "repository error"
 )
 
 func TestUserServiceCreateUserRepositoryError(t *testing.T) {
@@ -32,7 +36,7 @@ func TestUserServiceCreateUserRepositoryError(t *testing.T) {
 	}
 
 	userRepositoryMock := new(storagemocks.UserRepository)
-	userRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainUserType)).Return(errors.New("repository error")).Once()
+	userRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainUserType)).Return(errors.New(repositoryErrorMsg)).Once()
 	defer userRepositoryMock.AssertExpectations(t)
 
 	eventBusMock := new(eventmocks.Bus)
@@ -92,7 +96,7 @@ func TestMovieServiceCreateMovieRepositoryError(t *testing.T) {
 	}
 
 	movieRepositoryMock := new(storagemocks.MovieRepository)
-	movieRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainMovieType)).Return(errors.New("repository error")).Once()
+	movieRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainMovieType)).Return(errors.New(repositoryErrorMsg)).Once()
 	defer movieRepositoryMock.AssertExpectations(t)
 
 	service := NewMovieService(movieRepositoryMock)
@@ -113,5 +117,35 @@ func TestMovieServiceCreateMovieSuccess(t *testing.T) {
 	service := NewMovieService(movieRepositoryMock)
 
 	err := service.CreateMovie(context.Background(), dto)
+	assert.NoError(t, err)
+}
+
+func TestGroupServiceCreateGroupRepositoryError(t *testing.T) {
+	dto := dto.GroupCreateRequest{
+		Name: groupName,
+	}
+
+	groupRepositoryMock := new(storagemocks.GroupRepository)
+	groupRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainGroupType)).Return(errors.New(repositoryErrorMsg)).Once()
+	defer groupRepositoryMock.AssertExpectations(t)
+
+	service := NewGroupService(groupRepositoryMock)
+
+	err := service.CreateGroup(context.Background(), dto)
+	assert.Error(t, err)
+}
+
+func TestGroupServiceCreateGroupSuccess(t *testing.T) {
+	dto := dto.GroupCreateRequest{
+		Name: groupName,
+	}
+
+	groupRepositoryMock := new(storagemocks.GroupRepository)
+	groupRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainGroupType)).Return(nil).Once()
+	defer groupRepositoryMock.AssertExpectations(t)
+
+	service := NewGroupService(groupRepositoryMock)
+
+	err := service.CreateGroup(context.Background(), dto)
 	assert.NoError(t, err)
 }

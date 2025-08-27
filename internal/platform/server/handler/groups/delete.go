@@ -1,4 +1,4 @@
-package movies
+package groups
 
 import (
 	"errors"
@@ -12,19 +12,19 @@ import (
 
 func DeleteHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		movieIDParam := ctx.Param("id")
-		if movieIDParam == "" {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "movie ID is required"})
+		groupIDParam := ctx.Param("id")
+		if groupIDParam == "" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "group ID is required"})
 			return
 		}
 
-		err := commandBus.Dispatch(ctx, deleting.NewMovieCommand(movieIDParam))
+		err := commandBus.Dispatch(ctx, deleting.NewGroupCommand(groupIDParam))
 		if err != nil {
 			switch {
-			case errors.Is(err, domain.ErrInvalidMovieID):
+			case errors.Is(err, domain.ErrInvalidGroupID):
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
-			case errors.Is(err, domain.ErrMovieNotFound):
+			case errors.Is(err, domain.ErrGroupNotFound):
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			default:

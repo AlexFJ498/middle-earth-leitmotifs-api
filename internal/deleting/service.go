@@ -22,3 +22,20 @@ func NewMovieService(repo domain.MovieRepository) MovieService {
 func (s *MovieService) DeleteMovie(ctx context.Context, id domain.MovieID) error {
 	return s.movieRepository.Delete(ctx, id)
 }
+
+// GroupService is the default implementation of the GroupService interface.
+type GroupService struct {
+	groupRepository domain.GroupRepository
+}
+
+// NewGroupService returns a new GroupService instance.
+func NewGroupService(repo domain.GroupRepository) GroupService {
+	return GroupService{
+		groupRepository: repo,
+	}
+}
+
+// DeleteGroup deletes a group by its ID.
+func (s *GroupService) DeleteGroup(ctx context.Context, id domain.GroupID) error {
+	return s.groupRepository.Delete(ctx, id)
+}

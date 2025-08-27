@@ -1,0 +1,3 @@
+GET {{host}}/groups
+Accept: application/json
+Authorization: Bearer {{token}}

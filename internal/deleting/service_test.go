@@ -12,24 +12,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	uuidStr          = "123e4567-e89b-12d3-a456-426614174000"
+	databaseErrorMsg = "database error"
+)
+
 func TestMovieServiceDeleteMovieRepositoryError(t *testing.T) {
-	movieIDObj, err := domain.NewMovieIDFromString("123e4567-e89b-12d3-a456-426614174000")
+	movieIDObj, err := domain.NewMovieIDFromString(uuidStr)
 	require.NoError(t, err)
 
 	mockRepo := new(storagemocks.MovieRepository)
-	mockRepo.On("Delete", mock.Anything, movieIDObj).Return(fmt.Errorf("database error"))
+	mockRepo.On("Delete", mock.Anything, movieIDObj).Return(fmt.Errorf("%s", databaseErrorMsg))
 
 	service := NewMovieService(mockRepo)
 
 	err = service.DeleteMovie(context.Background(), movieIDObj)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "database error")
+	assert.Contains(t, err.Error(), databaseErrorMsg)
 
 	mockRepo.AssertExpectations(t)
 }
 
 func TestMovieServiceDeleteMovieSuccess(t *testing.T) {
-	movieIDObj, err := domain.NewMovieIDFromString("123e4567-e89b-12d3-a456-426614174000")
+	movieIDObj, err := domain.NewMovieIDFromString(uuidStr)
 	require.NoError(t, err)
 
 	mockRepo := new(storagemocks.MovieRepository)
@@ -38,6 +43,37 @@ func TestMovieServiceDeleteMovieSuccess(t *testing.T) {
 	service := NewMovieService(mockRepo)
 
 	err = service.DeleteMovie(context.Background(), movieIDObj)
+	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGroupServiceDeleteGroupRepositoryError(t *testing.T) {
+	groupIDObj, err := domain.NewGroupIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	mockRepo := new(storagemocks.GroupRepository)
+	mockRepo.On("Delete", mock.Anything, groupIDObj).Return(fmt.Errorf("%s", databaseErrorMsg))
+
+	service := NewGroupService(mockRepo)
+
+	err = service.DeleteGroup(context.Background(), groupIDObj)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "database error")
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGroupServiceDeleteGroupSuccess(t *testing.T) {
+	groupIDObj, err := domain.NewGroupIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	mockRepo := new(storagemocks.GroupRepository)
+	mockRepo.On("Delete", mock.Anything, groupIDObj).Return(nil)
+
+	service := NewGroupService(mockRepo)
+
+	err = service.DeleteGroup(context.Background(), groupIDObj)
 	assert.NoError(t, err)
 
 	mockRepo.AssertExpectations(t)

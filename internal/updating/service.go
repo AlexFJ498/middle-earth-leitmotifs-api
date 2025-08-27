@@ -24,3 +24,21 @@ func (s *MovieService) UpdateMovie(ctx context.Context, id string, dto dto.Movie
 	}
 	return s.movieRepository.Update(ctx, movie)
 }
+
+type GroupService struct {
+	groupRepository domain.GroupRepository
+}
+
+func NewGroupService(groupRepository domain.GroupRepository) GroupService {
+	return GroupService{
+		groupRepository: groupRepository,
+	}
+}
+
+func (s *GroupService) UpdateGroup(ctx context.Context, id string, dto dto.GroupUpdateRequest) error {
+	group, err := domain.NewGroupWithID(id, dto.Name)
+	if err != nil {
+		return err
+	}
+	return s.groupRepository.Update(ctx, group)
+}

@@ -10,6 +10,7 @@ import (
 const (
 	UserCommandType  command.Type = "command.create.user"
 	MovieCommandType command.Type = "command.create.movie"
+	GroupCommandType command.Type = "command.create.group"
 )
 
 // UserCommand is the command dispatched to create a new user.
@@ -88,4 +89,43 @@ func (h MovieCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	}
 
 	return h.service.CreateMovie(ctx, movieCmd.dto)
+}
+
+// GroupCommand is the command dispatched to create a new group.
+type GroupCommand struct {
+	dto dto.GroupCreateRequest
+}
+
+// NewGroupCommand creates a new GroupCommand instance.
+func NewGroupCommand(dto dto.GroupCreateRequest) GroupCommand {
+	return GroupCommand{
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c GroupCommand) Type() command.Type {
+	return GroupCommandType
+}
+
+// GroupCommandHandler is the handler responsible for creating groups.
+type GroupCommandHandler struct {
+	service GroupService
+}
+
+// NewGroupCommandHandler creates a new GroupCommandHandler instance.
+func NewGroupCommandHandler(service GroupService) GroupCommandHandler {
+	return GroupCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the GroupCommand to create a new group.
+func (h GroupCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	groupCmd, ok := cmd.(GroupCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.CreateGroup(ctx, groupCmd.dto)
 }

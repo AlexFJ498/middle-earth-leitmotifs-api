@@ -1,0 +1,10 @@
+@id = 123
+@uuid = 0901ef81-2d15-434f-bfd9-587dc9c628ec
+
+PUT {{host}}/groups/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "The Elves"
+}

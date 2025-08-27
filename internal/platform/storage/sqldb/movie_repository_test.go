@@ -187,8 +187,8 @@ func TestMovieRepositoryUpdateError(t *testing.T) {
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec("UPDATE movies SET name = $1 WHERE id = $2").
-		WithArgs(movieName, movieID).
+	sqlMock.ExpectExec("UPDATE movies SET id = $1, name = $2 WHERE id = $3").
+		WithArgs(movieID, movieName, movieID).
 		WillReturnError(errors.New("update error"))
 
 	repo := NewMovieRepository(db, 1*time.Second)
@@ -196,4 +196,22 @@ func TestMovieRepositoryUpdateError(t *testing.T) {
 	err = repo.Update(context.Background(), movie)
 	assert.NoError(t, sqlMock.ExpectationsWereMet())
 	assert.Error(t, err)
+}
+
+func TestMovieRepositoryUpdateSuccess(t *testing.T) {
+	movie, err := domain.NewMovieWithID(movieID, movieName)
+	require.NoError(t, err)
+
+	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+
+	sqlMock.ExpectExec("UPDATE movies SET id = $1, name = $2 WHERE id = $3").
+		WithArgs(movieID, movieName, movieID).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+	repo := NewMovieRepository(db, 1*time.Second)
+
+	err = repo.Update(context.Background(), movie)
+	assert.NoError(t, sqlMock.ExpectationsWereMet())
+	assert.NoError(t, err)
 }

@@ -1,0 +1,6 @@
+@id = 123
+@uuid = d07d9199-3d06-48bc-949e-6c47f4e0e6fd
+
+DELETE {{host}}/groups/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}

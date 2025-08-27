@@ -74,19 +74,28 @@ func Run() error {
 	queryBus.Register(authenticating.LoginQueryType, authenticating.NewLoginQueryHandler(authenticatingService))
 
 	creatingUserService := creating.NewUserService(userRepository, eventBus)
+	creatingMovieService := creating.NewMovieService(movieRepository)
+	creatingGroupService := creating.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
 	commandBus.Register(creating.UserCommandType, creating.NewUserCommandHandler(creatingUserService))
-	commandBus.Register(creating.MovieCommandType, creating.NewMovieCommandHandler(creating.NewMovieService(sqldb.NewMovieRepository(db, cfg.Dbtimeout))))
+	commandBus.Register(creating.MovieCommandType, creating.NewMovieCommandHandler(creatingMovieService))
+	commandBus.Register(creating.GroupCommandType, creating.NewGroupCommandHandler(creatingGroupService))
 
 	listingUserService := listing.NewUserService(userRepository)
 	listingMovieService := listing.NewMovieService(movieRepository)
+	listingGroupService := listing.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
 	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingUserService))
 	queryBus.Register(listing.MoviesQueryType, listing.NewMoviesQueryHandler(listingMovieService))
+	queryBus.Register(listing.GroupsQueryType, listing.NewGroupsQueryHandler(listingGroupService))
 
 	updatingMovieService := updating.NewMovieService(movieRepository)
+	updatingGroupService := updating.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
 	commandBus.Register(updating.MovieCommandType, updating.NewMovieCommandHandler(updatingMovieService))
+	commandBus.Register(updating.GroupCommandType, updating.NewGroupCommandHandler(updatingGroupService))
 
 	deletingMovieService := deleting.NewMovieService(movieRepository)
+	deletingGroupService := deleting.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
 	commandBus.Register(deleting.MovieCommandType, deleting.NewMovieCommandHandler(deletingMovieService))
+	commandBus.Register(deleting.GroupCommandType, deleting.NewGroupCommandHandler(deletingGroupService))
 
 	// At the moment, this is not implemented. It shows how an inmemory event bus can be used to handle events.
 	// increasingUserCounterService := increasing.NewUserCounterIncreaserService()

@@ -138,7 +138,7 @@ func (r *MovieRepository) Update(ctx context.Context, movie domain.Movie) error 
 	sb := movieSQLStruct.Update(sqlMovieTable, row)
 	sb.Where(sb.Equal("id", row.ID))
 	query, args := sb.Build()
-	fmt.Println(query, args)
+
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 

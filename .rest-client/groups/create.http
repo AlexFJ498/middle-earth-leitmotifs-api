@@ -1,0 +1,8 @@
+POST {{host}}/groups
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Rohan"
+}
