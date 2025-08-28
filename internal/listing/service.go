@@ -97,3 +97,33 @@ func (s GroupService) ListGroups(ctx context.Context) ([]dto.GroupResponse, erro
 
 	return groupResponses, nil
 }
+
+// CategoryService is the service for managing categories.
+type CategoryService struct {
+	categoryRepository domain.CategoryRepository
+}
+
+// NewCategoryService returns a new CategoryService instance.
+func NewCategoryService(categoryRepository domain.CategoryRepository) CategoryService {
+	return CategoryService{
+		categoryRepository: categoryRepository,
+	}
+}
+
+// ListCategories implements the CategoryService interface for listing all categories.
+func (s CategoryService) ListCategories(ctx context.Context) ([]dto.CategoryResponse, error) {
+	categories, err := s.categoryRepository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	categoryResponses := make([]dto.CategoryResponse, 0, len(categories))
+	for _, category := range categories {
+		categoryResponses = append(categoryResponses, dto.NewCategoryResponse(
+			category.ID().String(),
+			category.Name().String(),
+		))
+	}
+
+	return categoryResponses, nil
+}

@@ -78,3 +78,34 @@ func TestGroupServiceDeleteGroupSuccess(t *testing.T) {
 
 	mockRepo.AssertExpectations(t)
 }
+
+func TestCategoryServiceDeleteCategoryRepositoryError(t *testing.T) {
+	categoryIDObj, err := domain.NewCategoryIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	mockRepo := new(storagemocks.CategoryRepository)
+	mockRepo.On("Delete", mock.Anything, categoryIDObj).Return(fmt.Errorf("%s", databaseErrorMsg))
+
+	service := NewCategoryService(mockRepo)
+
+	err = service.DeleteCategory(context.Background(), categoryIDObj)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), databaseErrorMsg)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestCategoryServiceDeleteCategorySuccess(t *testing.T) {
+	categoryIDObj, err := domain.NewCategoryIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	mockRepo := new(storagemocks.CategoryRepository)
+	mockRepo.On("Delete", mock.Anything, categoryIDObj).Return(nil)
+
+	service := NewCategoryService(mockRepo)
+
+	err = service.DeleteCategory(context.Background(), categoryIDObj)
+	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}

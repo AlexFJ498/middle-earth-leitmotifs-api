@@ -69,33 +69,43 @@ func Run() error {
 
 	userRepository := sqldb.NewUserRepository(db, cfg.Dbtimeout)
 	movieRepository := sqldb.NewMovieRepository(db, cfg.Dbtimeout)
+	groupRepository := sqldb.NewGroupRepository(db, cfg.Dbtimeout)
+	categoryRepository := sqldb.NewCategoryRepository(db, cfg.Dbtimeout)
 
 	authenticatingService := authenticating.NewLoginService(userRepository, cfg.Jwtkey, cfg.Jwtexpires)
 	queryBus.Register(authenticating.LoginQueryType, authenticating.NewLoginQueryHandler(authenticatingService))
 
 	creatingUserService := creating.NewUserService(userRepository, eventBus)
 	creatingMovieService := creating.NewMovieService(movieRepository)
-	creatingGroupService := creating.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
+	creatingGroupService := creating.NewGroupService(groupRepository)
+	creatingCategoryService := creating.NewCategoryService(categoryRepository)
 	commandBus.Register(creating.UserCommandType, creating.NewUserCommandHandler(creatingUserService))
 	commandBus.Register(creating.MovieCommandType, creating.NewMovieCommandHandler(creatingMovieService))
 	commandBus.Register(creating.GroupCommandType, creating.NewGroupCommandHandler(creatingGroupService))
+	commandBus.Register(creating.CategoryCommandType, creating.NewCategoryCommandHandler(creatingCategoryService))
 
 	listingUserService := listing.NewUserService(userRepository)
 	listingMovieService := listing.NewMovieService(movieRepository)
-	listingGroupService := listing.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
+	listingGroupService := listing.NewGroupService(groupRepository)
+	listingCategoryService := listing.NewCategoryService(categoryRepository)
 	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingUserService))
 	queryBus.Register(listing.MoviesQueryType, listing.NewMoviesQueryHandler(listingMovieService))
 	queryBus.Register(listing.GroupsQueryType, listing.NewGroupsQueryHandler(listingGroupService))
+	queryBus.Register(listing.CategoriesQueryType, listing.NewCategoriesQueryHandler(listingCategoryService))
 
 	updatingMovieService := updating.NewMovieService(movieRepository)
-	updatingGroupService := updating.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
+	updatingGroupService := updating.NewGroupService(groupRepository)
+	updatingCategoryService := updating.NewCategoryService(categoryRepository)
 	commandBus.Register(updating.MovieCommandType, updating.NewMovieCommandHandler(updatingMovieService))
 	commandBus.Register(updating.GroupCommandType, updating.NewGroupCommandHandler(updatingGroupService))
+	commandBus.Register(updating.CategoryCommandType, updating.NewCategoryCommandHandler(updatingCategoryService))
 
 	deletingMovieService := deleting.NewMovieService(movieRepository)
-	deletingGroupService := deleting.NewGroupService(sqldb.NewGroupRepository(db, cfg.Dbtimeout))
+	deletingGroupService := deleting.NewGroupService(groupRepository)
+	deletingCategoryService := deleting.NewCategoryService(categoryRepository)
 	commandBus.Register(deleting.MovieCommandType, deleting.NewMovieCommandHandler(deletingMovieService))
 	commandBus.Register(deleting.GroupCommandType, deleting.NewGroupCommandHandler(deletingGroupService))
+	commandBus.Register(deleting.CategoryCommandType, deleting.NewCategoryCommandHandler(deletingCategoryService))
 
 	// At the moment, this is not implemented. It shows how an inmemory event bus can be used to handle events.
 	// increasingUserCounterService := increasing.NewUserCounterIncreaserService()

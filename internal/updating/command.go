@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	MovieCommandType command.Type = "command.update.movie"
-	GroupCommandType command.Type = "command.update.group"
+	MovieCommandType    command.Type = "command.update.movie"
+	GroupCommandType    command.Type = "command.update.group"
+	CategoryCommandType command.Type = "command.update.category"
 )
 
 // MovieCommand is the command dispatched to update a new movie.
@@ -92,4 +93,45 @@ func (h GroupCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	}
 
 	return h.service.UpdateGroup(ctx, groupCmd.id, groupCmd.dto)
+}
+
+// CategoryCommand is the command dispatched to update a new category.
+type CategoryCommand struct {
+	id  string
+	dto dto.CategoryUpdateRequest
+}
+
+// NewCategoryCommand updates a new CategoryCommand instance.
+func NewCategoryCommand(id string, dto dto.CategoryUpdateRequest) CategoryCommand {
+	return CategoryCommand{
+		id:  id,
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c CategoryCommand) Type() command.Type {
+	return CategoryCommandType
+}
+
+// CategoryCommandHandler is the handler responsible for updating categories.
+type CategoryCommandHandler struct {
+	service CategoryService
+}
+
+// NewCategoryCommandHandler updates a new CategoryCommandHandler instance.
+func NewCategoryCommandHandler(service CategoryService) CategoryCommandHandler {
+	return CategoryCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the CategoryCommand to update a category.
+func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	categoryCmd, ok := cmd.(CategoryCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.UpdateCategory(ctx, categoryCmd.id, categoryCmd.dto)
 }

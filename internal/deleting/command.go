@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	MovieCommandType = "command.delete.movie"
-	GroupCommandType = "command.delete.group"
+	MovieCommandType    = "command.delete.movie"
+	GroupCommandType    = "command.delete.group"
+	CategoryCommandType = "command.delete.category"
 )
 
 // MovieCommand is the command dispatched for deleting a movie.
@@ -96,4 +97,47 @@ func (h GroupCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 		return err
 	}
 	return h.service.DeleteGroup(ctx, groupID)
+}
+
+// CategoryCommand is the command dispatched for deleting a category.
+type CategoryCommand struct {
+	ID string
+}
+
+// NewCategoryCommand creates a new CategoryCommand instance.
+func NewCategoryCommand(id string) CategoryCommand {
+	return CategoryCommand{
+		ID: id,
+	}
+}
+
+// Type returns the type of the command.
+func (c CategoryCommand) Type() command.Type {
+	return CategoryCommandType
+}
+
+// CategoryCommandHandler handles the deletion of a category.
+type CategoryCommandHandler struct {
+	service CategoryService
+}
+
+// NewCategoryCommandHandler creates a new CategoryCommandHandler.
+func NewCategoryCommandHandler(service CategoryService) CategoryCommandHandler {
+	return CategoryCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the CategoryCommand.
+func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	categoryCmd, ok := cmd.(CategoryCommand)
+	if !ok {
+		return nil
+	}
+
+	categoryID, err := domain.NewCategoryIDFromString(categoryCmd.ID)
+	if err != nil {
+		return err
+	}
+	return h.service.DeleteCategory(ctx, categoryID)
 }

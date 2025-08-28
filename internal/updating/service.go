@@ -42,3 +42,21 @@ func (s *GroupService) UpdateGroup(ctx context.Context, id string, dto dto.Group
 	}
 	return s.groupRepository.Update(ctx, group)
 }
+
+type CategoryService struct {
+	categoryRepository domain.CategoryRepository
+}
+
+func NewCategoryService(categoryRepository domain.CategoryRepository) CategoryService {
+	return CategoryService{
+		categoryRepository: categoryRepository,
+	}
+}
+
+func (s *CategoryService) UpdateCategory(ctx context.Context, id string, dto dto.CategoryUpdateRequest) error {
+	category, err := domain.NewCategoryWithID(id, dto.Name)
+	if err != nil {
+		return err
+	}
+	return s.categoryRepository.Update(ctx, category)
+}

@@ -24,6 +24,9 @@ const (
 	groupName       = "Test Group"
 	domainGroupType = "domain.Group"
 
+	categoryName       = "Test Category"
+	domainCategoryType = "domain.Category"
+
 	eventEventSliceType = "[]event.Event"
 	repositoryErrorMsg  = "repository error"
 )
@@ -147,5 +150,35 @@ func TestGroupServiceCreateGroupSuccess(t *testing.T) {
 	service := NewGroupService(groupRepositoryMock)
 
 	err := service.CreateGroup(context.Background(), dto)
+	assert.NoError(t, err)
+}
+
+func TestCategoryServiceCreateCategoryRepositoryError(t *testing.T) {
+	dto := dto.CategoryCreateRequest{
+		Name: categoryName,
+	}
+
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+	categoryRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainCategoryType)).Return(errors.New(repositoryErrorMsg)).Once()
+	defer categoryRepositoryMock.AssertExpectations(t)
+
+	service := NewCategoryService(categoryRepositoryMock)
+
+	err := service.CreateCategory(context.Background(), dto)
+	assert.Error(t, err)
+}
+
+func TestCategoryServiceCreateCategorySuccess(t *testing.T) {
+	dto := dto.CategoryCreateRequest{
+		Name: categoryName,
+	}
+
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+	categoryRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType(domainCategoryType)).Return(nil).Once()
+	defer categoryRepositoryMock.AssertExpectations(t)
+
+	service := NewCategoryService(categoryRepositoryMock)
+
+	err := service.CreateCategory(context.Background(), dto)
 	assert.NoError(t, err)
 }

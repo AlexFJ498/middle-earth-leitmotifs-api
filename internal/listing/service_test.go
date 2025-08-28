@@ -91,10 +91,10 @@ func TestGroupServiceListGroupsRepositoryError(t *testing.T) {
 func TestGroupServiceListGroupsSuccess(t *testing.T) {
 	groupRepositoryMock := new(storagemocks.GroupRepository)
 	groups := []domain.Group{}
-	group1, err := domain.NewGroup("Fellowship of the Ring")
+	group1, err := domain.NewGroup("The Elves")
 	assert.NoError(t, err)
 	groups = append(groups, group1)
-	group2, err := domain.NewGroup("Company of the Ring")
+	group2, err := domain.NewGroup("Rohan")
 	assert.NoError(t, err)
 	groups = append(groups, group2)
 	groupRepositoryMock.On("FindAll", mock.Anything).Return(groups, nil).Once()
@@ -104,6 +104,37 @@ func TestGroupServiceListGroupsSuccess(t *testing.T) {
 	groupsDTO, err := groupService.ListGroups(context.Background())
 	assert.NoError(t, err)
 	assert.Len(t, groupsDTO, 2)
-	assert.Equal(t, "Fellowship of the Ring", groupsDTO[0].Name)
-	assert.Equal(t, "Company of the Ring", groupsDTO[1].Name)
+	assert.Equal(t, "The Elves", groupsDTO[0].Name)
+	assert.Equal(t, "Rohan", groupsDTO[1].Name)
+}
+
+func TestCategoryServiceListCategoriesRepositoryError(t *testing.T) {
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+	categoryRepositoryMock.On("FindAll", mock.Anything).Return(nil, errors.New("repository error")).Once()
+
+	categoryService := NewCategoryService(categoryRepositoryMock)
+
+	ctx := context.Background()
+	_, err := categoryService.ListCategories(ctx)
+	assert.Error(t, err)
+}
+
+func TestCategoryServiceListCategoriesSuccess(t *testing.T) {
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+	categories := []domain.Category{}
+	category1, err := domain.NewCategory("The Mordor Accompaniments")
+	assert.NoError(t, err)
+	categories = append(categories, category1)
+	category2, err := domain.NewCategory("The Hobbit Accompaniments")
+	assert.NoError(t, err)
+	categories = append(categories, category2)
+	categoryRepositoryMock.On("FindAll", mock.Anything).Return(categories, nil).Once()
+
+	categoryService := NewCategoryService(categoryRepositoryMock)
+
+	categoriesDTO, err := categoryService.ListCategories(context.Background())
+	assert.NoError(t, err)
+	assert.Len(t, categoriesDTO, 2)
+	assert.Equal(t, "The Mordor Accompaniments", categoriesDTO[0].Name)
+	assert.Equal(t, "The Hobbit Accompaniments", categoriesDTO[1].Name)
 }

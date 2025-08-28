@@ -89,3 +89,25 @@ func (s GroupService) CreateGroup(ctx context.Context, dto dto.GroupCreateReques
 
 	return s.groupRepository.Save(ctx, group)
 }
+
+// CategoryService is the service for managing categories.
+type CategoryService struct {
+	categoryRepository domain.CategoryRepository
+}
+
+// NewCategoryService returns a new CategoryService instance.
+func NewCategoryService(categoryRepository domain.CategoryRepository) CategoryService {
+	return CategoryService{
+		categoryRepository: categoryRepository,
+	}
+}
+
+// CreateCategory implements the CategoryService interface for creating a new category.
+func (s CategoryService) CreateCategory(ctx context.Context, dto dto.CategoryCreateRequest) error {
+	category, err := domain.NewCategory(dto.Name)
+	if err != nil {
+		return err
+	}
+
+	return s.categoryRepository.Save(ctx, category)
+}

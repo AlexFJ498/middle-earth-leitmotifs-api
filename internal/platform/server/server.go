@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/categories"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/groups"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/health"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/movies"
@@ -97,6 +98,11 @@ func (s *Server) registerRoutes() {
 		auth.GET("/groups", groups.ListHandler(s.queryBus))
 		auth.PUT("/groups/:id", groups.UpdateHandler(s.commandBus))
 		auth.DELETE("/groups/:id", groups.DeleteHandler(s.commandBus))
+
+		auth.POST("/categories", categories.CreateHandler(s.commandBus))
+		auth.GET("/categories", categories.ListHandler(s.queryBus))
+		auth.PUT("/categories/:id", categories.UpdateHandler(s.commandBus))
+		auth.DELETE("/categories/:id", categories.DeleteHandler(s.commandBus))
 	}
 }
 

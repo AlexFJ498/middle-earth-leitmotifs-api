@@ -12,22 +12,26 @@ import (
 )
 
 const (
-	testID           = "123e4567-e89b-12d3-a456-426614174000"
-	movieName        = "The Fellowship of the Ring"
-	updatedMovieName = "The Fellowship of the Ring - Updated"
-	groupName        = "Fellowship of the Ring"
-	updatedGroupName = "Fellowship of the Ring - Updated"
-	domainMovieType  = "domain.Movie"
-	domainGroupType  = "domain.Group"
+	testID       = "123e4567-e89b-12d3-a456-426614174000"
+	movieName    = "The Fellowship of the Ring"
+	groupName    = "The Elves"
+	categoryName = "The Mordor Accompaniments"
+
+	domainMovieType    = "domain.Movie"
+	domainGroupType    = "domain.Group"
+	domainCategoryType = "domain.Category"
+
+	repositoryErrorMsg = "repository error"
+	invalidId          = "invalid-id"
 )
 
 func TestMovieServiceUpdateMovieRepositoryError(t *testing.T) {
 	dto := dto.MovieUpdateRequest{
-		Name: updatedMovieName,
+		Name: movieName,
 	}
 
 	movieRepositoryMock := new(storagemocks.MovieRepository)
-	movieRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainMovieType)).Return(errors.New("repository error")).Once()
+	movieRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainMovieType)).Return(errors.New(repositoryErrorMsg)).Once()
 	defer movieRepositoryMock.AssertExpectations(t)
 
 	service := NewMovieService(movieRepositoryMock)
@@ -38,7 +42,7 @@ func TestMovieServiceUpdateMovieRepositoryError(t *testing.T) {
 
 func TestMovieServiceUpdateMovieSuccess(t *testing.T) {
 	dto := dto.MovieUpdateRequest{
-		Name: updatedMovieName,
+		Name: movieName,
 	}
 
 	movieRepositoryMock := new(storagemocks.MovieRepository)
@@ -53,7 +57,7 @@ func TestMovieServiceUpdateMovieSuccess(t *testing.T) {
 
 func TestMovieServiceUpdateMovieInvalidID(t *testing.T) {
 	dto := dto.MovieUpdateRequest{
-		Name: updatedMovieName,
+		Name: movieName,
 	}
 
 	movieRepositoryMock := new(storagemocks.MovieRepository)
@@ -61,17 +65,17 @@ func TestMovieServiceUpdateMovieInvalidID(t *testing.T) {
 
 	service := NewMovieService(movieRepositoryMock)
 
-	err := service.UpdateMovie(context.Background(), "invalid-id", dto)
+	err := service.UpdateMovie(context.Background(), invalidId, dto)
 	assert.Error(t, err)
 }
 
 func TestGroupServiceUpdateGroupRepositoryError(t *testing.T) {
 	dto := dto.GroupUpdateRequest{
-		Name: updatedGroupName,
+		Name: groupName,
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
-	groupRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainGroupType)).Return(errors.New("repository error")).Once()
+	groupRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainGroupType)).Return(errors.New(repositoryErrorMsg)).Once()
 	defer groupRepositoryMock.AssertExpectations(t)
 
 	service := NewGroupService(groupRepositoryMock)
@@ -82,7 +86,7 @@ func TestGroupServiceUpdateGroupRepositoryError(t *testing.T) {
 
 func TestGroupServiceUpdateGroupSuccess(t *testing.T) {
 	dto := dto.GroupUpdateRequest{
-		Name: updatedGroupName,
+		Name: groupName,
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
@@ -97,7 +101,7 @@ func TestGroupServiceUpdateGroupSuccess(t *testing.T) {
 
 func TestGroupServiceUpdateGroupInvalidID(t *testing.T) {
 	dto := dto.GroupUpdateRequest{
-		Name: updatedGroupName,
+		Name: groupName,
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
@@ -105,6 +109,50 @@ func TestGroupServiceUpdateGroupInvalidID(t *testing.T) {
 
 	service := NewGroupService(groupRepositoryMock)
 
-	err := service.UpdateGroup(context.Background(), "invalid-id", dto)
+	err := service.UpdateGroup(context.Background(), invalidId, dto)
+	assert.Error(t, err)
+}
+
+func TestCategoryServiceUpdateCategoryRepositoryError(t *testing.T) {
+	dto := dto.CategoryUpdateRequest{
+		Name: categoryName,
+	}
+
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+	categoryRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainCategoryType)).Return(errors.New(repositoryErrorMsg)).Once()
+	defer categoryRepositoryMock.AssertExpectations(t)
+
+	service := NewCategoryService(categoryRepositoryMock)
+
+	err := service.UpdateCategory(context.Background(), testID, dto)
+	assert.Error(t, err)
+}
+
+func TestCategoryServiceUpdateCategorySuccess(t *testing.T) {
+	dto := dto.CategoryUpdateRequest{
+		Name: categoryName,
+	}
+
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+	categoryRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainCategoryType)).Return(nil).Once()
+	defer categoryRepositoryMock.AssertExpectations(t)
+
+	service := NewCategoryService(categoryRepositoryMock)
+
+	err := service.UpdateCategory(context.Background(), testID, dto)
+	assert.NoError(t, err)
+}
+
+func TestCategoryServiceUpdateCategoryInvalidID(t *testing.T) {
+	dto := dto.CategoryUpdateRequest{
+		Name: categoryName,
+	}
+
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+	defer categoryRepositoryMock.AssertExpectations(t)
+
+	service := NewCategoryService(categoryRepositoryMock)
+
+	err := service.UpdateCategory(context.Background(), invalidId, dto)
 	assert.Error(t, err)
 }

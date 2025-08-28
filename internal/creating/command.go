@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	UserCommandType  command.Type = "command.create.user"
-	MovieCommandType command.Type = "command.create.movie"
-	GroupCommandType command.Type = "command.create.group"
+	UserCommandType     command.Type = "command.create.user"
+	MovieCommandType    command.Type = "command.create.movie"
+	GroupCommandType    command.Type = "command.create.group"
+	CategoryCommandType command.Type = "command.create.category"
 )
 
 // UserCommand is the command dispatched to create a new user.
@@ -128,4 +129,43 @@ func (h GroupCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	}
 
 	return h.service.CreateGroup(ctx, groupCmd.dto)
+}
+
+// CategoryCommand is the command dispatched to create a new category.
+type CategoryCommand struct {
+	dto dto.CategoryCreateRequest
+}
+
+// NewCategoryCommand creates a new CategoryCommand instance.
+func NewCategoryCommand(dto dto.CategoryCreateRequest) CategoryCommand {
+	return CategoryCommand{
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c CategoryCommand) Type() command.Type {
+	return CategoryCommandType
+}
+
+// CategoryCommandHandler is the handler responsible for creating categories.
+type CategoryCommandHandler struct {
+	service CategoryService
+}
+
+// NewCategoryCommandHandler creates a new CategoryCommandHandler instance.
+func NewCategoryCommandHandler(service CategoryService) CategoryCommandHandler {
+	return CategoryCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the CategoryCommand to create a new category.
+func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	categoryCmd, ok := cmd.(CategoryCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.CreateCategory(ctx, categoryCmd.dto)
 }

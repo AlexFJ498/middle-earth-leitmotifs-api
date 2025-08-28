@@ -39,3 +39,20 @@ func NewGroupService(repo domain.GroupRepository) GroupService {
 func (s *GroupService) DeleteGroup(ctx context.Context, id domain.GroupID) error {
 	return s.groupRepository.Delete(ctx, id)
 }
+
+// CategoryService is the default implementation of the CategoryService interface.
+type CategoryService struct {
+	categoryRepository domain.CategoryRepository
+}
+
+// NewCategoryService returns a new CategoryService instance.
+func NewCategoryService(repo domain.CategoryRepository) CategoryService {
+	return CategoryService{
+		categoryRepository: repo,
+	}
+}
+
+// DeleteCategory deletes a category by its ID.
+func (s *CategoryService) DeleteCategory(ctx context.Context, id domain.CategoryID) error {
+	return s.categoryRepository.Delete(ctx, id)
+}

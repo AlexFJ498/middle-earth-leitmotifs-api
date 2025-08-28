@@ -1,0 +1,6 @@
+@id = 123
+@uuid = 5bd6ada5-693c-4fd7-ae11-7ace3b293967
+
+DELETE {{host}}/categories/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}
