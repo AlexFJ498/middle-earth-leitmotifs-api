@@ -24,6 +24,5 @@ CREATE TABLE themes (
     name VARCHAR(255) NOT NULL,
     group_id UUID REFERENCES groups(id) NOT NULL,
     category_id UUID REFERENCES categories(id),
-    first_heard UUID REFERENCES tracks(id) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    first_heard UUID REFERENCES tracks(id) NOT NULL
 );

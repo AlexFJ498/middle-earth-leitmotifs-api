@@ -1,0 +1,61 @@
+ALTER TABLE categories
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE groups
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE movies
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE themes
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE tracks
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE users
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+CREATE OR REPLACE FUNCTION update_timestamps()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_categories_timestamps
+BEFORE UPDATE ON categories
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamps();
+
+CREATE TRIGGER update_groups_timestamps
+BEFORE UPDATE ON groups
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamps();
+
+CREATE TRIGGER update_movies_timestamps
+BEFORE UPDATE ON movies
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamps();
+
+CREATE TRIGGER update_themes_timestamps
+BEFORE UPDATE ON themes
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamps();
+
+CREATE TRIGGER update_tracks_timestamps
+BEFORE UPDATE ON tracks
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamps();
+
+CREATE TRIGGER update_users_timestamps
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamps();
