@@ -12,6 +12,7 @@ const (
 	MovieCommandType    command.Type = "command.create.movie"
 	GroupCommandType    command.Type = "command.create.group"
 	CategoryCommandType command.Type = "command.create.category"
+	TrackCommandType    command.Type = "command.create.track"
 )
 
 // UserCommand is the command dispatched to create a new user.
@@ -168,4 +169,43 @@ func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command)
 	}
 
 	return h.service.CreateCategory(ctx, categoryCmd.dto)
+}
+
+// TrackCommand is the command dispatched to create a new track.
+type TrackCommand struct {
+	dto dto.TrackCreateRequest
+}
+
+// NewTrackCommand creates a new TrackCommand instance.
+func NewTrackCommand(dto dto.TrackCreateRequest) TrackCommand {
+	return TrackCommand{
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c TrackCommand) Type() command.Type {
+	return TrackCommandType
+}
+
+// TrackCommandHandler is the handler responsible for creating tracks.
+type TrackCommandHandler struct {
+	service TrackService
+}
+
+// NewTrackCommandHandler creates a new TrackCommandHandler instance.
+func NewTrackCommandHandler(service TrackService) TrackCommandHandler {
+	return TrackCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the TrackCommand to create a new track.
+func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	trackCmd, ok := cmd.(TrackCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.CreateTrack(ctx, trackCmd.dto)
 }

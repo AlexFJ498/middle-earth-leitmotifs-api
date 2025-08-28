@@ -127,3 +127,30 @@ func (s CategoryService) ListCategories(ctx context.Context) ([]dto.CategoryResp
 
 	return categoryResponses, nil
 }
+
+// TrackService is the service for managing tracks.
+type TrackService struct {
+	trackRepository domain.TrackRepository
+}
+
+// NewTrackService returns a new TrackService instance.
+func NewTrackService(trackRepository domain.TrackRepository) TrackService {
+	return TrackService{
+		trackRepository: trackRepository,
+	}
+}
+
+// ListTracks implements the TrackService interface for listing all tracks.
+func (s TrackService) ListTracks(ctx context.Context) ([]dto.TrackResponse, error) {
+	tracks, err := s.trackRepository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	trackResponses := make([]dto.TrackResponse, 0, len(tracks))
+	for _, track := range tracks {
+		trackResponses = append(trackResponses, dto.NewTrackResponse(track))
+	}
+
+	return trackResponses, nil
+}

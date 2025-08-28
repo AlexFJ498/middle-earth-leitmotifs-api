@@ -11,6 +11,7 @@ const (
 	MovieCommandType    = "command.delete.movie"
 	GroupCommandType    = "command.delete.group"
 	CategoryCommandType = "command.delete.category"
+	TrackCommandType    = "command.delete.track"
 )
 
 // MovieCommand is the command dispatched for deleting a movie.
@@ -140,4 +141,47 @@ func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command)
 		return err
 	}
 	return h.service.DeleteCategory(ctx, categoryID)
+}
+
+// TrackCommand is the command dispatched for deleting a track.
+type TrackCommand struct {
+	ID string
+}
+
+// NewTrackCommand creates a new TrackCommand.
+func NewTrackCommand(id string) TrackCommand {
+	return TrackCommand{
+		ID: id,
+	}
+}
+
+// Type returns the type of the command.
+func (c TrackCommand) Type() command.Type {
+	return TrackCommandType
+}
+
+// TrackCommandHandler handles the deletion of a track.
+type TrackCommandHandler struct {
+	service TrackService
+}
+
+// NewTrackCommandHandler creates a new TrackCommandHandler.
+func NewTrackCommandHandler(service TrackService) TrackCommandHandler {
+	return TrackCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the TrackCommand.
+func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	trackCmd, ok := cmd.(TrackCommand)
+	if !ok {
+		return nil
+	}
+
+	trackID, err := domain.NewTrackIDFromString(trackCmd.ID)
+	if err != nil {
+		return err
+	}
+	return h.service.DeleteTrack(ctx, trackID)
 }

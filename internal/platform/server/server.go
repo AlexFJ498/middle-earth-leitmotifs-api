@@ -15,6 +15,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/health"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/movies"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/session"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/tracks"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/admin"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/jwt"
@@ -81,6 +82,10 @@ func (s *Server) registerRoutes() {
 
 	// Public routes
 	s.engine.POST("/login", session.LoginHandler(s.queryBus))
+	s.engine.GET("/movies", movies.ListHandler(s.queryBus))
+	s.engine.GET("/groups", groups.ListHandler(s.queryBus))
+	s.engine.GET("/categories", categories.ListHandler(s.queryBus))
+	s.engine.GET("/tracks", tracks.ListHandler(s.queryBus))
 
 	// Protected routes
 	auth := s.engine.Group("")
@@ -90,19 +95,20 @@ func (s *Server) registerRoutes() {
 		auth.GET("/users", users.ListHandler(s.queryBus))
 
 		auth.POST("/movies", movies.CreateHandler(s.commandBus))
-		auth.GET("/movies", movies.ListHandler(s.queryBus))
 		auth.PUT("/movies/:id", movies.UpdateHandler(s.commandBus))
 		auth.DELETE("/movies/:id", movies.DeleteHandler(s.commandBus))
 
 		auth.POST("/groups", groups.CreateHandler(s.commandBus))
-		auth.GET("/groups", groups.ListHandler(s.queryBus))
 		auth.PUT("/groups/:id", groups.UpdateHandler(s.commandBus))
 		auth.DELETE("/groups/:id", groups.DeleteHandler(s.commandBus))
 
 		auth.POST("/categories", categories.CreateHandler(s.commandBus))
-		auth.GET("/categories", categories.ListHandler(s.queryBus))
 		auth.PUT("/categories/:id", categories.UpdateHandler(s.commandBus))
 		auth.DELETE("/categories/:id", categories.DeleteHandler(s.commandBus))
+
+		auth.POST("/tracks", tracks.CreateHandler(s.commandBus))
+		auth.PUT("/tracks/:id", tracks.UpdateHandler(s.commandBus))
+		auth.DELETE("/tracks/:id", tracks.DeleteHandler(s.commandBus))
 	}
 }
 

@@ -1,0 +1,6 @@
+@id = 123
+@uuid = 54ec228f-eac5-4b2e-9788-186e0b2b0067
+
+DELETE {{host}}/tracks/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}

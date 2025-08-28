@@ -1,0 +1,11 @@
+@id = 123
+@uuid = 54ec228f-eac5-4b2e-9788-186e0b2b0067
+
+PUT {{host}}/tracks/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "The Three Hunters",
+    "movie_id": "b6c9d5ae-bf3b-419e-ba8f-09c8ce39d9bc"
+}

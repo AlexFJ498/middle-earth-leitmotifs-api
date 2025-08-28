@@ -111,3 +111,25 @@ func (s CategoryService) CreateCategory(ctx context.Context, dto dto.CategoryCre
 
 	return s.categoryRepository.Save(ctx, category)
 }
+
+// TrackService is the service for managing tracks.
+type TrackService struct {
+	trackRepository domain.TrackRepository
+}
+
+// NewTrackService returns a new TrackService instance.
+func NewTrackService(trackRepository domain.TrackRepository) TrackService {
+	return TrackService{
+		trackRepository: trackRepository,
+	}
+}
+
+// CreateTrack implements the TrackService interface for creating a new track.
+func (s TrackService) CreateTrack(ctx context.Context, dto dto.TrackCreateRequest) error {
+	track, err := domain.NewTrack(dto.Name, dto.MovieID)
+	if err != nil {
+		return err
+	}
+
+	return s.trackRepository.Save(ctx, track)
+}

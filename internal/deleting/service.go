@@ -56,3 +56,20 @@ func NewCategoryService(repo domain.CategoryRepository) CategoryService {
 func (s *CategoryService) DeleteCategory(ctx context.Context, id domain.CategoryID) error {
 	return s.categoryRepository.Delete(ctx, id)
 }
+
+// TrackService is the default implementation of the TrackService interface.
+type TrackService struct {
+	trackRepository domain.TrackRepository
+}
+
+// NewTrackService returns a new TrackService instance.
+func NewTrackService(repo domain.TrackRepository) TrackService {
+	return TrackService{
+		trackRepository: repo,
+	}
+}
+
+// DeleteTrack deletes a track by its ID.
+func (s *TrackService) DeleteTrack(ctx context.Context, id domain.TrackID) error {
+	return s.trackRepository.Delete(ctx, id)
+}

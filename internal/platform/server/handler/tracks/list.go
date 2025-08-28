@@ -1,4 +1,4 @@
-package movies
+package tracks
 
 import (
 	"net/http"
@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListHandler handles the listing of movies.
+// ListHandler returns the handler that lists all tracks.
 func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		movies, err := queryBus.Ask(ctx, listing.NewMoviesQuery())
+		tracks, err := queryBus.Ask(ctx, listing.NewTracksQuery())
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, movies)
+		ctx.JSON(http.StatusOK, tracks)
 	}
 }

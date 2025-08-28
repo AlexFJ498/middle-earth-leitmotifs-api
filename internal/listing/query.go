@@ -11,6 +11,7 @@ const (
 	MoviesQueryType     = "query.listing.movies"
 	GroupsQueryType     = "query.listing.groups"
 	CategoriesQueryType = "query.listing.categories"
+	TracksQueryType     = "query.listing.tracks"
 )
 
 // UsersQuery represents a query for listing all users.
@@ -131,4 +132,34 @@ func NewCategoriesQueryHandler(categoryService CategoryService) CategoriesQueryH
 // Handle handles the categories query.
 func (h CategoriesQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
 	return h.categoryService.ListCategories(ctx)
+}
+
+// TracksQuery represents a query for listing all tracks.
+type TracksQuery struct{}
+
+// NewTracksQuery creates a new TracksQuery instance.
+func NewTracksQuery() TracksQuery {
+	return TracksQuery{}
+}
+
+// Type returns the query type.
+func (q TracksQuery) Type() query.Type {
+	return TracksQueryType
+}
+
+// TracksQueryHandler handles the tracks query.
+type TracksQueryHandler struct {
+	trackService TrackService
+}
+
+// NewTracksQueryHandler creates a new TracksQueryHandler instance.
+func NewTracksQueryHandler(trackService TrackService) TracksQueryHandler {
+	return TracksQueryHandler{
+		trackService: trackService,
+	}
+}
+
+// Handle handles the tracks query.
+func (h TracksQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
+	return h.trackService.ListTracks(ctx)
 }

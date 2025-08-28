@@ -1,4 +1,4 @@
-package movies
+package tracks
 
 import (
 	"errors"
@@ -11,29 +11,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// UpdateHandler handles the update of a movie.
+// UpdateHandler returns the handler that updates tracks.
 func UpdateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		movieIDParam := ctx.Param("id")
-		if movieIDParam == "" {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "movie ID is required"})
+		trackIDParam := ctx.Param("id")
+		if trackIDParam == "" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "track ID is required"})
 			return
 		}
 
-		var req dto.MovieUpdateRequest
+		var req dto.TrackUpdateRequest
 		if err := ctx.ShouldBindJSON(&req); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		cmd := updating.NewMovieCommand(movieIDParam, req)
+		cmd := updating.NewTrackCommand(ctx.Param("id"), req)
 		if err := commandBus.Dispatch(ctx, cmd); err != nil {
 			switch {
-			case errors.Is(err, domain.ErrMovieNotFound):
+			case errors.Is(err, domain.ErrTrackNotFound):
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
-			case errors.Is(err, domain.ErrInvalidMovieID),
-				errors.Is(err, domain.ErrInvalidMovieName):
+			case errors.Is(err, domain.ErrInvalidTrackID),
+				errors.Is(err, domain.ErrInvalidTrackName):
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			default:

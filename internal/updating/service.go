@@ -60,3 +60,21 @@ func (s *CategoryService) UpdateCategory(ctx context.Context, id string, dto dto
 	}
 	return s.categoryRepository.Update(ctx, category)
 }
+
+type TrackService struct {
+	trackRepository domain.TrackRepository
+}
+
+func NewTrackService(trackRepository domain.TrackRepository) TrackService {
+	return TrackService{
+		trackRepository: trackRepository,
+	}
+}
+
+func (s *TrackService) UpdateTrack(ctx context.Context, id string, dto dto.TrackUpdateRequest) error {
+	track, err := domain.NewTrackWithID(id, dto.Name, dto.MovieID)
+	if err != nil {
+		return err
+	}
+	return s.trackRepository.Update(ctx, track)
+}

@@ -1,0 +1,3 @@
+GET {{host}}/tracks
+Accept: application/json
+Authorization: Bearer {{token}}

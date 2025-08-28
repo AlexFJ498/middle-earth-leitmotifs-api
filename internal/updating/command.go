@@ -11,6 +11,7 @@ const (
 	MovieCommandType    command.Type = "command.update.movie"
 	GroupCommandType    command.Type = "command.update.group"
 	CategoryCommandType command.Type = "command.update.category"
+	TrackCommandType    command.Type = "command.update.track"
 )
 
 // MovieCommand is the command dispatched to update a new movie.
@@ -134,4 +135,45 @@ func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command)
 	}
 
 	return h.service.UpdateCategory(ctx, categoryCmd.id, categoryCmd.dto)
+}
+
+// TrackCommand is the command dispatched to update a track.
+type TrackCommand struct {
+	id  string
+	dto dto.TrackUpdateRequest
+}
+
+// NewTrackCommand creates a new TrackCommand instance.
+func NewTrackCommand(id string, dto dto.TrackUpdateRequest) TrackCommand {
+	return TrackCommand{
+		id:  id,
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c TrackCommand) Type() command.Type {
+	return TrackCommandType
+}
+
+// TrackCommandHandler is the handler responsible for updating tracks.
+type TrackCommandHandler struct {
+	service TrackService
+}
+
+// NewTrackCommandHandler creates a new TrackCommandHandler instance.
+func NewTrackCommandHandler(service TrackService) TrackCommandHandler {
+	return TrackCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the TrackCommand to update a track.
+func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	trackCmd, ok := cmd.(TrackCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.UpdateTrack(ctx, trackCmd.id, trackCmd.dto)
 }
