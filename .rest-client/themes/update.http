@@ -1,0 +1,13 @@
+@id = 123
+@uuid = d0097216-8938-4423-84fb-63e9fca7628f
+
+PUT {{host}}/themes/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "The History of the Ring",
+    "group_id": "6a4f86e4-4fef-4151-9c60-e467007dd213",
+    "category_id": "40929ca6-ed89-4548-a1d9-54b604ea50b2",
+    "first_heard": "481c98f7-373f-4c6d-b0ec-3ba0719a46a0"
+}

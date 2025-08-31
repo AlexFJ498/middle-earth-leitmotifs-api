@@ -12,6 +12,7 @@ const (
 	GroupCommandType    = "command.delete.group"
 	CategoryCommandType = "command.delete.category"
 	TrackCommandType    = "command.delete.track"
+	ThemeCommandType    = "command.delete.theme"
 )
 
 // MovieCommand is the command dispatched for deleting a movie.
@@ -184,4 +185,47 @@ func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 		return err
 	}
 	return h.service.DeleteTrack(ctx, trackID)
+}
+
+// ThemeCommand is the command dispatched for deleting a theme.
+type ThemeCommand struct {
+	ID string
+}
+
+// NewThemeCommand creates a new ThemeCommand instance.
+func NewThemeCommand(id string) ThemeCommand {
+	return ThemeCommand{
+		ID: id,
+	}
+}
+
+// Type returns the type of the command.
+func (c ThemeCommand) Type() command.Type {
+	return ThemeCommandType
+}
+
+// ThemeCommandHandler handles the deletion of a theme.
+type ThemeCommandHandler struct {
+	service ThemeService
+}
+
+// NewThemeCommandHandler creates a new ThemeCommandHandler.
+func NewThemeCommandHandler(service ThemeService) ThemeCommandHandler {
+	return ThemeCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the ThemeCommand.
+func (h ThemeCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	themeCmd, ok := cmd.(ThemeCommand)
+	if !ok {
+		return nil
+	}
+
+	themeID, err := domain.NewThemeIDFromString(themeCmd.ID)
+	if err != nil {
+		return err
+	}
+	return h.service.DeleteTheme(ctx, themeID)
 }

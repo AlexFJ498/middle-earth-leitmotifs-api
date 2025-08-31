@@ -16,14 +16,20 @@ const (
 	movieName    = "The Fellowship of the Ring"
 	groupName    = "The Elves"
 	categoryName = "The Mordor Accompaniments"
+	trackName    = "The Three Hunters"
+	themeName    = "The History of the Ring"
 
 	domainMovieType    = "domain.Movie"
 	domainGroupType    = "domain.Group"
 	domainCategoryType = "domain.Category"
+	domainTrackType    = "domain.Track"
+	domainThemeType    = "domain.Theme"
 
 	repositoryErrorMsg = "repository error"
 	invalidId          = "invalid-id"
 )
+
+var categoryID = "456e7890-e89b-12d3-a456-426614174114"
 
 func TestMovieServiceUpdateMovieRepositoryError(t *testing.T) {
 	dto := dto.MovieUpdateRequest{
@@ -154,5 +160,105 @@ func TestCategoryServiceUpdateCategoryInvalidID(t *testing.T) {
 	service := NewCategoryService(categoryRepositoryMock)
 
 	err := service.UpdateCategory(context.Background(), invalidId, dto)
+	assert.Error(t, err)
+}
+
+func TestTrackServiceUpdateTrackRepositoryError(t *testing.T) {
+	dto := dto.TrackUpdateRequest{
+		Name:    trackName,
+		MovieID: testID,
+	}
+
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	trackRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainTrackType)).Return(errors.New(repositoryErrorMsg)).Once()
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackService(trackRepositoryMock)
+
+	err := service.UpdateTrack(context.Background(), testID, dto)
+	assert.Error(t, err)
+}
+
+func TestTrackServiceUpdateTrackSuccess(t *testing.T) {
+	dto := dto.TrackUpdateRequest{
+		Name:    trackName,
+		MovieID: testID,
+	}
+
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	trackRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainTrackType)).Return(nil).Once()
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackService(trackRepositoryMock)
+
+	err := service.UpdateTrack(context.Background(), testID, dto)
+	assert.NoError(t, err)
+}
+
+func TestTrackServiceUpdateTrackInvalidID(t *testing.T) {
+	dto := dto.TrackUpdateRequest{
+		Name:    trackName,
+		MovieID: testID,
+	}
+
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackService(trackRepositoryMock)
+
+	err := service.UpdateTrack(context.Background(), invalidId, dto)
+	assert.Error(t, err)
+}
+
+func TestThemeServiceUpdateThemeRepositoryError(t *testing.T) {
+	dto := dto.ThemeUpdateRequest{
+		Name:       themeName,
+		FirstHeard: testID,
+		GroupID:    testID,
+		CategoryID: &categoryID,
+	}
+
+	themeRepositoryMock := new(storagemocks.ThemeRepository)
+	themeRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainThemeType)).Return(errors.New(repositoryErrorMsg)).Once()
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	service := NewThemeService(themeRepositoryMock)
+
+	err := service.UpdateTheme(context.Background(), testID, dto)
+	assert.Error(t, err)
+}
+
+func TestThemeServiceUpdateThemeSuccess(t *testing.T) {
+	dto := dto.ThemeUpdateRequest{
+		Name:       themeName,
+		FirstHeard: testID,
+		GroupID:    testID,
+		CategoryID: &categoryID,
+	}
+
+	themeRepositoryMock := new(storagemocks.ThemeRepository)
+	themeRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainThemeType)).Return(nil).Once()
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	service := NewThemeService(themeRepositoryMock)
+
+	err := service.UpdateTheme(context.Background(), testID, dto)
+	assert.NoError(t, err)
+}
+
+func TestThemeServiceUpdateThemeInvalidID(t *testing.T) {
+	dto := dto.ThemeUpdateRequest{
+		Name:       themeName,
+		FirstHeard: testID,
+		GroupID:    testID,
+		CategoryID: &categoryID,
+	}
+
+	themeRepositoryMock := new(storagemocks.ThemeRepository)
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	service := NewThemeService(themeRepositoryMock)
+
+	err := service.UpdateTheme(context.Background(), invalidId, dto)
 	assert.Error(t, err)
 }

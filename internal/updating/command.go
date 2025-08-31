@@ -12,6 +12,7 @@ const (
 	GroupCommandType    command.Type = "command.update.group"
 	CategoryCommandType command.Type = "command.update.category"
 	TrackCommandType    command.Type = "command.update.track"
+	ThemeCommandType    command.Type = "command.update.theme"
 )
 
 // MovieCommand is the command dispatched to update a new movie.
@@ -176,4 +177,45 @@ func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	}
 
 	return h.service.UpdateTrack(ctx, trackCmd.id, trackCmd.dto)
+}
+
+// ThemeCommand is the command dispatched to update a new theme.
+type ThemeCommand struct {
+	id  string
+	dto dto.ThemeUpdateRequest
+}
+
+// NewThemeCommand creates a new ThemeCommand instance.
+func NewThemeCommand(id string, dto dto.ThemeUpdateRequest) ThemeCommand {
+	return ThemeCommand{
+		id:  id,
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c ThemeCommand) Type() command.Type {
+	return ThemeCommandType
+}
+
+// ThemeCommandHandler is the handler responsible for updating themes.
+type ThemeCommandHandler struct {
+	service ThemeService
+}
+
+// NewThemeCommandHandler creates a new ThemeCommandHandler instance.
+func NewThemeCommandHandler(service ThemeService) ThemeCommandHandler {
+	return ThemeCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the ThemeCommand to update a theme.
+func (h ThemeCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	themeCmd, ok := cmd.(ThemeCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.UpdateTheme(ctx, themeCmd.id, themeCmd.dto)
 }

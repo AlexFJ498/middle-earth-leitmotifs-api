@@ -104,7 +104,7 @@ func NewTrack(name string, movieID string) (Track, error) {
 	return track, nil
 }
 
-func NewTrackWithID(id, name string, movieID string) (Track, error) {
+func NewTrackWithID(id, name, movieID string) (Track, error) {
 	idVO, err := NewTrackIDFromString(id)
 	if err != nil {
 		return Track{}, err

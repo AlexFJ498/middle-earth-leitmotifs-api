@@ -39,3 +39,13 @@ func extractSQLErrorCode(err error) string {
 	}
 	return ""
 }
+
+func extractConstraintName(err error) string {
+	switch defaultFlavor {
+	case sqlbuilder.PostgreSQL:
+		if err, ok := err.(*pq.Error); ok {
+			return err.Constraint
+		}
+	}
+	return ""
+}

@@ -73,3 +73,20 @@ func NewTrackService(repo domain.TrackRepository) TrackService {
 func (s *TrackService) DeleteTrack(ctx context.Context, id domain.TrackID) error {
 	return s.trackRepository.Delete(ctx, id)
 }
+
+// ThemeService is the default implementation of the ThemeService interface.
+type ThemeService struct {
+	themeRepository domain.ThemeRepository
+}
+
+// NewThemeService returns a new ThemeService instance.
+func NewThemeService(repo domain.ThemeRepository) ThemeService {
+	return ThemeService{
+		themeRepository: repo,
+	}
+}
+
+// DeleteTheme deletes a theme by its ID.
+func (s *ThemeService) DeleteTheme(ctx context.Context, id domain.ThemeID) error {
+	return s.themeRepository.Delete(ctx, id)
+}

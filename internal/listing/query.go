@@ -12,6 +12,7 @@ const (
 	GroupsQueryType     = "query.listing.groups"
 	CategoriesQueryType = "query.listing.categories"
 	TracksQueryType     = "query.listing.tracks"
+	ThemesQueryType     = "query.listing.themes"
 )
 
 // UsersQuery represents a query for listing all users.
@@ -162,4 +163,34 @@ func NewTracksQueryHandler(trackService TrackService) TracksQueryHandler {
 // Handle handles the tracks query.
 func (h TracksQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
 	return h.trackService.ListTracks(ctx)
+}
+
+// ThemesQuery represents a query for listing all themes.
+type ThemesQuery struct{}
+
+// NewThemesQuery creates a new ThemesQuery instance.
+func NewThemesQuery() ThemesQuery {
+	return ThemesQuery{}
+}
+
+// Type returns the query type.
+func (q ThemesQuery) Type() query.Type {
+	return ThemesQueryType
+}
+
+// ThemesQueryHandler handles the themes query.
+type ThemesQueryHandler struct {
+	themeService ThemeService
+}
+
+// NewThemesQueryHandler creates a new ThemesQueryHandler instance.
+func NewThemesQueryHandler(themeService ThemeService) ThemesQueryHandler {
+	return ThemesQueryHandler{
+		themeService: themeService,
+	}
+}
+
+// Handle handles the themes query.
+func (h ThemesQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
+	return h.themeService.ListThemes(ctx)
 }

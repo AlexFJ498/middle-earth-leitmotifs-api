@@ -1,5 +1,7 @@
 package dto
 
+import domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
+
 type CategoryCreateRequest struct {
 	Name string `json:"name" binding:"required"`
 }
@@ -13,9 +15,9 @@ type CategoryResponse struct {
 	Name string `json:"name"`
 }
 
-func NewCategoryResponse(id, name string) CategoryResponse {
+func NewCategoryResponse(category domain.Category) CategoryResponse {
 	return CategoryResponse{
-		ID:   id,
-		Name: name,
+		ID:   category.ID().String(),
+		Name: category.Name().String(),
 	}
 }

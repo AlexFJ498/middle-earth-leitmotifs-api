@@ -21,6 +21,8 @@ const (
 	repositoryErrorMsg = "repository error"
 )
 
+var categoryID = "456e7890-e89b-12d3-a456-426614174114"
+
 func TestUserServiceCreateUserRepositoryError(t *testing.T) {
 	dto := dto.UserCreateRequest{
 		Name:     userName,
@@ -202,5 +204,41 @@ func TestTrackServiceCreateTrackSuccess(t *testing.T) {
 	service := NewTrackService(trackRepositoryMock)
 
 	err := service.CreateTrack(context.Background(), dto)
+	assert.NoError(t, err)
+}
+
+func TestThemeServiceCreateThemeRepositoryError(t *testing.T) {
+	dto := dto.ThemeCreateRequest{
+		Name:       "Test Theme",
+		FirstHeard: "456e7890-e89b-12d3-a456-426614174112",
+		GroupID:    "456e7890-e89b-12d3-a456-426614174113",
+		CategoryID: &categoryID,
+	}
+
+	themeRepositoryMock := new(storagemocks.ThemeRepository)
+	themeRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("domain.Theme")).Return(errors.New(repositoryErrorMsg)).Once()
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	service := NewThemeService(themeRepositoryMock)
+
+	err := service.CreateTheme(context.Background(), dto)
+	assert.Error(t, err)
+}
+
+func TestThemeServiceCreateThemeSuccess(t *testing.T) {
+	dto := dto.ThemeCreateRequest{
+		Name:       "Test Theme",
+		FirstHeard: "456e7890-e89b-12d3-a456-426614174115",
+		GroupID:    "456e7890-e89b-12d3-a456-426614174116",
+		CategoryID: &categoryID,
+	}
+
+	themeRepositoryMock := new(storagemocks.ThemeRepository)
+	themeRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("domain.Theme")).Return(nil).Once()
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	service := NewThemeService(themeRepositoryMock)
+
+	err := service.CreateTheme(context.Background(), dto)
 	assert.NoError(t, err)
 }

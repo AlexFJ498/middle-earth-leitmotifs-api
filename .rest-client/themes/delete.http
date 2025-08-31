@@ -1,0 +1,6 @@
+@id = 123
+@uuid = d0097216-8938-4423-84fb-63e9fca7628f
+
+DELETE {{host}}/themes/{{uuid}}
+Accept: application/json
+Authorization: Bearer {{token}}

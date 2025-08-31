@@ -13,6 +13,7 @@ const (
 	GroupCommandType    command.Type = "command.create.group"
 	CategoryCommandType command.Type = "command.create.category"
 	TrackCommandType    command.Type = "command.create.track"
+	ThemeCommandType    command.Type = "command.create.theme"
 )
 
 // UserCommand is the command dispatched to create a new user.
@@ -208,4 +209,43 @@ func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	}
 
 	return h.service.CreateTrack(ctx, trackCmd.dto)
+}
+
+// ThemeCommand is the command dispatched to create a new theme.
+type ThemeCommand struct {
+	dto dto.ThemeCreateRequest
+}
+
+// NewThemeCommand creates a new ThemeCommand instance.
+func NewThemeCommand(dto dto.ThemeCreateRequest) ThemeCommand {
+	return ThemeCommand{
+		dto: dto,
+	}
+}
+
+// Type returns the type of the command.
+func (c ThemeCommand) Type() command.Type {
+	return ThemeCommandType
+}
+
+// ThemeCommandHandler is the handler responsible for creating themes.
+type ThemeCommandHandler struct {
+	service ThemeService
+}
+
+// NewThemeCommandHandler creates a new ThemeCommandHandler instance.
+func NewThemeCommandHandler(service ThemeService) ThemeCommandHandler {
+	return ThemeCommandHandler{
+		service: service,
+	}
+}
+
+// Handle processes the ThemeCommand to create a new theme.
+func (h ThemeCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	themeCmd, ok := cmd.(ThemeCommand)
+	if !ok {
+		return nil
+	}
+
+	return h.service.CreateTheme(ctx, themeCmd.dto)
 }

@@ -13,15 +13,15 @@ type TrackUpdateRequest struct {
 }
 
 type TrackResponse struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	MovieID string `json:"movie_id"`
+	ID    string        `json:"id"`
+	Name  string        `json:"name"`
+	Movie MovieResponse `json:"movie"`
 }
 
-func NewTrackResponse(track domain.Track) TrackResponse {
+func NewTrackResponse(track domain.Track, movie MovieResponse) TrackResponse {
 	return TrackResponse{
-		ID:      track.ID().String(),
-		Name:    track.Name().String(),
-		MovieID: track.MovieID().String(),
+		ID:    track.ID().String(),
+		Name:  track.Name().String(),
+		Movie: movie,
 	}
 }

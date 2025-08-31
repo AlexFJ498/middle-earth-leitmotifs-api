@@ -133,3 +133,25 @@ func (s TrackService) CreateTrack(ctx context.Context, dto dto.TrackCreateReques
 
 	return s.trackRepository.Save(ctx, track)
 }
+
+// ThemeService is the service for managing themes.
+type ThemeService struct {
+	themeRepository domain.ThemeRepository
+}
+
+// NewThemeService returns a new ThemeService instance.
+func NewThemeService(themeRepository domain.ThemeRepository) ThemeService {
+	return ThemeService{
+		themeRepository: themeRepository,
+	}
+}
+
+// CreateTheme implements the ThemeService interface for creating a new theme.
+func (s ThemeService) CreateTheme(ctx context.Context, dto dto.ThemeCreateRequest) error {
+	theme, err := domain.NewTheme(dto.Name, dto.FirstHeard, dto.GroupID, dto.CategoryID)
+	if err != nil {
+		return err
+	}
+
+	return s.themeRepository.Save(ctx, theme)
+}

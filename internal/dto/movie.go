@@ -1,5 +1,7 @@
 package dto
 
+import domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
+
 type MovieCreateRequest struct {
 	Name string `json:"name" binding:"required"`
 }
@@ -13,9 +15,9 @@ type MovieResponse struct {
 	Name string `json:"name"`
 }
 
-func NewMovieResponse(id, name string) MovieResponse {
+func NewMovieResponse(movie domain.Movie) MovieResponse {
 	return MovieResponse{
-		ID:   id,
-		Name: name,
+		ID:   movie.ID().String(),
+		Name: movie.Name().String(),
 	}
 }

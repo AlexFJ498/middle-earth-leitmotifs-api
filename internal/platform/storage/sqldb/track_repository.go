@@ -11,17 +11,14 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 )
 
-const (
-	sqlTrackTable = "tracks"
-)
-
-var trackSQLStruct = sqlbuilder.NewStruct(new(TrackDB)).For(defaultFlavor)
-
 type TrackDB struct {
 	ID      string `db:"id"`
 	Name    string `db:"name"`
 	MovieID string `db:"movie_id"`
 }
+
+var sqlTrackTable = "tracks"
+var trackSQLStruct = sqlbuilder.NewStruct(new(TrackDB)).For(defaultFlavor)
 
 type TrackRepository struct {
 	db        *sql.DB
@@ -33,6 +30,18 @@ func NewTrackRepository(db *sql.DB, timeout time.Duration) *TrackRepository {
 		db:        db,
 		dbTimeout: timeout,
 	}
+}
+
+func trackToDTO(track domain.Track) TrackDB {
+	return TrackDB{
+		ID:      track.ID().String(),
+		Name:    track.Name().String(),
+		MovieID: track.MovieID().String(),
+	}
+}
+
+func trackToDomain(dto TrackDB) (domain.Track, error) {
+	return domain.NewTrackWithID(dto.ID, dto.Name, dto.MovieID)
 }
 
 func (r *TrackRepository) Save(ctx context.Context, track domain.Track) error {
@@ -153,16 +162,4 @@ func (r *TrackRepository) Update(ctx context.Context, track domain.Track) error 
 	}
 
 	return nil
-}
-
-func trackToDTO(track domain.Track) TrackDB {
-	return TrackDB{
-		ID:      track.ID().String(),
-		Name:    track.Name().String(),
-		MovieID: track.MovieID().String(),
-	}
-}
-
-func trackToDomain(dto TrackDB) (domain.Track, error) {
-	return domain.NewTrackWithID(dto.ID, dto.Name, dto.MovieID)
 }

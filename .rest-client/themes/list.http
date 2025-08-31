@@ -1,0 +1,3 @@
+GET {{host}}/themes
+Accept: application/json
+Authorization: Bearer {{token}}
