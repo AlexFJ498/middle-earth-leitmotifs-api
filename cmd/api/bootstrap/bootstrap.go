@@ -25,7 +25,7 @@ import (
 type config struct {
 	// Server configuration
 	Host            string
-	Port            uint
+	Port            uint `envconfig:"PORT"`
 	Shutdowntimeout time.Duration
 
 	// Database configuration
@@ -55,7 +55,12 @@ func Run() error {
 		return err
 	}
 
-	postgreURI := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", cfg.Dbuser, cfg.Dbpassword, cfg.Dbhost, cfg.Dbport, cfg.Dbname)
+	var postgreURI string
+	if os.Getenv("DATABASE_URL") != "" {
+		postgreURI = os.Getenv("DATABASE_URL")
+	} else {
+		postgreURI = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", cfg.Dbuser, cfg.Dbpassword, cfg.Dbhost, cfg.Dbport, cfg.Dbname)
+	}
 	db, err := sql.Open("postgres", postgreURI)
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
