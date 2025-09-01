@@ -78,7 +78,7 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) registerRoutes() {
-	s.engine.Use(gin.Recovery())
+	s.engine.Use(gin.Recovery(), gin.Logger())
 	s.engine.GET("/health", health.CheckHandler())
 
 	// Public routes
