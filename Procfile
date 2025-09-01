@@ -1,1 +1,1 @@
-web: ./middle-earth-leitmotifs-api
+web: go run ./cmd/api/main.go
