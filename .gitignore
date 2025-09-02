@@ -31,3 +31,5 @@ go.work.sum
 
 # Editor/IDE
 .vscode/
+
+api-seed.http
