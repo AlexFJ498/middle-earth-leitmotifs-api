@@ -90,7 +90,7 @@ func NewThemeService(themeRepository domain.ThemeRepository) ThemeService {
 }
 
 func (s *ThemeService) UpdateTheme(ctx context.Context, id string, dto dto.ThemeUpdateRequest) error {
-	theme, err := domain.NewThemeWithID(id, dto.Name, dto.FirstHeard, dto.GroupID, dto.CategoryID)
+	theme, err := domain.NewThemeWithID(id, dto.Name, dto.FirstHeard, dto.Group, dto.Category)
 	if err != nil {
 		return err
 	}

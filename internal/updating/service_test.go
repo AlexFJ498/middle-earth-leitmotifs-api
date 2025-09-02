@@ -214,8 +214,8 @@ func TestThemeServiceUpdateThemeRepositoryError(t *testing.T) {
 	dto := dto.ThemeUpdateRequest{
 		Name:       themeName,
 		FirstHeard: testID,
-		GroupID:    testID,
-		CategoryID: &categoryID,
+		Group:      testID,
+		Category:   &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
@@ -232,8 +232,8 @@ func TestThemeServiceUpdateThemeSuccess(t *testing.T) {
 	dto := dto.ThemeUpdateRequest{
 		Name:       themeName,
 		FirstHeard: testID,
-		GroupID:    testID,
-		CategoryID: &categoryID,
+		Group:      testID,
+		Category:   &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
@@ -250,8 +250,8 @@ func TestThemeServiceUpdateThemeInvalidID(t *testing.T) {
 	dto := dto.ThemeUpdateRequest{
 		Name:       themeName,
 		FirstHeard: testID,
-		GroupID:    testID,
-		CategoryID: &categoryID,
+		Group:      testID,
+		Category:   &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)

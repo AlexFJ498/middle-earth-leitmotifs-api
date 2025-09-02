@@ -12,24 +12,24 @@ type ThemeCreateRequest struct {
 type ThemeUpdateRequest struct {
 	Name       string  `json:"name" binding:"required"`
 	FirstHeard string  `json:"first_heard" binding:"required"`
-	GroupID    string  `json:"group_id" binding:"required"`
-	CategoryID *string `json:"category_id"`
+	Group      string  `json:"group" binding:"required"`
+	Category   *string `json:"category"`
 }
 
 type ThemeResponse struct {
 	ID         string            `json:"id"`
 	Name       string            `json:"name"`
 	FirstHeard TrackResponse     `json:"first_heard"`
-	GroupID    GroupResponse     `json:"group_id"`
-	CategoryID *CategoryResponse `json:"category_id"`
+	GroupID    GroupResponse     `json:"group"`
+	Category   *CategoryResponse `json:"category"`
 }
 
-func NewThemeResponse(theme domain.Theme, firstHeard TrackResponse, groupID GroupResponse, categoryID *CategoryResponse) ThemeResponse {
+func NewThemeResponse(theme domain.Theme, firstHeard TrackResponse, group GroupResponse, category *CategoryResponse) ThemeResponse {
 	return ThemeResponse{
 		ID:         theme.ID().String(),
 		Name:       theme.Name().String(),
 		FirstHeard: firstHeard,
-		GroupID:    groupID,
-		CategoryID: categoryID,
+		GroupID:    group,
+		Category:   category,
 	}
 }
