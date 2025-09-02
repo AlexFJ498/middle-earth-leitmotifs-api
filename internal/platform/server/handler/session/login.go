@@ -2,6 +2,7 @@ package session
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
@@ -37,6 +38,7 @@ func LoginHandler(queryBus query.Bus) gin.HandlerFunc {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			default:
+				log.Printf("[LOGIN ERROR] %v", err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 				return
 			}
