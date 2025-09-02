@@ -20,6 +20,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/admin"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/jwt"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/log_server"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/query"
 	"github.com/gin-gonic/gin"
@@ -78,7 +79,7 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) registerRoutes() {
-	s.engine.Use(gin.Recovery(), gin.Logger())
+	s.engine.Use(log_server.Middleware(), gin.Recovery(), gin.Logger())
 	s.engine.GET("/health", health.CheckHandler())
 
 	// Public routes
