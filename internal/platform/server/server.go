@@ -23,6 +23,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/log_server"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/query"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,9 +40,13 @@ type Server struct {
 	// deps
 	commandBus command.Bus
 	queryBus   query.Bus
+
+	// front endURL is the URL of the frontend application.
+	// Used for CORS configuration.
+	frontendURL string
 }
 
-func New(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus, queryBus query.Bus, jwtKey auth.JWTKey) (context.Context, Server) {
+func New(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus, queryBus query.Bus, jwtKey auth.JWTKey, frontendURL string) (context.Context, Server) {
 	srv := Server{
 		httpAddr: fmt.Sprintf("%s:%d", host, port),
 		engine:   gin.New(),
@@ -51,6 +56,8 @@ func New(ctx context.Context, host string, port uint, shutdownTimeout time.Durat
 
 		commandBus: commandBus,
 		queryBus:   queryBus,
+
+		frontendURL: frontendURL,
 	}
 
 	srv.registerRoutes()
@@ -79,7 +86,19 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) registerRoutes() {
-	s.engine.Use(log_server.Middleware(), gin.Recovery(), gin.Logger())
+	s.engine.Use(
+		log_server.Middleware(),
+		gin.Recovery(),
+		gin.Logger(),
+		cors.New(cors.Config{
+			AllowOrigins:     []string{s.frontendURL},
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}),
+	)
 	s.engine.GET("/health", health.CheckHandler())
 
 	// Public routes

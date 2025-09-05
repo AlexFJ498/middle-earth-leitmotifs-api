@@ -39,6 +39,9 @@ type config struct {
 	// Login configuration
 	Jwtkey     auth.JWTKey
 	Jwtexpires time.Duration
+
+	// Frontend configuration
+	FrontendURL string
 }
 
 func Run() error {
@@ -137,6 +140,6 @@ func Run() error {
 	// 	creating.NewIncreaseUsersCounterOnUserCreated(increasingUserCounterService),
 	// )
 
-	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus, queryBus, cfg.Jwtkey)
+	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus, queryBus, cfg.Jwtkey, cfg.FrontendURL)
 	return srv.Run(ctx)
 }
