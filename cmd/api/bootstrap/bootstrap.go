@@ -41,7 +41,7 @@ type config struct {
 	Jwtexpires time.Duration
 
 	// Frontend configuration
-	FrontendURL string
+	Frontendurl string
 }
 
 func Run() error {
@@ -140,6 +140,6 @@ func Run() error {
 	// 	creating.NewIncreaseUsersCounterOnUserCreated(increasingUserCounterService),
 	// )
 
-	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus, queryBus, cfg.Jwtkey, cfg.FrontendURL)
+	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.Shutdowntimeout, commandBus, queryBus, cfg.Jwtkey, cfg.Frontendurl)
 	return srv.Run(ctx)
 }
