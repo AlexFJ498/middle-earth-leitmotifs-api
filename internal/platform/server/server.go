@@ -86,6 +86,12 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) registerRoutes() {
+	const movieIDRoute = "/movies/:id"
+	const groupIDRoute = "/groups/:id"
+	const categoryIDRoute = "/categories/:id"
+	const trackIDRoute = "/tracks/:id"
+	const themeIDRoute = "/themes/:id"
+
 	s.engine.Use(
 		log_server.Middleware(),
 		gin.Recovery(),
@@ -103,11 +109,21 @@ func (s *Server) registerRoutes() {
 
 	// Public routes
 	s.engine.POST("/login", session.LoginHandler(s.queryBus))
+
 	s.engine.GET("/movies", movies.ListHandler(s.queryBus))
+	s.engine.GET(movieIDRoute, movies.GetHandler(s.queryBus))
+
 	s.engine.GET("/groups", groups.ListHandler(s.queryBus))
+	s.engine.GET(groupIDRoute, groups.GetHandler(s.queryBus))
+
 	s.engine.GET("/categories", categories.ListHandler(s.queryBus))
+	s.engine.GET(categoryIDRoute, categories.GetHandler(s.queryBus))
+
 	s.engine.GET("/tracks", tracks.ListHandler(s.queryBus))
+	s.engine.GET(trackIDRoute, tracks.GetHandler(s.queryBus))
+
 	s.engine.GET("/themes", themes.ListHandler(s.queryBus))
+	s.engine.GET(themeIDRoute, themes.GetHandler(s.queryBus))
 
 	// Protected routes
 	auth := s.engine.Group("")
@@ -117,24 +133,24 @@ func (s *Server) registerRoutes() {
 		auth.GET("/users", users.ListHandler(s.queryBus))
 
 		auth.POST("/movies", movies.CreateHandler(s.commandBus))
-		auth.PUT("/movies/:id", movies.UpdateHandler(s.commandBus))
-		auth.DELETE("/movies/:id", movies.DeleteHandler(s.commandBus))
+		auth.PUT(movieIDRoute, movies.UpdateHandler(s.commandBus))
+		auth.DELETE(movieIDRoute, movies.DeleteHandler(s.commandBus))
 
 		auth.POST("/groups", groups.CreateHandler(s.commandBus))
-		auth.PUT("/groups/:id", groups.UpdateHandler(s.commandBus))
-		auth.DELETE("/groups/:id", groups.DeleteHandler(s.commandBus))
+		auth.PUT(groupIDRoute, groups.UpdateHandler(s.commandBus))
+		auth.DELETE(groupIDRoute, groups.DeleteHandler(s.commandBus))
 
 		auth.POST("/categories", categories.CreateHandler(s.commandBus))
-		auth.PUT("/categories/:id", categories.UpdateHandler(s.commandBus))
-		auth.DELETE("/categories/:id", categories.DeleteHandler(s.commandBus))
+		auth.PUT(categoryIDRoute, categories.UpdateHandler(s.commandBus))
+		auth.DELETE(categoryIDRoute, categories.DeleteHandler(s.commandBus))
 
 		auth.POST("/tracks", tracks.CreateHandler(s.commandBus))
-		auth.PUT("/tracks/:id", tracks.UpdateHandler(s.commandBus))
-		auth.DELETE("/tracks/:id", tracks.DeleteHandler(s.commandBus))
+		auth.PUT(trackIDRoute, tracks.UpdateHandler(s.commandBus))
+		auth.DELETE(trackIDRoute, tracks.DeleteHandler(s.commandBus))
 
 		auth.POST("/themes", themes.CreateHandler(s.commandBus))
-		auth.PUT("/themes/:id", themes.UpdateHandler(s.commandBus))
-		auth.DELETE("/themes/:id", themes.DeleteHandler(s.commandBus))
+		auth.PUT(themeIDRoute, themes.UpdateHandler(s.commandBus))
+		auth.DELETE(themeIDRoute, themes.DeleteHandler(s.commandBus))
 	}
 }
 

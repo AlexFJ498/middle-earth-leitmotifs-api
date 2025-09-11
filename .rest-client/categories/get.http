@@ -1,0 +1,5 @@
+@categoryID = 40929ca6-ed89-4548-a1d9-54b604ea50b2
+
+GET {{host}}/categories/{{categoryID}}
+Accept: application/json
+Authorization: Bearer {{token}}

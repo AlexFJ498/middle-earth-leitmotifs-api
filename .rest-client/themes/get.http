@@ -1,0 +1,5 @@
+@themeID = aadd834e-2b87-4812-854d-e67550490bff
+
+GET {{host}}/themes/{{themeID}}
+Accept: application/json
+Authorization: Bearer {{token}}

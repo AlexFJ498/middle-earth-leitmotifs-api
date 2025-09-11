@@ -1,4 +1,4 @@
-package listing
+package getting
 
 import (
 	"context"
@@ -7,55 +7,23 @@ import (
 )
 
 const (
-	UsersQueryType      = "query.listing.users"
-	MoviesQueryType     = "query.listing.movies"
-	GroupsQueryType     = "query.listing.groups"
-	CategoriesQueryType = "query.listing.categories"
-	TracksQueryType     = "query.listing.tracks"
-	ThemesQueryType     = "query.listing.themes"
+	MoviesQueryType     = "query.getting.movies"
+	GroupsQueryType     = "query.getting.groups"
+	CategoriesQueryType = "query.getting.categories"
+	TracksQueryType     = "query.getting.tracks"
+	ThemesQueryType     = "query.getting.themes"
 )
 
-// UsersQuery represents a query for listing all users.
-type UsersQuery struct{}
-
-// NewUsersQuery creates a new UsersQuery instance.
-func NewUsersQuery() UsersQuery {
-	return UsersQuery{}
+// MoviesQuery is the query for getting a movie.
+type MoviesQuery struct {
+	ID string
 }
-
-// Type returns the query type.
-func (q UsersQuery) Type() query.Type {
-	return UsersQueryType
-}
-
-// UsersQueryHandler handles the users query.
-type UsersQueryHandler struct {
-	userService UserService
-}
-
-// NewUsersQueryHandler creates a new UsersQueryHandler instance.
-func NewUsersQueryHandler(userService UserService) UsersQueryHandler {
-	return UsersQueryHandler{
-		userService: userService,
-	}
-}
-
-// Handle handles the users query.
-func (h UsersQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
-	_, ok := query.(UsersQuery)
-	if !ok {
-		return nil, nil
-	}
-
-	return h.userService.ListUsers(ctx)
-}
-
-// MoviesQuery represents a query for listing all movies.
-type MoviesQuery struct{}
 
 // NewMoviesQuery creates a new MoviesQuery instance.
-func NewMoviesQuery() MoviesQuery {
-	return MoviesQuery{}
+func NewMoviesQuery(id string) MoviesQuery {
+	return MoviesQuery{
+		ID: id,
+	}
 }
 
 // Type returns the query type.
@@ -77,20 +45,24 @@ func NewMoviesQueryHandler(movieService MovieService) MoviesQueryHandler {
 
 // Handle handles the movies query.
 func (h MoviesQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
-	_, ok := query.(MoviesQuery)
+	movieQuery, ok := query.(MoviesQuery)
 	if !ok {
 		return nil, nil
 	}
 
-	return h.movieService.ListMovies(ctx)
+	return h.movieService.GetMovie(ctx, movieQuery.ID)
 }
 
-// GroupsQuery represents a query for listing all groups.
-type GroupsQuery struct{}
+// GroupsQuery is the query for getting a group.
+type GroupsQuery struct {
+	ID string
+}
 
 // NewGroupsQuery creates a new GroupsQuery instance.
-func NewGroupsQuery() GroupsQuery {
-	return GroupsQuery{}
+func NewGroupsQuery(id string) GroupsQuery {
+	return GroupsQuery{
+		ID: id,
+	}
 }
 
 // Type returns the query type.
@@ -112,20 +84,24 @@ func NewGroupsQueryHandler(groupService GroupService) GroupsQueryHandler {
 
 // Handle handles the groups query.
 func (h GroupsQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
-	_, ok := query.(GroupsQuery)
+	groupQuery, ok := query.(GroupsQuery)
 	if !ok {
 		return nil, nil
 	}
 
-	return h.groupService.ListGroups(ctx)
+	return h.groupService.GetGroup(ctx, groupQuery.ID)
 }
 
-// CategoriesQuery represents a query for listing all categories.
-type CategoriesQuery struct{}
+// CategoriesQuery is the query for getting a category.
+type CategoriesQuery struct {
+	ID string
+}
 
 // NewCategoriesQuery creates a new CategoriesQuery instance.
-func NewCategoriesQuery() CategoriesQuery {
-	return CategoriesQuery{}
+func NewCategoriesQuery(id string) CategoriesQuery {
+	return CategoriesQuery{
+		ID: id,
+	}
 }
 
 // Type returns the query type.
@@ -147,20 +123,24 @@ func NewCategoriesQueryHandler(categoryService CategoryService) CategoriesQueryH
 
 // Handle handles the categories query.
 func (h CategoriesQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
-	_, ok := query.(CategoriesQuery)
+	categoryQuery, ok := query.(CategoriesQuery)
 	if !ok {
 		return nil, nil
 	}
 
-	return h.categoryService.ListCategories(ctx)
+	return h.categoryService.GetCategory(ctx, categoryQuery.ID)
 }
 
-// TracksQuery represents a query for listing all tracks.
-type TracksQuery struct{}
+// TracksQuery is the query for getting a track.
+type TracksQuery struct {
+	ID string
+}
 
 // NewTracksQuery creates a new TracksQuery instance.
-func NewTracksQuery() TracksQuery {
-	return TracksQuery{}
+func NewTracksQuery(id string) TracksQuery {
+	return TracksQuery{
+		ID: id,
+	}
 }
 
 // Type returns the query type.
@@ -182,20 +162,24 @@ func NewTracksQueryHandler(trackService TrackService) TracksQueryHandler {
 
 // Handle handles the tracks query.
 func (h TracksQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
-	_, ok := query.(TracksQuery)
+	trackQuery, ok := query.(TracksQuery)
 	if !ok {
 		return nil, nil
 	}
 
-	return h.trackService.ListTracks(ctx)
+	return h.trackService.GetTrack(ctx, trackQuery.ID)
 }
 
-// ThemesQuery represents a query for listing all themes.
-type ThemesQuery struct{}
+// ThemesQuery is the query for getting a theme.
+type ThemesQuery struct {
+	ID string
+}
 
 // NewThemesQuery creates a new ThemesQuery instance.
-func NewThemesQuery() ThemesQuery {
-	return ThemesQuery{}
+func NewThemesQuery(id string) ThemesQuery {
+	return ThemesQuery{
+		ID: id,
+	}
 }
 
 // Type returns the query type.
@@ -217,10 +201,10 @@ func NewThemesQueryHandler(themeService ThemeService) ThemesQueryHandler {
 
 // Handle handles the themes query.
 func (h ThemesQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
-	_, ok := query.(ThemesQuery)
+	themeQuery, ok := query.(ThemesQuery)
 	if !ok {
 		return nil, nil
 	}
 
-	return h.themeService.ListThemes(ctx)
+	return h.themeService.GetTheme(ctx, themeQuery.ID)
 }

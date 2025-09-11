@@ -5,6 +5,7 @@ import (
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/dto"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/getting"
 )
 
 // UserService is the default implementation of the UserService interface
@@ -61,21 +62,6 @@ func (s MovieService) ListMovies(ctx context.Context) ([]dto.MovieResponse, erro
 	return movieResponses, nil
 }
 
-// GetMovie implements the MovieService interface for getting a movie by ID.
-func (s MovieService) GetMovie(ctx context.Context, id string) (dto.MovieResponse, error) {
-	movieID, err := domain.NewMovieIDFromString(id)
-	if err != nil {
-		return dto.MovieResponse{}, err
-	}
-
-	movie, err := s.movieRepository.Find(ctx, movieID)
-	if err != nil {
-		return dto.MovieResponse{}, err
-	}
-
-	return dto.NewMovieResponse(movie), nil
-}
-
 // GroupService is the service for managing groups.
 type GroupService struct {
 	groupRepository domain.GroupRepository
@@ -101,21 +87,6 @@ func (s GroupService) ListGroups(ctx context.Context) ([]dto.GroupResponse, erro
 	}
 
 	return groupResponses, nil
-}
-
-// GetGroup implements the GroupService interface for getting a group by ID.
-func (s GroupService) GetGroup(ctx context.Context, id string) (dto.GroupResponse, error) {
-	groupID, err := domain.NewGroupIDFromString(id)
-	if err != nil {
-		return dto.GroupResponse{}, err
-	}
-
-	group, err := s.groupRepository.Find(ctx, groupID)
-	if err != nil {
-		return dto.GroupResponse{}, err
-	}
-
-	return dto.NewGroupResponse(group), nil
 }
 
 // CategoryService is the service for managing categories.
@@ -145,32 +116,19 @@ func (s CategoryService) ListCategories(ctx context.Context) ([]dto.CategoryResp
 	return categoryResponses, nil
 }
 
-// GetCategory implements the CategoryService interface for getting a category by ID.
-func (s CategoryService) GetCategory(ctx context.Context, id string) (dto.CategoryResponse, error) {
-	categoryID, err := domain.NewCategoryIDFromString(id)
-	if err != nil {
-		return dto.CategoryResponse{}, err
-	}
-
-	category, err := s.categoryRepository.Find(ctx, categoryID)
-	if err != nil {
-		return dto.CategoryResponse{}, err
-	}
-
-	return dto.NewCategoryResponse(category), nil
-}
-
 // TrackService is the service for managing tracks.
 type TrackService struct {
-	trackRepository domain.TrackRepository
-	MovieService    MovieService
+	trackRepository     domain.TrackRepository
+	MovieService        MovieService
+	GettingMovieService getting.MovieService
 }
 
 // NewTrackService returns a new TrackService instance.
-func NewTrackService(trackRepository domain.TrackRepository, movieService MovieService) TrackService {
+func NewTrackService(trackRepository domain.TrackRepository, movieService MovieService, gettingMovieService getting.MovieService) TrackService {
 	return TrackService{
-		trackRepository: trackRepository,
-		MovieService:    movieService,
+		trackRepository:     trackRepository,
+		MovieService:        movieService,
+		GettingMovieService: gettingMovieService,
 	}
 }
 
@@ -184,7 +142,7 @@ func (s TrackService) ListTracks(ctx context.Context) ([]dto.TrackResponse, erro
 	trackResponses := make([]dto.TrackResponse, 0, len(tracks))
 	for _, track := range tracks {
 		// Obtain the movie related to the track.
-		movieDTO, err := s.MovieService.GetMovie(ctx, track.MovieID().String())
+		movieDTO, err := s.GettingMovieService.GetMovie(ctx, track.MovieID().String())
 		if err != nil {
 			return []dto.TrackResponse{}, err
 		}
@@ -195,42 +153,27 @@ func (s TrackService) ListTracks(ctx context.Context) ([]dto.TrackResponse, erro
 	return trackResponses, nil
 }
 
-// GetTrack implements the TrackService interface for getting a track by ID.
-func (s TrackService) GetTrack(ctx context.Context, id string) (dto.TrackResponse, error) {
-	trackID, err := domain.NewTrackIDFromString(id)
-	if err != nil {
-		return dto.TrackResponse{}, err
-	}
-
-	track, err := s.trackRepository.Find(ctx, trackID)
-	if err != nil {
-		return dto.TrackResponse{}, err
-	}
-
-	// Obtain the movie related to the track.
-	movieDTO, err := s.MovieService.GetMovie(ctx, track.MovieID().String())
-	if err != nil {
-		return dto.TrackResponse{}, err
-	}
-
-	return dto.NewTrackResponse(track, movieDTO), nil
-}
-
 // ThemeService is the service for managing themes.
 type ThemeService struct {
-	themeRepository domain.ThemeRepository
-	trackService    TrackService
-	groupService    GroupService
-	categoryService CategoryService
+	themeRepository        domain.ThemeRepository
+	trackService           TrackService
+	groupService           GroupService
+	categoryService        CategoryService
+	GettingGroupService    getting.GroupService
+	GettingTrackService    getting.TrackService
+	GettingCategoryService getting.CategoryService
 }
 
 // NewThemeService returns a new ThemeService instance.
-func NewThemeService(themeRepository domain.ThemeRepository, trackService TrackService, groupService GroupService, categoryService CategoryService) ThemeService {
+func NewThemeService(themeRepository domain.ThemeRepository, trackService TrackService, groupService GroupService, categoryService CategoryService, gettingGroupService getting.GroupService, gettingTrackService getting.TrackService, gettingCategoryService getting.CategoryService) ThemeService {
 	return ThemeService{
-		themeRepository: themeRepository,
-		trackService:    trackService,
-		groupService:    groupService,
-		categoryService: categoryService,
+		themeRepository:        themeRepository,
+		trackService:           trackService,
+		groupService:           groupService,
+		categoryService:        categoryService,
+		GettingGroupService:    gettingGroupService,
+		GettingTrackService:    gettingTrackService,
+		GettingCategoryService: gettingCategoryService,
 	}
 }
 
@@ -245,19 +188,19 @@ func (s ThemeService) ListThemes(ctx context.Context) ([]dto.ThemeResponse, erro
 	for _, theme := range themes {
 		// Fetch related entities.
 
-		groupDTO, err := s.groupService.GetGroup(ctx, theme.GroupID().String())
+		groupDTO, err := s.GettingGroupService.GetGroup(ctx, theme.GroupID().String())
 		if err != nil {
 			return nil, err
 		}
 
-		trackDTO, err := s.trackService.GetTrack(ctx, theme.FirstHeard().String())
+		trackDTO, err := s.GettingTrackService.GetTrack(ctx, theme.FirstHeard().String())
 		if err != nil {
 			return nil, err
 		}
 
 		var categoryDTO *dto.CategoryResponse
 		if theme.CategoryID() != nil {
-			categoryDTORes, err := s.categoryService.GetCategory(ctx, theme.CategoryID().String())
+			categoryDTORes, err := s.GettingCategoryService.GetCategory(ctx, theme.CategoryID().String())
 			if err != nil {
 				return nil, err
 			}
@@ -268,39 +211,4 @@ func (s ThemeService) ListThemes(ctx context.Context) ([]dto.ThemeResponse, erro
 	}
 
 	return themeResponses, nil
-}
-
-// GetTheme implements the ThemeService interface for getting a theme by ID.
-func (s ThemeService) GetTheme(ctx context.Context, id string) (dto.ThemeResponse, error) {
-	themeID, err := domain.NewThemeIDFromString(id)
-	if err != nil {
-		return dto.ThemeResponse{}, err
-	}
-
-	theme, err := s.themeRepository.Find(ctx, themeID)
-	if err != nil {
-		return dto.ThemeResponse{}, err
-	}
-
-	// Fetch related entities.
-	groupDTO, err := s.groupService.GetGroup(ctx, theme.GroupID().String())
-	if err != nil {
-		return dto.ThemeResponse{}, err
-	}
-
-	trackDTO, err := s.trackService.GetTrack(ctx, theme.FirstHeard().String())
-	if err != nil {
-		return dto.ThemeResponse{}, err
-	}
-
-	var categoryDTO *dto.CategoryResponse
-	if theme.CategoryID() != nil {
-		categoryDTORes, err := s.categoryService.GetCategory(ctx, theme.CategoryID().String())
-		if err != nil {
-			return dto.ThemeResponse{}, err
-		}
-		categoryDTO = &categoryDTORes
-	}
-
-	return dto.NewThemeResponse(theme, trackDTO, groupDTO, categoryDTO), nil
 }

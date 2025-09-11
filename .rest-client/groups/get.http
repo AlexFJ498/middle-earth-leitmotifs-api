@@ -1,0 +1,5 @@
+@groupID = 6a4f86e4-4fef-4151-9c60-e467007dd213
+
+GET {{host}}/groups/{{groupID}}
+Accept: application/json
+Authorization: Bearer {{token}}

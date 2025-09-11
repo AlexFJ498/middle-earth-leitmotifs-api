@@ -20,7 +20,7 @@ type ThemeResponse struct {
 	ID         string            `json:"id"`
 	Name       string            `json:"name"`
 	FirstHeard TrackResponse     `json:"first_heard"`
-	GroupID    GroupResponse     `json:"group"`
+	Group      GroupResponse     `json:"group"`
 	Category   *CategoryResponse `json:"category"`
 }
 
@@ -29,7 +29,7 @@ func NewThemeResponse(theme domain.Theme, firstHeard TrackResponse, group GroupR
 		ID:         theme.ID().String(),
 		Name:       theme.Name().String(),
 		FirstHeard: firstHeard,
-		GroupID:    group,
+		Group:      group,
 		Category:   category,
 	}
 }

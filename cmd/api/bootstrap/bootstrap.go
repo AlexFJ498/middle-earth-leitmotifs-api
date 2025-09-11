@@ -10,6 +10,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/authenticating"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/creating"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/deleting"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/getting"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/listing"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/auth"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/bus/inmemory"
@@ -85,6 +86,17 @@ func Run() error {
 	authenticatingService := authenticating.NewLoginService(userRepository, cfg.Jwtkey, cfg.Jwtexpires)
 	queryBus.Register(authenticating.LoginQueryType, authenticating.NewLoginQueryHandler(authenticatingService))
 
+	gettingMovieService := getting.NewMovieService(movieRepository)
+	gettingGroupService := getting.NewGroupService(groupRepository)
+	gettingCategoryService := getting.NewCategoryService(categoryRepository)
+	gettingTrackService := getting.NewTrackService(trackRepository, gettingMovieService)
+	gettingThemeService := getting.NewThemeService(themeRepository, gettingTrackService, gettingGroupService, gettingCategoryService)
+	queryBus.Register(getting.MoviesQueryType, getting.NewMoviesQueryHandler(gettingMovieService))
+	queryBus.Register(getting.GroupsQueryType, getting.NewGroupsQueryHandler(gettingGroupService))
+	queryBus.Register(getting.CategoriesQueryType, getting.NewCategoriesQueryHandler(gettingCategoryService))
+	queryBus.Register(getting.TracksQueryType, getting.NewTracksQueryHandler(gettingTrackService))
+	queryBus.Register(getting.ThemesQueryType, getting.NewThemesQueryHandler(gettingThemeService))
+
 	creatingUserService := creating.NewUserService(userRepository, eventBus)
 	creatingMovieService := creating.NewMovieService(movieRepository)
 	creatingGroupService := creating.NewGroupService(groupRepository)
@@ -102,8 +114,8 @@ func Run() error {
 	listingMovieService := listing.NewMovieService(movieRepository)
 	listingGroupService := listing.NewGroupService(groupRepository)
 	listingCategoryService := listing.NewCategoryService(categoryRepository)
-	listingTrackService := listing.NewTrackService(trackRepository, listingMovieService)
-	listingThemeService := listing.NewThemeService(themeRepository, listingTrackService, listingGroupService, listingCategoryService)
+	listingTrackService := listing.NewTrackService(trackRepository, listingMovieService, gettingMovieService)
+	listingThemeService := listing.NewThemeService(themeRepository, listingTrackService, listingGroupService, listingCategoryService, gettingGroupService, gettingTrackService, gettingCategoryService)
 	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingUserService))
 	queryBus.Register(listing.MoviesQueryType, listing.NewMoviesQueryHandler(listingMovieService))
 	queryBus.Register(listing.GroupsQueryType, listing.NewGroupsQueryHandler(listingGroupService))

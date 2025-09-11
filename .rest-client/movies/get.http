@@ -1,0 +1,5 @@
+@movieID = 28712a55-04dd-4200-9316-4d6a1e399128
+
+GET {{host}}/movies/{{movieID}}
+Accept: application/json
+Authorization: Bearer {{token}}

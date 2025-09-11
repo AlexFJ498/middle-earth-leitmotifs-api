@@ -1,0 +1,5 @@
+@trackID = 481c98f7-373f-4c6d-b0ec-3ba0719a46a0
+
+GET {{host}}/tracks/{{trackID}}
+Accept: application/json
+Authorization: Bearer {{token}}
