@@ -58,6 +58,7 @@ type ThemeRepository interface {
 	Save(ctx context.Context, theme Theme) error
 	Find(ctx context.Context, id ThemeID) (Theme, error)
 	FindAll(ctx context.Context) ([]Theme, error)
+	FindByGroup(ctx context.Context, groupID GroupID) ([]Theme, error)
 	Delete(ctx context.Context, id ThemeID) error
 	Update(ctx context.Context, theme Theme) error
 }

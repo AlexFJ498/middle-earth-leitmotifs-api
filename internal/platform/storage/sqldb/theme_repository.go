@@ -139,6 +139,38 @@ func (r *ThemeRepository) FindAll(ctx context.Context) ([]domain.Theme, error) {
 	return themes, nil
 }
 
+func (r *ThemeRepository) FindByGroup(ctx context.Context, groupID domain.GroupID) ([]domain.Theme, error) {
+	sb := themeSQLStruct.SelectFrom(sqlThemeTable)
+	sb.Where(sb.Equal("group_id", groupID.String()))
+	query, args := sb.Build()
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer cancel()
+
+	rows, err := r.db.QueryContext(ctxTimeout, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find themes by group: %v", err)
+	}
+	defer rows.Close()
+
+	var themes []domain.Theme
+	for rows.Next() {
+		var themeDTO ThemeDB
+		if err := rows.Scan(themeSQLStruct.Addr(&themeDTO)...); err != nil {
+			return nil, fmt.Errorf("failed to scan theme: %v", err)
+		}
+
+		theme, err := themeToDomain(themeDTO)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert theme: %v", err)
+		}
+
+		themes = append(themes, theme)
+	}
+
+	return themes, nil
+}
+
 func (r *ThemeRepository) Delete(ctx context.Context, id domain.ThemeID) error {
 	sb := themeSQLStruct.DeleteFrom(sqlThemeTable)
 	sb.Where(sb.Equal("id", id.String()))

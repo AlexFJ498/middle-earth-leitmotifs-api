@@ -124,6 +124,7 @@ func (s *Server) registerRoutes() {
 
 	s.engine.GET("/themes", themes.ListHandler(s.queryBus))
 	s.engine.GET(themeIDRoute, themes.GetHandler(s.queryBus))
+	s.engine.GET("/themes/group/:group_id", themes.ListByGroupHandler(s.queryBus))
 
 	// Protected routes
 	auth := s.engine.Group("")

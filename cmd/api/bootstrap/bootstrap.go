@@ -122,6 +122,7 @@ func Run() error {
 	queryBus.Register(listing.CategoriesQueryType, listing.NewCategoriesQueryHandler(listingCategoryService))
 	queryBus.Register(listing.TracksQueryType, listing.NewTracksQueryHandler(listingTrackService))
 	queryBus.Register(listing.ThemesQueryType, listing.NewThemesQueryHandler(listingThemeService))
+	queryBus.Register(listing.ThemesByGroupQueryType, listing.NewThemesByGroupQueryHandler(listingThemeService))
 
 	updatingMovieService := updating.NewMovieService(movieRepository)
 	updatingGroupService := updating.NewGroupService(groupRepository)

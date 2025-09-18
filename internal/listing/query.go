@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	UsersQueryType      = "query.listing.users"
-	MoviesQueryType     = "query.listing.movies"
-	GroupsQueryType     = "query.listing.groups"
-	CategoriesQueryType = "query.listing.categories"
-	TracksQueryType     = "query.listing.tracks"
-	ThemesQueryType     = "query.listing.themes"
+	UsersQueryType         = "query.listing.users"
+	MoviesQueryType        = "query.listing.movies"
+	GroupsQueryType        = "query.listing.groups"
+	CategoriesQueryType    = "query.listing.categories"
+	TracksQueryType        = "query.listing.tracks"
+	ThemesQueryType        = "query.listing.themes"
+	ThemesByGroupQueryType = "query.listing.themes.by_group"
 )
 
 // UsersQuery represents a query for listing all users.
@@ -223,4 +224,43 @@ func (h ThemesQueryHandler) Handle(ctx context.Context, query query.Query) (any,
 	}
 
 	return h.themeService.ListThemes(ctx)
+}
+
+// ThemesByGroupQuery represents a query for listing all themes by group.
+type ThemesByGroupQuery struct {
+	GroupID string
+}
+
+// NewThemesByGroupQuery creates a new ThemesByGroupQuery instance.
+func NewThemesByGroupQuery(groupID string) ThemesByGroupQuery {
+	return ThemesByGroupQuery{
+		GroupID: groupID,
+	}
+}
+
+// Type returns the query type.
+func (q ThemesByGroupQuery) Type() query.Type {
+	return ThemesByGroupQueryType
+}
+
+// ThemesByGroupQueryHandler handles the themes by group query.
+type ThemesByGroupQueryHandler struct {
+	themeService ThemeService
+}
+
+// NewThemesByGroupQueryHandler creates a new ThemesByGroupQueryHandler instance.
+func NewThemesByGroupQueryHandler(themeService ThemeService) ThemesByGroupQueryHandler {
+	return ThemesByGroupQueryHandler{
+		themeService: themeService,
+	}
+}
+
+// Handle handles the themes by group query.
+func (h ThemesByGroupQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
+	q, ok := query.(ThemesByGroupQuery)
+	if !ok {
+		return nil, nil
+	}
+
+	return h.themeService.ListThemesByGroup(ctx, q.GroupID)
 }

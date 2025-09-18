@@ -1,3 +1,10 @@
+### List all themes
 GET {{host}}/themes
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### List themes by group
+@group_id = "a751aa05-6290-4e27-bd20-04a22382fa32"
+GET {{host}}/themes/group/{{group_id}}
 Accept: application/json
 Authorization: Bearer {{token}}

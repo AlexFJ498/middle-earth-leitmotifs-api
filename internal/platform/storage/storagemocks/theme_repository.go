@@ -90,6 +90,36 @@ func (_m *ThemeRepository) FindAll(ctx context.Context) ([]domain.Theme, error) 
 	return r0, r1
 }
 
+// FindByGroup provides a mock function with given fields: ctx, groupID
+func (_m *ThemeRepository) FindByGroup(ctx context.Context, groupID domain.GroupID) ([]domain.Theme, error) {
+	ret := _m.Called(ctx, groupID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindByGroup")
+	}
+
+	var r0 []domain.Theme
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.GroupID) ([]domain.Theme, error)); ok {
+		return rf(ctx, groupID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, domain.GroupID) []domain.Theme); ok {
+		r0 = rf(ctx, groupID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Theme)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, domain.GroupID) error); ok {
+		r1 = rf(ctx, groupID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Save provides a mock function with given fields: ctx, theme
 func (_m *ThemeRepository) Save(ctx context.Context, theme domain.Theme) error {
 	ret := _m.Called(ctx, theme)

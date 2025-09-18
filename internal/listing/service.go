@@ -186,8 +186,45 @@ func (s ThemeService) ListThemes(ctx context.Context) ([]dto.ThemeResponse, erro
 
 	themeResponses := make([]dto.ThemeResponse, 0, len(themes))
 	for _, theme := range themes {
-		// Fetch related entities.
+		groupDTO, err := s.GettingGroupService.GetGroup(ctx, theme.GroupID().String())
+		if err != nil {
+			return nil, err
+		}
 
+		trackDTO, err := s.GettingTrackService.GetTrack(ctx, theme.FirstHeard().String())
+		if err != nil {
+			return nil, err
+		}
+
+		var categoryDTO *dto.CategoryResponse
+		if theme.CategoryID() != nil {
+			categoryDTORes, err := s.GettingCategoryService.GetCategory(ctx, theme.CategoryID().String())
+			if err != nil {
+				return nil, err
+			}
+			categoryDTO = &categoryDTORes
+		}
+
+		themeResponses = append(themeResponses, dto.NewThemeResponse(theme, trackDTO, groupDTO, categoryDTO))
+	}
+
+	return themeResponses, nil
+}
+
+// ListThemesByGroup implements the ThemeService interface for listing all themes by group.
+func (s ThemeService) ListThemesByGroup(ctx context.Context, groupID string) ([]dto.ThemeResponse, error) {
+	groupIDObj, err := domain.NewGroupIDFromString(groupID)
+	if err != nil {
+		return nil, err
+	}
+
+	themes, err := s.themeRepository.FindByGroup(ctx, groupIDObj)
+	if err != nil {
+		return []dto.ThemeResponse{}, err
+	}
+
+	themeResponses := make([]dto.ThemeResponse, 0, len(themes))
+	for _, theme := range themes {
 		groupDTO, err := s.GettingGroupService.GetGroup(ctx, theme.GroupID().String())
 		if err != nil {
 			return nil, err
