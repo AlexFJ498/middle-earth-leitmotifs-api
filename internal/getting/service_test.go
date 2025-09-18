@@ -102,7 +102,7 @@ func TestGroupServiceGetGroupInvalidID(t *testing.T) {
 
 func TestGroupServiceGetGroupSuccess(t *testing.T) {
 	groupRepositoryMock := new(storagemocks.GroupRepository)
-	group, err := domain.NewGroup("Orchestral")
+	group, err := domain.NewGroup("Orchestral", "Description of Orchestral", "http://example.com/orchestral.jpg")
 	assert.NoError(t, err)
 
 	groupRepositoryMock.On("Find", mock.Anything, group.ID()).Return(group, nil).Once()
@@ -294,7 +294,7 @@ func TestThemeServiceGetThemeInvalidID(t *testing.T) {
 func TestThemeServiceGetThemeSuccess(t *testing.T) {
 	categoryID := "28712a35-04dd-4200-9316-4d6a1e399123"
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
-	theme, err := domain.NewTheme("The Bridge of Khazad-dûm", exampleUUID, "28712a35-04dd-4200-9316-4d6a1e399122", &categoryID)
+	theme, err := domain.NewTheme("The Bridge of Khazad-dûm", exampleUUID, "28712a35-04dd-4200-9316-4d6a1e399122", "Description", &categoryID)
 	assert.NoError(t, err)
 	themeRepositoryMock.On("Find", mock.Anything, theme.ID()).Return(theme, nil).Once()
 	defer themeRepositoryMock.AssertExpectations(t)

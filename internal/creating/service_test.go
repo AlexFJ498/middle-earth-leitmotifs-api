@@ -117,7 +117,9 @@ func TestMovieServiceCreateMovieSuccess(t *testing.T) {
 
 func TestGroupServiceCreateGroupRepositoryError(t *testing.T) {
 	dto := dto.GroupCreateRequest{
-		Name: "Test Group",
+		Name:        "Test Group",
+		Description: "Description",
+		ImageURL:    "http://example.com/image.jpg",
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
@@ -132,7 +134,9 @@ func TestGroupServiceCreateGroupRepositoryError(t *testing.T) {
 
 func TestGroupServiceCreateGroupSuccess(t *testing.T) {
 	dto := dto.GroupCreateRequest{
-		Name: "Test Group",
+		Name:        "Test Group",
+		Description: "Description",
+		ImageURL:    "http://example.com/image.jpg",
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
@@ -209,10 +213,11 @@ func TestTrackServiceCreateTrackSuccess(t *testing.T) {
 
 func TestThemeServiceCreateThemeRepositoryError(t *testing.T) {
 	dto := dto.ThemeCreateRequest{
-		Name:       "Test Theme",
-		FirstHeard: "456e7890-e89b-12d3-a456-426614174112",
-		GroupID:    "456e7890-e89b-12d3-a456-426614174113",
-		CategoryID: &categoryID,
+		Name:        "Test Theme",
+		FirstHeard:  "456e7890-e89b-12d3-a456-426614174112",
+		GroupID:     "456e7890-e89b-12d3-a456-426614174113",
+		Description: "Theme Description",
+		CategoryID:  &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
@@ -227,10 +232,11 @@ func TestThemeServiceCreateThemeRepositoryError(t *testing.T) {
 
 func TestThemeServiceCreateThemeSuccess(t *testing.T) {
 	dto := dto.ThemeCreateRequest{
-		Name:       "Test Theme",
-		FirstHeard: "456e7890-e89b-12d3-a456-426614174115",
-		GroupID:    "456e7890-e89b-12d3-a456-426614174116",
-		CategoryID: &categoryID,
+		Name:        "Test Theme",
+		FirstHeard:  "456e7890-e89b-12d3-a456-426614174115",
+		GroupID:     "456e7890-e89b-12d3-a456-426614174116",
+		Description: "Theme Description",
+		CategoryID:  &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)

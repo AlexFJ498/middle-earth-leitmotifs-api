@@ -12,8 +12,10 @@ import (
 )
 
 type GroupDB struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
+	ID          string `db:"id"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
+	ImageURL    string `db:"image_url"`
 }
 
 var sqlGroupTable = "groups"
@@ -35,14 +37,18 @@ func NewGroupRepository(db *sql.DB, dbTimeout time.Duration) *GroupRepository {
 
 func groupToDTO(group domain.Group) GroupDB {
 	return GroupDB{
-		ID:   group.ID().String(),
-		Name: group.Name().String(),
+		ID:          group.ID().String(),
+		Name:        group.Name().String(),
+		Description: group.Description().String(),
+		ImageURL:    group.ImageURL().String(),
 	}
 }
 func groupToDomain(dto GroupDB) (domain.Group, error) {
 	return domain.NewGroupWithID(
 		dto.ID,
 		dto.Name,
+		dto.Description,
+		dto.ImageURL,
 	)
 }
 

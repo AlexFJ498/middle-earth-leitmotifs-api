@@ -4,5 +4,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "name": "Rohan"
+    "name": "Rohan",
+    "description": "The land of the horse-lords",
+    "image_url": "/groups/rohan.jpg"
 }

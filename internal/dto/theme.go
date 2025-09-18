@@ -3,33 +3,37 @@ package dto
 import domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
 
 type ThemeCreateRequest struct {
-	Name       string  `json:"name" binding:"required"`
-	FirstHeard string  `json:"first_heard" binding:"required"`
-	GroupID    string  `json:"group_id" binding:"required"`
-	CategoryID *string `json:"category_id"`
+	Name        string  `json:"name" binding:"required"`
+	FirstHeard  string  `json:"first_heard" binding:"required"`
+	GroupID     string  `json:"group_id" binding:"required"`
+	Description string  `json:"description" binding:"required"`
+	CategoryID  *string `json:"category_id"`
 }
 
 type ThemeUpdateRequest struct {
-	Name       string  `json:"name" binding:"required"`
-	FirstHeard string  `json:"first_heard" binding:"required"`
-	Group      string  `json:"group" binding:"required"`
-	Category   *string `json:"category"`
+	Name        string  `json:"name" binding:"required"`
+	FirstHeard  string  `json:"first_heard" binding:"required"`
+	Group       string  `json:"group" binding:"required"`
+	Description string  `json:"description" binding:"required"`
+	Category    *string `json:"category"`
 }
 
 type ThemeResponse struct {
-	ID         string            `json:"id"`
-	Name       string            `json:"name"`
-	FirstHeard TrackResponse     `json:"first_heard"`
-	Group      GroupResponse     `json:"group"`
-	Category   *CategoryResponse `json:"category"`
+	ID          string            `json:"id"`
+	Name        string            `json:"name"`
+	FirstHeard  TrackResponse     `json:"first_heard"`
+	Group       GroupResponse     `json:"group"`
+	Description string            `json:"description"`
+	Category    *CategoryResponse `json:"category"`
 }
 
 func NewThemeResponse(theme domain.Theme, firstHeard TrackResponse, group GroupResponse, category *CategoryResponse) ThemeResponse {
 	return ThemeResponse{
-		ID:         theme.ID().String(),
-		Name:       theme.Name().String(),
-		FirstHeard: firstHeard,
-		Group:      group,
-		Category:   category,
+		ID:          theme.ID().String(),
+		Name:        theme.Name().String(),
+		FirstHeard:  firstHeard,
+		Group:       group,
+		Description: theme.Description().String(),
+		Category:    category,
 	}
 }

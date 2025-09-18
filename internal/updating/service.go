@@ -36,7 +36,7 @@ func NewGroupService(groupRepository domain.GroupRepository) GroupService {
 }
 
 func (s *GroupService) UpdateGroup(ctx context.Context, id string, dto dto.GroupUpdateRequest) error {
-	group, err := domain.NewGroupWithID(id, dto.Name)
+	group, err := domain.NewGroupWithID(id, dto.Name, dto.Description, dto.ImageURL)
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func NewThemeService(themeRepository domain.ThemeRepository) ThemeService {
 }
 
 func (s *ThemeService) UpdateTheme(ctx context.Context, id string, dto dto.ThemeUpdateRequest) error {
-	theme, err := domain.NewThemeWithID(id, dto.Name, dto.FirstHeard, dto.Group, dto.Category)
+	theme, err := domain.NewThemeWithID(id, dto.Name, dto.FirstHeard, dto.Group, dto.Description, dto.Category)
 	if err != nil {
 		return err
 	}

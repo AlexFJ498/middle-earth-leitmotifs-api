@@ -15,18 +15,20 @@ import (
 
 const groupID = "123e4567-e89b-12d3-a456-426614174000"
 const groupName = "Fellowship of the Ring"
-const querySelectAllGroups = "SELECT groups.id, groups.name FROM groups"
+const groupDescription = "A group formed to destroy the One Ring"
+const groupImageURL = "http://example.com/image.jpg"
+const querySelectAllGroups = "SELECT groups.id, groups.name, groups.description, groups.image_url FROM groups"
 
 func TestGroupRepositorySaveRepositoryError(t *testing.T) {
-	group, err := domain.NewGroupWithID(groupID, groupName)
+	group, err := domain.NewGroupWithID(groupID, groupName, groupDescription, groupImageURL)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
 	sqlMock.ExpectExec(
-		"INSERT INTO groups (id, name) VALUES ($1, $2)").
-		WithArgs(groupID, groupName).
+		"INSERT INTO groups (id, name, description, image_url) VALUES ($1, $2, $3, $4)").
+		WithArgs(groupID, groupName, groupDescription, groupImageURL).
 		WillReturnError(errors.New("database error"))
 
 	repo := NewGroupRepository(db, 1*time.Second)
@@ -37,15 +39,15 @@ func TestGroupRepositorySaveRepositoryError(t *testing.T) {
 }
 
 func TestGroupRepositorySaveSuccess(t *testing.T) {
-	group, err := domain.NewGroupWithID(groupID, groupName)
+	group, err := domain.NewGroupWithID(groupID, groupName, groupDescription, groupImageURL)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
 	sqlMock.ExpectExec(
-		"INSERT INTO groups (id, name) VALUES ($1, $2)").
-		WithArgs(groupID, groupName).
+		"INSERT INTO groups (id, name, description, image_url) VALUES ($1, $2, $3, $4)").
+		WithArgs(groupID, groupName, groupDescription, groupImageURL).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	repo := NewGroupRepository(db, 1*time.Second)
@@ -59,7 +61,7 @@ func TestGroupRepositoryFindNotFound(t *testing.T) {
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectQuery("SELECT groups.id, groups.name FROM groups WHERE id = $1").
+	sqlMock.ExpectQuery("SELECT groups.id, groups.name, groups.description, groups.image_url FROM groups WHERE id = $1").
 		WithArgs(groupID).
 		WillReturnError(sql.ErrNoRows)
 
@@ -77,9 +79,9 @@ func TestGroupRepositoryFindSuccess(t *testing.T) {
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectQuery("SELECT groups.id, groups.name FROM groups WHERE id = $1").
+	sqlMock.ExpectQuery("SELECT groups.id, groups.name, groups.description, groups.image_url FROM groups WHERE id = $1").
 		WithArgs(groupID).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name"}).AddRow(groupID, groupName))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "image_url"}).AddRow(groupID, groupName, groupDescription, groupImageURL))
 
 	repo := NewGroupRepository(db, 1*time.Second)
 
@@ -98,9 +100,9 @@ func TestGroupRepositoryFindAllSuccess(t *testing.T) {
 	require.NoError(t, err)
 
 	sqlMock.ExpectQuery(querySelectAllGroups).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name"}).
-			AddRow(groupID, groupName).
-			AddRow("223e4567-e89b-12d3-a456-426614174001", "Company of the Ring"))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "image_url"}).
+			AddRow(groupID, groupName, groupDescription, groupImageURL).
+			AddRow("223e4567-e89b-12d3-a456-426614174001", "Company of the Ring", "Description", "http://example.com/image.jpg"))
 
 	repo := NewGroupRepository(db, 1*time.Second)
 
@@ -119,7 +121,7 @@ func TestGroupRepositoryFindAllEmpty(t *testing.T) {
 	require.NoError(t, err)
 
 	sqlMock.ExpectQuery(querySelectAllGroups).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name"}))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "image_url"}))
 
 	repo := NewGroupRepository(db, 1*time.Second)
 
@@ -181,14 +183,14 @@ func TestGroupRepositoryDeleteSuccess(t *testing.T) {
 }
 
 func TestGroupRepositoryUpdateError(t *testing.T) {
-	group, err := domain.NewGroupWithID(groupID, groupName)
+	group, err := domain.NewGroupWithID(groupID, groupName, groupDescription, groupImageURL)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec("UPDATE groups SET id = $1, name = $2 WHERE id = $3").
-		WithArgs(groupID, groupName, groupID).
+	sqlMock.ExpectExec("UPDATE groups SET id = $1, name = $2, description = $3, image_url = $4 WHERE id = $5").
+		WithArgs(groupID, groupName, groupDescription, groupImageURL, groupID).
 		WillReturnError(errors.New("update error"))
 
 	repo := NewGroupRepository(db, 1*time.Second)
@@ -199,14 +201,14 @@ func TestGroupRepositoryUpdateError(t *testing.T) {
 }
 
 func TestGroupRepositoryUpdateSuccess(t *testing.T) {
-	group, err := domain.NewGroupWithID(groupID, groupName)
+	group, err := domain.NewGroupWithID(groupID, groupName, groupDescription, groupImageURL)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec("UPDATE groups SET id = $1, name = $2 WHERE id = $3").
-		WithArgs(groupID, groupName, groupID).
+	sqlMock.ExpectExec("UPDATE groups SET id = $1, name = $2, description = $3, image_url = $4 WHERE id = $5").
+		WithArgs(groupID, groupName, groupDescription, groupImageURL, groupID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	repo := NewGroupRepository(db, 1*time.Second)

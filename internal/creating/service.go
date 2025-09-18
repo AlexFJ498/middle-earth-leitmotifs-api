@@ -82,7 +82,7 @@ func NewGroupService(groupRepository domain.GroupRepository) GroupService {
 
 // CreateGroup implements the GroupService interface for creating a new group.
 func (s GroupService) CreateGroup(ctx context.Context, dto dto.GroupCreateRequest) error {
-	group, err := domain.NewGroup(dto.Name)
+	group, err := domain.NewGroup(dto.Name, dto.Description, dto.ImageURL)
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func NewThemeService(themeRepository domain.ThemeRepository) ThemeService {
 
 // CreateTheme implements the ThemeService interface for creating a new theme.
 func (s ThemeService) CreateTheme(ctx context.Context, dto dto.ThemeCreateRequest) error {
-	theme, err := domain.NewTheme(dto.Name, dto.FirstHeard, dto.GroupID, dto.CategoryID)
+	theme, err := domain.NewTheme(dto.Name, dto.FirstHeard, dto.GroupID, dto.Description, dto.CategoryID)
 	if err != nil {
 		return err
 	}

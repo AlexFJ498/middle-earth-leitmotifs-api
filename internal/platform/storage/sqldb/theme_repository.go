@@ -12,11 +12,12 @@ import (
 )
 
 type ThemeDB struct {
-	ID         string  `db:"id"`
-	Name       string  `db:"name"`
-	FirstHeard string  `db:"first_heard"`
-	GroupID    string  `db:"group_id"`
-	CategoryID *string `db:"category_id"`
+	ID          string  `db:"id"`
+	Name        string  `db:"name"`
+	FirstHeard  string  `db:"first_heard"`
+	GroupID     string  `db:"group_id"`
+	Description string  `db:"description"`
+	CategoryID  *string `db:"category_id"`
 }
 
 var fkMap = map[string]error{
@@ -48,11 +49,12 @@ func themeToDTO(theme domain.Theme) ThemeDB {
 	}
 
 	return ThemeDB{
-		ID:         theme.ID().String(),
-		Name:       theme.Name().String(),
-		FirstHeard: theme.FirstHeard().String(),
-		GroupID:    theme.GroupID().String(),
-		CategoryID: categoryID,
+		ID:          theme.ID().String(),
+		Name:        theme.Name().String(),
+		FirstHeard:  theme.FirstHeard().String(),
+		GroupID:     theme.GroupID().String(),
+		Description: theme.Description().String(),
+		CategoryID:  categoryID,
 	}
 }
 
@@ -62,6 +64,7 @@ func themeToDomain(dto ThemeDB) (domain.Theme, error) {
 		dto.Name,
 		dto.FirstHeard,
 		dto.GroupID,
+		dto.Description,
 		dto.CategoryID)
 }
 

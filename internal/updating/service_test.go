@@ -12,12 +12,15 @@ import (
 )
 
 const (
-	testID       = "123e4567-e89b-12d3-a456-426614174000"
-	movieName    = "The Fellowship of the Ring"
-	groupName    = "The Elves"
-	categoryName = "The Mordor Accompaniments"
-	trackName    = "The Three Hunters"
-	themeName    = "The History of the Ring"
+	testID           = "123e4567-e89b-12d3-a456-426614174000"
+	movieName        = "The Fellowship of the Ring"
+	groupName        = "The Elves"
+	groupDescription = "Description"
+	groupImageURL    = "http://example.com/image.jpg"
+	categoryName     = "The Mordor Accompaniments"
+	trackName        = "The Three Hunters"
+	themeName        = "The History of the Ring"
+	themeDescription = "Description"
 
 	domainMovieType    = "domain.Movie"
 	domainGroupType    = "domain.Group"
@@ -77,7 +80,9 @@ func TestMovieServiceUpdateMovieInvalidID(t *testing.T) {
 
 func TestGroupServiceUpdateGroupRepositoryError(t *testing.T) {
 	dto := dto.GroupUpdateRequest{
-		Name: groupName,
+		Name:        groupName,
+		Description: groupDescription,
+		ImageURL:    groupImageURL,
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
@@ -92,7 +97,9 @@ func TestGroupServiceUpdateGroupRepositoryError(t *testing.T) {
 
 func TestGroupServiceUpdateGroupSuccess(t *testing.T) {
 	dto := dto.GroupUpdateRequest{
-		Name: groupName,
+		Name:        groupName,
+		Description: groupDescription,
+		ImageURL:    groupImageURL,
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
@@ -107,7 +114,9 @@ func TestGroupServiceUpdateGroupSuccess(t *testing.T) {
 
 func TestGroupServiceUpdateGroupInvalidID(t *testing.T) {
 	dto := dto.GroupUpdateRequest{
-		Name: groupName,
+		Name:        groupName,
+		Description: groupDescription,
+		ImageURL:    groupImageURL,
 	}
 
 	groupRepositoryMock := new(storagemocks.GroupRepository)
@@ -212,10 +221,11 @@ func TestTrackServiceUpdateTrackInvalidID(t *testing.T) {
 
 func TestThemeServiceUpdateThemeRepositoryError(t *testing.T) {
 	dto := dto.ThemeUpdateRequest{
-		Name:       themeName,
-		FirstHeard: testID,
-		Group:      testID,
-		Category:   &categoryID,
+		Name:        themeName,
+		FirstHeard:  testID,
+		Group:       testID,
+		Description: themeDescription,
+		Category:    &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
@@ -230,10 +240,11 @@ func TestThemeServiceUpdateThemeRepositoryError(t *testing.T) {
 
 func TestThemeServiceUpdateThemeSuccess(t *testing.T) {
 	dto := dto.ThemeUpdateRequest{
-		Name:       themeName,
-		FirstHeard: testID,
-		Group:      testID,
-		Category:   &categoryID,
+		Name:        themeName,
+		FirstHeard:  testID,
+		Group:       testID,
+		Description: themeDescription,
+		Category:    &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
@@ -248,10 +259,11 @@ func TestThemeServiceUpdateThemeSuccess(t *testing.T) {
 
 func TestThemeServiceUpdateThemeInvalidID(t *testing.T) {
 	dto := dto.ThemeUpdateRequest{
-		Name:       themeName,
-		FirstHeard: testID,
-		Group:      testID,
-		Category:   &categoryID,
+		Name:        themeName,
+		FirstHeard:  testID,
+		Group:       testID,
+		Description: themeDescription,
+		Category:    &categoryID,
 	}
 
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
