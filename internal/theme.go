@@ -10,6 +10,8 @@ import (
 var ErrInvalidThemeID = fmt.Errorf("invalid theme ID")
 var ErrInvalidThemeName = fmt.Errorf("invalid theme name")
 var ErrInvalidDescription = fmt.Errorf("invalid description")
+var ErrInvalidFirstHeardStart = fmt.Errorf("invalid first heard start")
+var ErrInvalidFirstHeardEnd = fmt.Errorf("invalid first heard end")
 var ErrThemeNotFound = fmt.Errorf("theme not found")
 
 type ThemeID struct {
@@ -22,6 +24,14 @@ type ThemeName struct {
 
 type Description struct {
 	value string
+}
+
+type FirstHeardStart struct {
+	value int
+}
+
+type FirstHeardEnd struct {
+	value int
 }
 
 func NewThemeID() (ThemeID, error) {
@@ -70,6 +80,30 @@ func (d Description) String() string {
 	return d.value
 }
 
+func NewFirstHeardStart(value int) (FirstHeardStart, error) {
+	if value < 0 {
+		return FirstHeardStart{}, ErrInvalidFirstHeardStart
+	}
+
+	return FirstHeardStart{value: value}, nil
+}
+
+func (f FirstHeardStart) Int() int {
+	return f.value
+}
+
+func NewFirstHeardEnd(value int) (FirstHeardEnd, error) {
+	if value < 0 {
+		return FirstHeardEnd{}, ErrInvalidFirstHeardEnd
+	}
+
+	return FirstHeardEnd{value: value}, nil
+}
+
+func (f FirstHeardEnd) Int() int {
+	return f.value
+}
+
 type ThemeRepository interface {
 	Save(ctx context.Context, theme Theme) error
 	Find(ctx context.Context, id ThemeID) (Theme, error)
@@ -82,15 +116,17 @@ type ThemeRepository interface {
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=ThemeRepository
 
 type Theme struct {
-	id          ThemeID
-	name        ThemeName
-	firstHeard  TrackID
-	groupID     GroupID
-	description Description
-	categoryID  *CategoryID // Optional
+	id              ThemeID
+	name            ThemeName
+	firstHeard      TrackID
+	groupID         GroupID
+	description     Description
+	firstHeardStart FirstHeardStart
+	firstHeardEnd   FirstHeardEnd
+	categoryID      *CategoryID // Optional
 }
 
-func NewTheme(name, firstHeard, groupID, description string, categoryID *string) (Theme, error) {
+func NewTheme(name, firstHeard, groupID, description string, firstHeardStart, firstHeardEnd int, categoryID *string) (Theme, error) {
 	idVO, err := NewThemeID()
 	if err != nil {
 		return Theme{}, err
@@ -116,6 +152,16 @@ func NewTheme(name, firstHeard, groupID, description string, categoryID *string)
 		return Theme{}, err
 	}
 
+	firstHeardStartVO, err := NewFirstHeardStart(firstHeardStart)
+	if err != nil {
+		return Theme{}, err
+	}
+
+	firstHeardEndVO, err := NewFirstHeardEnd(firstHeardEnd)
+	if err != nil {
+		return Theme{}, err
+	}
+
 	var categoryIDVO *CategoryID
 	if categoryID != nil {
 		var err error
@@ -127,16 +173,18 @@ func NewTheme(name, firstHeard, groupID, description string, categoryID *string)
 	}
 
 	return Theme{
-		id:          idVO,
-		name:        nameVO,
-		firstHeard:  firstHeardVO,
-		groupID:     groupIDVO,
-		description: descriptionVO,
-		categoryID:  categoryIDVO,
+		id:              idVO,
+		name:            nameVO,
+		firstHeard:      firstHeardVO,
+		groupID:         groupIDVO,
+		description:     descriptionVO,
+		firstHeardStart: firstHeardStartVO,
+		firstHeardEnd:   firstHeardEndVO,
+		categoryID:      categoryIDVO,
 	}, nil
 }
 
-func NewThemeWithID(id, name, firstHeard, groupID, description string, categoryID *string) (Theme, error) {
+func NewThemeWithID(id, name, firstHeard, groupID, description string, firstHeardStart, firstHeardEnd int, categoryID *string) (Theme, error) {
 	idVO, err := NewThemeIDFromString(id)
 	if err != nil {
 		return Theme{}, err
@@ -162,6 +210,16 @@ func NewThemeWithID(id, name, firstHeard, groupID, description string, categoryI
 		return Theme{}, err
 	}
 
+	firstHeardStartVO, err := NewFirstHeardStart(firstHeardStart)
+	if err != nil {
+		return Theme{}, err
+	}
+
+	firstHeardEndVO, err := NewFirstHeardEnd(firstHeardEnd)
+	if err != nil {
+		return Theme{}, err
+	}
+
 	var categoryIDVO *CategoryID
 	if categoryID != nil {
 		var err error
@@ -173,12 +231,14 @@ func NewThemeWithID(id, name, firstHeard, groupID, description string, categoryI
 	}
 
 	return Theme{
-		id:          idVO,
-		name:        nameVO,
-		firstHeard:  firstHeardVO,
-		groupID:     groupIDVO,
-		description: descriptionVO,
-		categoryID:  categoryIDVO,
+		id:              idVO,
+		name:            nameVO,
+		firstHeard:      firstHeardVO,
+		groupID:         groupIDVO,
+		description:     descriptionVO,
+		firstHeardStart: firstHeardStartVO,
+		firstHeardEnd:   firstHeardEndVO,
+		categoryID:      categoryIDVO,
 	}, nil
 }
 
@@ -204,4 +264,12 @@ func (t Theme) Description() Description {
 
 func (t Theme) CategoryID() *CategoryID {
 	return t.categoryID
+}
+
+func (t Theme) FirstHeardStart() FirstHeardStart {
+	return t.firstHeardStart
+}
+
+func (t Theme) FirstHeardEnd() FirstHeardEnd {
+	return t.firstHeardEnd
 }

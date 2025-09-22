@@ -148,7 +148,7 @@ func NewThemeService(themeRepository domain.ThemeRepository) ThemeService {
 
 // CreateTheme implements the ThemeService interface for creating a new theme.
 func (s ThemeService) CreateTheme(ctx context.Context, dto dto.ThemeCreateRequest) error {
-	theme, err := domain.NewTheme(dto.Name, dto.FirstHeard, dto.GroupID, dto.Description, dto.CategoryID)
+	theme, err := domain.NewTheme(dto.Name, dto.FirstHeard, dto.GroupID, dto.Description, dto.FirstHeardStart, dto.FirstHeardEnd, dto.CategoryID)
 	if err != nil {
 		return err
 	}

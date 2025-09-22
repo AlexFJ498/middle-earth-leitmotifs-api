@@ -223,10 +223,10 @@ func TestThemeServiceListThemesSuccess(t *testing.T) {
 	categoryID2 := "40929ca6-ed89-4548-a1d9-54b604ea50b6"
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
 	themes := []domain.Theme{}
-	theme1, err := domain.NewTheme("The History of the Ring", "6a4f86e4-4fef-4151-9c60-e467007dd213", "40929ca6-ed89-4548-a1d9-54b604ea50b2", "Description", &categoryID1)
+	theme1, err := domain.NewTheme("The History of the Ring", "6a4f86e4-4fef-4151-9c60-e467007dd213", "40929ca6-ed89-4548-a1d9-54b604ea50b2", "Description", 0, 1, &categoryID1)
 	assert.NoError(t, err)
 	themes = append(themes, theme1)
-	theme2, err := domain.NewTheme("The Rohan Fanfare", "6a4f86e4-4fef-4151-9c60-e467007dd213", "40929ca6-ed89-4548-a1d9-54b604ea50b2", "Description", &categoryID2)
+	theme2, err := domain.NewTheme("The Rohan Fanfare", "6a4f86e4-4fef-4151-9c60-e467007dd213", "40929ca6-ed89-4548-a1d9-54b604ea50b2", "Description", 0, 1, &categoryID2)
 	assert.NoError(t, err)
 	themes = append(themes, theme2)
 	themeRepositoryMock.On("FindAll", mock.Anything).Return(themes, nil).Once()
