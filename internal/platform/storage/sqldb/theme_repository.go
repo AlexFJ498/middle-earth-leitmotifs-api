@@ -113,6 +113,7 @@ func (r *ThemeRepository) Find(ctx context.Context, id domain.ThemeID) (domain.T
 
 func (r *ThemeRepository) FindAll(ctx context.Context) ([]domain.Theme, error) {
 	sb := themeSQLStruct.SelectFrom(sqlThemeTable)
+	sb.OrderBy("created_at ASC")
 	query, args := sb.Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
@@ -145,6 +146,7 @@ func (r *ThemeRepository) FindAll(ctx context.Context) ([]domain.Theme, error) {
 func (r *ThemeRepository) FindByGroup(ctx context.Context, groupID domain.GroupID) ([]domain.Theme, error) {
 	sb := themeSQLStruct.SelectFrom(sqlThemeTable)
 	sb.Where(sb.Equal("group_id", groupID.String()))
+	sb.OrderBy("created_at ASC")
 	query, args := sb.Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)

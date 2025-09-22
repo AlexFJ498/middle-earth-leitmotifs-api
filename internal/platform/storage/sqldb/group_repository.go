@@ -88,6 +88,7 @@ func (r *GroupRepository) Find(ctx context.Context, id domain.GroupID) (domain.G
 
 func (r *GroupRepository) FindAll(ctx context.Context) ([]domain.Group, error) {
 	sb := groupSQLStruct.SelectFrom(sqlGroupTable)
+	sb.OrderBy("created_at ASC")
 	query, args := sb.Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)

@@ -17,7 +17,7 @@ const groupID = "123e4567-e89b-12d3-a456-426614174000"
 const groupName = "Fellowship of the Ring"
 const groupDescription = "A group formed to destroy the One Ring"
 const groupImageURL = "http://example.com/image.jpg"
-const querySelectAllGroups = "SELECT groups.id, groups.name, groups.description, groups.image_url FROM groups"
+const querySelectAllGroups = "SELECT groups.id, groups.name, groups.description, groups.image_url FROM groups ORDER BY created_at ASC"
 
 func TestGroupRepositorySaveRepositoryError(t *testing.T) {
 	group, err := domain.NewGroupWithID(groupID, groupName, groupDescription, groupImageURL)
