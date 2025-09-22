@@ -9,6 +9,7 @@ import (
 
 var ErrInvalidTrackID = fmt.Errorf("invalid track ID")
 var ErrInvalidTrackName = fmt.Errorf("invalid track name")
+var ErrInvalidSpotifyURL = fmt.Errorf("invalid Spotify URL")
 var ErrTrackNotFound = fmt.Errorf("track not found")
 
 type TrackID struct {
@@ -16,6 +17,10 @@ type TrackID struct {
 }
 
 type TrackName struct {
+	value string
+}
+
+type SpotifyURL struct {
 	value string
 }
 
@@ -63,6 +68,27 @@ func (n TrackName) String() string {
 	return n.value
 }
 
+func NewSpotifyURL(value string) (SpotifyURL, error) {
+	if value == "" {
+		return SpotifyURL{}, ErrInvalidSpotifyURL
+	}
+
+	return SpotifyURL{
+		value: value,
+	}, nil
+}
+
+func (u SpotifyURL) String() string {
+	return u.value
+}
+
+func (u *SpotifyURL) AsStringPtr() *string {
+	if u == nil || u.value == "" {
+		return nil
+	}
+	return &u.value
+}
+
 type TrackRepository interface {
 	Save(ctx context.Context, track Track) error
 	Find(ctx context.Context, id TrackID) (Track, error)
@@ -74,12 +100,13 @@ type TrackRepository interface {
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=TrackRepository
 
 type Track struct {
-	id      TrackID
-	name    TrackName
-	movieID MovieID
+	id         TrackID
+	name       TrackName
+	movieID    MovieID
+	spotifyURL *SpotifyURL
 }
 
-func NewTrack(name string, movieID string) (Track, error) {
+func NewTrack(name, movieID string, spotifyURL *string) (Track, error) {
 	idVO, err := NewTrackID()
 	if err != nil {
 		return Track{}, err
@@ -95,16 +122,26 @@ func NewTrack(name string, movieID string) (Track, error) {
 		return Track{}, err
 	}
 
+	var spotifyURLVO *SpotifyURL
+	if spotifyURL != nil {
+		spotifyURLValue, err := NewSpotifyURL(*spotifyURL)
+		if err != nil {
+			return Track{}, err
+		}
+		spotifyURLVO = &spotifyURLValue
+	}
+
 	track := Track{
-		id:      idVO,
-		name:    nameVO,
-		movieID: movieIDVO,
+		id:         idVO,
+		name:       nameVO,
+		movieID:    movieIDVO,
+		spotifyURL: spotifyURLVO,
 	}
 
 	return track, nil
 }
 
-func NewTrackWithID(id, name, movieID string) (Track, error) {
+func NewTrackWithID(id, name, movieID string, spotifyURL *string) (Track, error) {
 	idVO, err := NewTrackIDFromString(id)
 	if err != nil {
 		return Track{}, err
@@ -120,10 +157,20 @@ func NewTrackWithID(id, name, movieID string) (Track, error) {
 		return Track{}, err
 	}
 
+	var spotifyURLVO *SpotifyURL
+	if spotifyURL != nil {
+		spotifyURLValue, err := NewSpotifyURL(*spotifyURL)
+		if err != nil {
+			return Track{}, err
+		}
+		spotifyURLVO = &spotifyURLValue
+	}
+
 	track := Track{
-		id:      idVO,
-		name:    nameVO,
-		movieID: movieIDVO,
+		id:         idVO,
+		name:       nameVO,
+		movieID:    movieIDVO,
+		spotifyURL: spotifyURLVO,
 	}
 
 	return track, nil
@@ -139,4 +186,8 @@ func (t Track) Name() TrackName {
 
 func (t Track) MovieID() MovieID {
 	return t.movieID
+}
+
+func (t Track) SpotifyURL() *SpotifyURL {
+	return t.spotifyURL
 }

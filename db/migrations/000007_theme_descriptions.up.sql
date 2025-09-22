@@ -1,2 +1,2 @@
 ALTER TABLE themes
-ADD COLUMN description TEXT NOT NULL DEFAULT '';
+ADD COLUMN description TEXT NOT NULL DEFAULT 'description';

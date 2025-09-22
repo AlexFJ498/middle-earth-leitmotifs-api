@@ -72,7 +72,7 @@ func NewTrackService(trackRepository domain.TrackRepository) TrackService {
 }
 
 func (s *TrackService) UpdateTrack(ctx context.Context, id string, dto dto.TrackUpdateRequest) error {
-	track, err := domain.NewTrackWithID(id, dto.Name, dto.MovieID)
+	track, err := domain.NewTrackWithID(id, dto.Name, dto.MovieID, dto.SpotifyURL)
 	if err != nil {
 		return err
 	}

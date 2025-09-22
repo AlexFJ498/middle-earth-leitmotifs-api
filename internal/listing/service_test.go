@@ -167,10 +167,10 @@ func TestTrackServiceListTracksRepositoryError(t *testing.T) {
 func TestTrackServiceListTracksSuccess(t *testing.T) {
 	trackRepositoryMock := new(storagemocks.TrackRepository)
 	tracks := []domain.Track{}
-	track1, err := domain.NewTrack("The Three Hunters", "b6c9d5ae-bf3b-419e-ba8f-09c8ce39d9bc")
+	track1, err := domain.NewTrack("The Three Hunters", "b6c9d5ae-bf3b-419e-ba8f-09c8ce39d9bc", nil)
 	assert.NoError(t, err)
 	tracks = append(tracks, track1)
-	track2, err := domain.NewTrack("The Shire", "28712a55-04dd-4200-9316-4d6a1e399128")
+	track2, err := domain.NewTrack("The Shire", "28712a55-04dd-4200-9316-4d6a1e399128", nil)
 	assert.NoError(t, err)
 	tracks = append(tracks, track2)
 	trackRepositoryMock.On("FindAll", mock.Anything).Return(tracks, nil).Once()
@@ -236,7 +236,7 @@ func TestThemeServiceListThemesSuccess(t *testing.T) {
 	movieService := NewMovieService(movieRepositoryMock)
 	gettingMovieService := getting.NewMovieService(movieRepositoryMock)
 
-	track, err := domain.NewTrack("Track", "28712a55-04dd-4200-9316-4d6a1e399128")
+	track, err := domain.NewTrack("Track", "28712a55-04dd-4200-9316-4d6a1e399128", nil)
 	assert.NoError(t, err)
 
 	trackRepositoryMock := new(storagemocks.TrackRepository)

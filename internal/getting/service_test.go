@@ -206,7 +206,7 @@ func TestTrackServiceGetTrackInvalidID(t *testing.T) {
 
 func TestTrackServiceGetTrackMovieRepositoryError(t *testing.T) {
 	trackRepositoryMock := new(storagemocks.TrackRepository)
-	track, err := domain.NewTrack(trackName, exampleUUID)
+	track, err := domain.NewTrack(trackName, exampleUUID, nil)
 	assert.NoError(t, err)
 
 	trackRepositoryMock.On("Find", mock.Anything, track.ID()).Return(track, nil).Once()
@@ -226,7 +226,7 @@ func TestTrackServiceGetTrackMovieRepositoryError(t *testing.T) {
 
 func TestTrackServiceGetTrackSuccess(t *testing.T) {
 	trackRepositoryMock := new(storagemocks.TrackRepository)
-	track, err := domain.NewTrack(trackName, exampleUUID)
+	track, err := domain.NewTrack(trackName, exampleUUID, nil)
 	assert.NoError(t, err)
 
 	trackRepositoryMock.On("Find", mock.Anything, track.ID()).Return(track, nil).Once()
@@ -302,7 +302,7 @@ func TestThemeServiceGetThemeSuccess(t *testing.T) {
 	movieRepositoryMock := new(storagemocks.MovieRepository)
 	movieService := NewMovieService(movieRepositoryMock)
 
-	track, err := domain.NewTrack(trackName, exampleUUID)
+	track, err := domain.NewTrack(trackName, exampleUUID, nil)
 	assert.NoError(t, err)
 
 	trackRepositoryMock := new(storagemocks.TrackRepository)

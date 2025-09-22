@@ -12,9 +12,10 @@ import (
 )
 
 type TrackDB struct {
-	ID      string `db:"id"`
-	Name    string `db:"name"`
-	MovieID string `db:"movie_id"`
+	ID         string  `db:"id"`
+	Name       string  `db:"name"`
+	MovieID    string  `db:"movie_id"`
+	SpotifyURL *string `db:"spotify_url"`
 }
 
 var sqlTrackTable = "tracks"
@@ -34,14 +35,15 @@ func NewTrackRepository(db *sql.DB, timeout time.Duration) *TrackRepository {
 
 func trackToDTO(track domain.Track) TrackDB {
 	return TrackDB{
-		ID:      track.ID().String(),
-		Name:    track.Name().String(),
-		MovieID: track.MovieID().String(),
+		ID:         track.ID().String(),
+		Name:       track.Name().String(),
+		MovieID:    track.MovieID().String(),
+		SpotifyURL: track.SpotifyURL().AsStringPtr(),
 	}
 }
 
 func trackToDomain(dto TrackDB) (domain.Track, error) {
-	return domain.NewTrackWithID(dto.ID, dto.Name, dto.MovieID)
+	return domain.NewTrackWithID(dto.ID, dto.Name, dto.MovieID, dto.SpotifyURL)
 }
 
 func (r *TrackRepository) Save(ctx context.Context, track domain.Track) error {

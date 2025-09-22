@@ -5,5 +5,6 @@ Authorization: Bearer {{token}}
 
 {
     "name": "The Three Hunters",
-    "movie_id": "b6c9d5ae-bf3b-419e-ba8f-09c8ce39d9bc"
+    "movie_id": "b6c9d5ae-bf3b-419e-ba8f-09c8ce39d9bc",
+    "spotify_url": "https://open.spotify.com/track/1"
 }

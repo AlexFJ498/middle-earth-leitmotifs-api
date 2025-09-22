@@ -17,20 +17,20 @@ const (
 	trackName          = "The Shire"
 	trackMovieID       = "456e7890-e89b-12d3-a456-426614174111"
 	connectionErrorMsg = "connection error"
-	selectQuery        = "SELECT tracks.id, tracks.name, tracks.movie_id FROM tracks WHERE id = $1"
+	selectQuery        = "SELECT tracks.id, tracks.name, tracks.movie_id, tracks.spotify_url FROM tracks WHERE id = $1"
 	deleteQuery        = "DELETE FROM tracks WHERE id = $1"
-	selectAllQuery     = "SELECT tracks.id, tracks.name, tracks.movie_id FROM tracks"
+	selectAllQuery     = "SELECT tracks.id, tracks.name, tracks.movie_id, tracks.spotify_url FROM tracks"
 )
 
 func TestTrackRepositorySaveError(t *testing.T) {
-	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID)
+	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID, nil)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec("INSERT INTO tracks (id, name, movie_id) VALUES ($1, $2, $3)").
-		WithArgs(trackID, trackName, trackMovieID).
+	sqlMock.ExpectExec("INSERT INTO tracks (id, name, movie_id, spotify_url) VALUES ($1, $2, $3, $4)").
+		WithArgs(trackID, trackName, trackMovieID, nil).
 		WillReturnError(errors.New(connectionErrorMsg))
 
 	repo := NewTrackRepository(db, 1*time.Second)
@@ -42,14 +42,14 @@ func TestTrackRepositorySaveError(t *testing.T) {
 }
 
 func TestTrackRepositorySaveSuccess(t *testing.T) {
-	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID)
+	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID, nil)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec("INSERT INTO tracks (id, name, movie_id) VALUES ($1, $2, $3)").
-		WithArgs(trackID, trackName, trackMovieID).
+	sqlMock.ExpectExec("INSERT INTO tracks (id, name, movie_id, spotify_url) VALUES ($1, $2, $3, $4)").
+		WithArgs(trackID, trackName, trackMovieID, nil).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	repo := NewTrackRepository(db, 1*time.Second)
@@ -84,7 +84,7 @@ func TestTrackRepositoryFindNotFound(t *testing.T) {
 
 	sqlMock.ExpectQuery(selectQuery).
 		WithArgs(trackID).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "movie_id"}))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "movie_id", "spotify_url"}))
 
 	repo := NewTrackRepository(db, 1*time.Second)
 
@@ -102,8 +102,8 @@ func TestTrackRepositoryFindSuccess(t *testing.T) {
 
 	sqlMock.ExpectQuery(selectQuery).
 		WithArgs(trackID).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "movie_id"}).
-			AddRow(trackID, trackName, trackMovieID))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "movie_id", "spotify_url"}).
+			AddRow(trackID, trackName, trackMovieID, nil))
 
 	repo := NewTrackRepository(db, 1*time.Second)
 
@@ -138,9 +138,9 @@ func TestTrackRepositoryFindAllSuccess(t *testing.T) {
 	require.NoError(t, err)
 
 	sqlMock.ExpectQuery(selectAllQuery).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "movie_id"}).
-			AddRow(trackID, trackName, trackMovieID).
-			AddRow("789e1011-e89b-12d3-a456-426614174222", "Concerning Hobbits", trackMovieID))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "movie_id", "spotify_url"}).
+			AddRow(trackID, trackName, trackMovieID, nil).
+			AddRow("789e1011-e89b-12d3-a456-426614174222", "Concerning Hobbits", trackMovieID, nil))
 
 	repo := NewTrackRepository(db, 1*time.Second)
 
@@ -209,14 +209,14 @@ func TestTrackRepositoryDeleteSuccess(t *testing.T) {
 }
 
 func TestTrackRepositoryUpdateError(t *testing.T) {
-	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID)
+	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID, nil)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec("UPDATE tracks SET id = $1, name = $2, movie_id = $3 WHERE id = $4").
-		WithArgs(trackID, trackName, trackMovieID, trackID).
+	sqlMock.ExpectExec("UPDATE tracks SET id = $1, name = $2, movie_id = $3, spotify_url = $4 WHERE id = $5").
+		WithArgs(trackID, trackName, trackMovieID, nil, trackID).
 		WillReturnError(errors.New("update error"))
 
 	repo := NewTrackRepository(db, 1*time.Second)
@@ -227,14 +227,14 @@ func TestTrackRepositoryUpdateError(t *testing.T) {
 }
 
 func TestTrackRepositoryUpdateSuccess(t *testing.T) {
-	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID)
+	track, err := domain.NewTrackWithID(trackID, trackName, trackMovieID, nil)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec("UPDATE tracks SET id = $1, name = $2, movie_id = $3 WHERE id = $4").
-		WithArgs(trackID, trackName, trackMovieID, trackID).
+	sqlMock.ExpectExec("UPDATE tracks SET id = $1, name = $2, movie_id = $3, spotify_url = $4 WHERE id = $5").
+		WithArgs(trackID, trackName, trackMovieID, nil, trackID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	repo := NewTrackRepository(db, 1*time.Second)

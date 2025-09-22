@@ -1,0 +1,2 @@
+ALTER TABLE tracks
+ADD COLUMN spotify_url VARCHAR(255) NULL;

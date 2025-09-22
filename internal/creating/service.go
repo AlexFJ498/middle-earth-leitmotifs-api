@@ -126,7 +126,7 @@ func NewTrackService(trackRepository domain.TrackRepository) TrackService {
 
 // CreateTrack implements the TrackService interface for creating a new track.
 func (s TrackService) CreateTrack(ctx context.Context, dto dto.TrackCreateRequest) error {
-	track, err := domain.NewTrack(dto.Name, dto.MovieID)
+	track, err := domain.NewTrack(dto.Name, dto.MovieID, dto.SpotifyURL)
 	if err != nil {
 		return err
 	}

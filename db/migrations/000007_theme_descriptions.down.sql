@@ -1,2 +1,2 @@
 ALTER TABLE themes
-DROP COLUMN description;
+DROP COLUMN IF EXISTS description;
