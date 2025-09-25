@@ -3,18 +3,18 @@
 A public API focused on the leitmotifs in Howard Shore’s scores for Middle‑earth, as documented by Doug Adams.
 
 ## Table of Contents
-- About this project
-- Project overview
-- Tech stack
-- Architecture
-- API endpoints
-- Setup
-- Configuration
-- Running locally
-- Docker
-- Testing
-- License
-- Acknowledgments
+- [About this project](#about-this-project)
+- [Project overview](#project-overview)
+- [Tech stack](#tech-stack)
+- [Architecture](#architecture)
+- [API endpoints](#api-endpoints)
+- [Setup](#setup)
+- [Configuration](#configuration)
+- [Running locally](#running-locally)
+- [Docker](#docker)
+- [Testing](#testing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ## About this project
 
