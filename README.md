@@ -4,15 +4,12 @@ A public API focused on the leitmotifs in Howard Shore’s scores for Middle‑e
 
 ## Table of Contents
 - [About this project](#about-this-project)
+- [Frontend](#frontend)
 - [Project overview](#project-overview)
 - [Tech stack](#tech-stack)
 - [Architecture](#architecture)
-- [API endpoints](#api-endpoints)
-- [Setup](#setup)
-- [Configuration](#configuration)
-- [Running locally](#running-locally)
-- [Docker](#docker)
-- [Testing](#testing)
+- [Getting Started](#getting-started)
+- [Development](#development)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -27,6 +24,13 @@ Music compositions and track titles are the property of Howard Shore and the res
 No sheet music or film audio is hosted; embedded players link only to official Spotify releases. Images on this site were generated using AI and serve only as illustrative placeholders; they are not official artwork.
 
 The thematic names and structure presented here are derived from Doug Adams’ book “The Music of The Lord of the Rings Films”. All original naming remains the property of the author. The brief descriptions were written specifically for this site and are intentionally limited.
+
+## Frontend
+
+This API serves as the backend for the **Middle‑earth Leitmotifs** web application. The frontend provides an interactive interface for browsing Howard Shore's leitmotifs from *The Lord of the Rings* trilogy.
+
+**Frontend Repository**: [middle-earth-leitmotifs-frontend](https://github.com/AlexFJ498/middle-earth-leitmotifs-frontend)  
+**Live Application**: [Visit the website](https://middle-earth-leitmotifs.vercel.app)
 
 ## Project overview
 
@@ -45,57 +49,35 @@ This repository contains a Go service that exposes a REST API to manage and quer
 
 The service follows a simple CQRS‑style separation:
 
-- Domain: core entities and errors under `internal/*.go` (e.g., `theme.go`, `track.go`, `movie.go`).
-- Application:
+- **Domain**: core entities and errors under `internal/*.go` (e.g., `theme.go`, `track.go`, `movie.go`).
+- **Application**:
 	- Commands for create/update/delete under `internal/creating`, `internal/updating`, `internal/deleting`.
 	- Queries for get/list under `internal/getting`, `internal/listing`.
 	- In‑memory buses in `internal/platform/bus/inmemory`.
-- Infrastructure:
+- **Infrastructure**:
 	- HTTP server and handlers in `internal/platform/server` (Gin), with JWT and admin middlewares.
 	- SQL repositories in `internal/platform/storage/sqldb` using `go-sqlbuilder` and explicit SQL error mapping (`flavor.go`).
-- Composition: the entrypoint `cmd/api/main.go` calls `cmd/api/bootstrap/bootstrap.go`, which wires configuration, DB connection, buses, repositories, and services, then starts the HTTP server.
+- **Composition**: the entrypoint `cmd/api/main.go` calls `cmd/api/bootstrap/bootstrap.go`, which wires configuration, DB connection, buses, repositories, and services, then starts the HTTP server.
 
-## API endpoints
+## Getting Started
 
-Public
-- GET `/health`
-- POST `/login`
-- GET `/movies`, GET `/movies/:id`
-- GET `/groups`, GET `/groups/:id`
-- GET `/categories`, GET `/categories/:id`
-- GET `/tracks`, GET `/tracks/:id`
-- GET `/themes`, GET `/themes/:id`
-- GET `/themes/group/:group_id`
-
-Protected (JWT + admin)
-- Users: POST `/users`, GET `/users`
-- Movies: POST `/movies`, PUT `/movies/:id`, DELETE `/movies/:id`
-- Groups: POST `/groups`, PUT `/groups/:id`, DELETE `/groups/:id`
-- Categories: POST `/categories`, PUT `/categories/:id`, DELETE `/categories/:id`
-- Tracks: POST `/tracks`, PUT `/tracks/:id`, DELETE `/tracks/:id`
-- Themes: POST `/themes`, PUT `/themes/:id`, DELETE `/themes/:id`
-
-For quick HTTP examples, see the `.rest-client/` folder.
-
-## Setup
-
-Requirements
+### Requirements
 - Go toolchain
 - PostgreSQL 16 (or compatible)
 
-Install dependencies
+### Install dependencies
 ```powershell
 go mod download
 ```
 
-Database
+### Database
 - Apply the SQL migrations in `db/migrations/` to your database (use your preferred migration tool or run the scripts in order).
 
-## Configuration
+### Configuration
 
 Configuration is provided via environment variables (loaded with `envconfig` using the `MELA_` prefix). If `MELA_ENV` is not set, `.env.local` is loaded via `godotenv`.
 
-Common variables
+**Environment Variables**
 - `MELA_HOST` (e.g., `0.0.0.0`)
 - `MELA_PORT` (e.g., `8080`)
 - `MELA_SHUTDOWNTIMEOUT` (e.g., `5s`)
@@ -104,7 +86,7 @@ Common variables
 - `MELA_JWTKEY`, `MELA_JWTEXPIRES`
 - `MELA_FRONTENDURL` (for CORS)
 
-## Running locally
+### Running locally
 
 Run the API
 ```powershell
@@ -114,7 +96,7 @@ go run ./cmd/api/main.go
 The server binds to `MELA_HOST:MELA_PORT`. Graceful shutdown is handled via OS signals and the configured shutdown timeout.
 By default (with `MELA_HOST=0.0.0.0` and `MELA_PORT=8080`), the API is available at http://localhost:8080.
 
-## Docker
+### Docker
 
 A multi‑stage Dockerfile is included.
 
@@ -125,9 +107,31 @@ docker compose up --build
 
 This will start the API container and a PostgreSQL 16 container with volumes. The API exposes port 8080 by default.
 
-## Testing
+## Development
 
-Run all tests
+### API endpoints
+**Public**
+- GET `/health`
+- POST `/login`
+- GET `/movies`, GET `/movies/:id`
+- GET `/groups`, GET `/groups/:id`
+- GET `/categories`, GET `/categories/:id`
+- GET `/tracks`, GET `/tracks/:id`
+- GET `/themes`, GET `/themes/:id`
+- GET `/themes/group/:group_id`
+
+**Protected (JWT + admin)**
+- Users: POST `/users`, GET `/users`
+- Movies: POST `/movies`, PUT `/movies/:id`, DELETE `/movies/:id`
+- Groups: POST `/groups`, PUT `/groups/:id`, DELETE `/groups/:id`
+- Categories: POST `/categories`, PUT `/categories/:id`, DELETE `/categories/:id`
+- Tracks: POST `/tracks`, PUT `/tracks/:id`, DELETE `/tracks/:id`
+- Themes: POST `/themes`, PUT `/themes/:id`, DELETE `/themes/:id`
+
+For quick HTTP examples, see the `.rest-client/` folder.
+
+### Testing
+**Run all tests**
 ```powershell
 go test ./...
 ```
