@@ -29,7 +29,7 @@ The thematic names and structure presented here are derived from Doug Adams’ b
 
 This API serves as the backend for the **Middle‑earth Leitmotifs** web application. The frontend provides an interactive interface for browsing Howard Shore's leitmotifs from *The Lord of the Rings* trilogy.
 
-**Frontend Repository**: [middle-earth-leitmotifs-frontend](https://github.com/AlexFJ498/middle-earth-leitmotifs-frontend)  
+**Frontend Repository**: [middle-earth-leitmotifs-frontend](https://github.com/AlexFJ498/middle-earth-leitmotifs-front)  
 **Live Application**: [Visit the website](https://middle-earth-leitmotifs.vercel.app)
 
 ## Project overview
