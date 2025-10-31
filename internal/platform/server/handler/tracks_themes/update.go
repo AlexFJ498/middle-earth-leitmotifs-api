@@ -1,4 +1,4 @@
-package themes
+package tracks_themes
 
 import (
 	"errors"
@@ -13,27 +13,24 @@ import (
 
 func UpdateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		themeIDParam := ctx.Param("id")
-		if themeIDParam == "" {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "theme ID is required"})
+		var dto dto.TrackThemeUpdateRequest
+		if err := ctx.ShouldBindJSON(&dto); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		var req dto.ThemeUpdateRequest
-		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-			return
-		}
-
-		cmd := updating.NewThemeCommand(ctx.Param("id"), req)
-		if err := commandBus.Dispatch(ctx, cmd); err != nil {
+		err := commandBus.Dispatch(ctx, updating.NewTrackThemeCommand(dto))
+		if err != nil {
 			switch {
-			case errors.Is(err, domain.ErrThemeNotFound):
-				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-				return
-			case errors.Is(err, domain.ErrInvalidThemeID),
-				errors.Is(err, domain.ErrInvalidThemeName):
+			case errors.Is(err, domain.ErrInvalidTrackID),
+				errors.Is(err, domain.ErrInvalidThemeID),
+				errors.Is(err, domain.ErrInvalidStartSecond),
+				errors.Is(err, domain.ErrInvalidEndSecond):
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			case errors.Is(err, domain.ErrTrackNotFound),
+				errors.Is(err, domain.ErrThemeNotFound):
+				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			default:
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})

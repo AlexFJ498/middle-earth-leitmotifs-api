@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListHandler returns the handler that lists all tracks.
 func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		tracks, err := queryBus.Ask(ctx, listing.NewTracksQuery())

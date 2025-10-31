@@ -22,11 +22,12 @@ const (
 	themeName        = "The History of the Ring"
 	themeDescription = "Description"
 
-	domainMovieType    = "domain.Movie"
-	domainGroupType    = "domain.Group"
-	domainCategoryType = "domain.Category"
-	domainTrackType    = "domain.Track"
-	domainThemeType    = "domain.Theme"
+	domainMovieType      = "domain.Movie"
+	domainGroupType      = "domain.Group"
+	domainCategoryType   = "domain.Category"
+	domainTrackType      = "domain.Track"
+	domainThemeType      = "domain.Theme"
+	domainTrackThemeType = "domain.TrackTheme"
 
 	repositoryErrorMsg = "repository error"
 	invalidId          = "invalid-id"
@@ -272,5 +273,79 @@ func TestThemeServiceUpdateThemeInvalidID(t *testing.T) {
 	service := NewThemeService(themeRepositoryMock)
 
 	err := service.UpdateTheme(context.Background(), invalidId, dto)
+	assert.Error(t, err)
+}
+
+func TestTrackThemeServiceUpdateTrackThemeRepositoryError(t *testing.T) {
+	trackThemeCmd := NewTrackThemeCommand(dto.TrackThemeUpdateRequest{
+		TrackID:     testID,
+		ThemeID:     testID,
+		StartSecond: 0,
+		EndSecond:   10,
+		IsVariant:   false,
+	})
+
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	trackThemeRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainTrackThemeType)).Return(errors.New(repositoryErrorMsg)).Once()
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackThemeService(trackThemeRepositoryMock)
+
+	err := service.UpdateTrackTheme(context.Background(), trackThemeCmd.dto)
+	assert.Error(t, err)
+}
+
+func TestTrackThemeServiceUpdateTrackThemeSuccess(t *testing.T) {
+	trackThemeCmd := NewTrackThemeCommand(dto.TrackThemeUpdateRequest{
+		TrackID:     testID,
+		ThemeID:     testID,
+		StartSecond: 0,
+		EndSecond:   10,
+		IsVariant:   false,
+	})
+
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	trackThemeRepositoryMock.On("Update", mock.Anything, mock.AnythingOfType(domainTrackThemeType)).Return(nil).Once()
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackThemeService(trackThemeRepositoryMock)
+
+	err := service.UpdateTrackTheme(context.Background(), trackThemeCmd.dto)
+	assert.NoError(t, err)
+}
+
+func TestTrackThemeServiceUpdateTrackThemeInvalidTrackID(t *testing.T) {
+	trackThemeCmd := NewTrackThemeCommand(dto.TrackThemeUpdateRequest{
+		TrackID:     invalidId,
+		ThemeID:     testID,
+		StartSecond: 0,
+		EndSecond:   10,
+		IsVariant:   false,
+	})
+
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackThemeService(trackThemeRepositoryMock)
+
+	err := service.UpdateTrackTheme(context.Background(), trackThemeCmd.dto)
+	assert.Error(t, err)
+}
+
+func TestTrackThemeServiceUpdateTrackThemeInvalidThemeID(t *testing.T) {
+	trackThemeCmd := NewTrackThemeCommand(dto.TrackThemeUpdateRequest{
+		TrackID:     testID,
+		ThemeID:     invalidId,
+		StartSecond: 0,
+		EndSecond:   10,
+		IsVariant:   false,
+	})
+
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackThemeService(trackThemeRepositoryMock)
+
+	err := service.UpdateTrackTheme(context.Background(), trackThemeCmd.dto)
 	assert.Error(t, err)
 }

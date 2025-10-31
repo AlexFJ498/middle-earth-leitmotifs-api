@@ -1,0 +1,10 @@
+DELETE {{host}}/tracks-themes
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "track_id": "939be34d-455b-4127-8e53-723ecc10d366",
+    "theme_id": "de50a5bb-355b-4511-930b-b107bb092a76",
+    "start_second": 10
+}

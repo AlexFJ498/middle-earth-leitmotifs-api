@@ -268,3 +268,43 @@ func TestThemeServiceListThemesSuccess(t *testing.T) {
 	assert.Equal(t, "The History of the Ring", themesDTO[0].Name)
 	assert.Equal(t, "The Rohan Fanfare", themesDTO[1].Name)
 }
+
+func TestTrackThemeServiceListTrackThemesRepositoryError(t *testing.T) {
+	themeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	themeRepositoryMock.On("FindByTrack", mock.Anything, mock.Anything).Return(nil, errors.New(repositoryErrorMsg)).Once()
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	trackThemeService := NewTrackThemeService(themeRepositoryMock)
+
+	ctx := context.Background()
+	_, err := trackThemeService.ListTracksThemesByTrack(ctx, "28712a55-04dd-4200-9316-4d6a1e399128")
+	assert.Error(t, err)
+	assert.Equal(t, repositoryErrorMsg, err.Error())
+}
+
+func TestTrackThemeServiceListTrackThemesSuccess(t *testing.T) {
+	themeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	trackThemes := []domain.TrackTheme{}
+
+	trackTheme1, err := domain.NewTrackTheme("28712a55-04dd-4200-9316-4d6a1e399128", "6a4f86e4-4fef-4151-9c60-e467007dd213", 0, 10, false)
+	assert.NoError(t, err)
+
+	trackTheme2, err := domain.NewTrackTheme("28712a55-04dd-4200-9316-4d6a1e399128", "7b5f86e4-4fef-4151-9c60-e467007dd214", 30, 50, true)
+	assert.NoError(t, err)
+
+	trackThemes = append(trackThemes, trackTheme1)
+	trackThemes = append(trackThemes, trackTheme2)
+
+	themeRepositoryMock.On("FindByTrack", mock.Anything, mock.Anything).Return(trackThemes, nil).Once()
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	trackThemeService := NewTrackThemeService(themeRepositoryMock)
+
+	themesDTO, err := trackThemeService.ListTracksThemesByTrack(context.Background(), "28712a55-04dd-4200-9316-4d6a1e399128")
+	assert.NoError(t, err)
+	assert.Len(t, themesDTO, 2)
+	assert.Equal(t, "6a4f86e4-4fef-4151-9c60-e467007dd213", themesDTO[0].ThemeID)
+	assert.Equal(t, 0, themesDTO[0].StartSecond)
+	assert.Equal(t, "7b5f86e4-4fef-4151-9c60-e467007dd214", themesDTO[1].ThemeID)
+	assert.Equal(t, 30, themesDTO[1].StartSecond)
+}

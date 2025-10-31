@@ -17,6 +17,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/session"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/themes"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/tracks"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/tracks_themes"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/admin"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/jwt"
@@ -115,16 +116,17 @@ func (s *Server) registerRoutes() {
 
 	s.engine.GET("/groups", groups.ListHandler(s.queryBus))
 	s.engine.GET(groupIDRoute, groups.GetHandler(s.queryBus))
+	s.engine.GET(groupIDRoute+"/themes", themes.ListByGroupHandler(s.queryBus))
 
 	s.engine.GET("/categories", categories.ListHandler(s.queryBus))
 	s.engine.GET(categoryIDRoute, categories.GetHandler(s.queryBus))
 
 	s.engine.GET("/tracks", tracks.ListHandler(s.queryBus))
 	s.engine.GET(trackIDRoute, tracks.GetHandler(s.queryBus))
+	s.engine.GET(trackIDRoute+"/themes", tracks_themes.ListByTrackHandler(s.queryBus))
 
 	s.engine.GET("/themes", themes.ListHandler(s.queryBus))
 	s.engine.GET(themeIDRoute, themes.GetHandler(s.queryBus))
-	s.engine.GET("/themes/group/:group_id", themes.ListByGroupHandler(s.queryBus))
 
 	// Protected routes
 	auth := s.engine.Group("")
@@ -152,6 +154,11 @@ func (s *Server) registerRoutes() {
 		auth.POST("/themes", themes.CreateHandler(s.commandBus))
 		auth.PUT(themeIDRoute, themes.UpdateHandler(s.commandBus))
 		auth.DELETE(themeIDRoute, themes.DeleteHandler(s.commandBus))
+
+		auth.POST("/tracks-themes", tracks_themes.CreateHandler(s.commandBus))
+		auth.PUT("/tracks-themes", tracks_themes.UpdateHandler(s.commandBus))
+		auth.DELETE("/tracks-themes", tracks_themes.DeleteHandler(s.commandBus))
+
 	}
 }
 

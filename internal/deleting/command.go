@@ -4,47 +4,43 @@ import (
 	"context"
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/dto"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/kit/command"
 )
 
 const (
-	MovieCommandType    = "command.delete.movie"
-	GroupCommandType    = "command.delete.group"
-	CategoryCommandType = "command.delete.category"
-	TrackCommandType    = "command.delete.track"
-	ThemeCommandType    = "command.delete.theme"
+	MovieCommandType      = "command.delete.movie"
+	GroupCommandType      = "command.delete.group"
+	CategoryCommandType   = "command.delete.category"
+	TrackCommandType      = "command.delete.track"
+	ThemeCommandType      = "command.delete.theme"
+	TrackThemeCommandType = "command.delete.track_theme"
 )
 
-// MovieCommand is the command dispatched for deleting a movie.
 type MovieCommand struct {
 	ID string
 }
 
-// NewMovieCommand creates a new MovieCommand instance.
 func NewMovieCommand(id string) MovieCommand {
 	return MovieCommand{
 		ID: id,
 	}
 }
 
-// Type returns the type of the command.
 func (c MovieCommand) Type() command.Type {
 	return MovieCommandType
 }
 
-// MovieCommandHandler handles the deletion of a movie.
 type MovieCommandHandler struct {
 	service MovieService
 }
 
-// NewMovieCommandHandler creates a new MovieCommandHandler.
 func NewMovieCommandHandler(service MovieService) MovieCommandHandler {
 	return MovieCommandHandler{
 		service: service,
 	}
 }
 
-// Handle processes the MovieCommand.
 func (h MovieCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
 	movieCmd, ok := cmd.(MovieCommand)
 	if !ok {
@@ -58,36 +54,30 @@ func (h MovieCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	return h.service.DeleteMovie(ctx, movieID)
 }
 
-// GroupCommand is the command dispatched for deleting a group.
 type GroupCommand struct {
 	ID string
 }
 
-// NewGroupCommand creates a new GroupCommand instance.
 func NewGroupCommand(id string) GroupCommand {
 	return GroupCommand{
 		ID: id,
 	}
 }
 
-// Type returns the type of the command.
 func (c GroupCommand) Type() command.Type {
 	return GroupCommandType
 }
 
-// GroupCommandHandler handles the deletion of a group.
 type GroupCommandHandler struct {
 	service GroupService
 }
 
-// NewGroupCommandHandler creates a new GroupCommandHandler.
 func NewGroupCommandHandler(service GroupService) GroupCommandHandler {
 	return GroupCommandHandler{
 		service: service,
 	}
 }
 
-// Handle processes the GroupCommand.
 func (h GroupCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
 	groupCmd, ok := cmd.(GroupCommand)
 	if !ok {
@@ -101,36 +91,30 @@ func (h GroupCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	return h.service.DeleteGroup(ctx, groupID)
 }
 
-// CategoryCommand is the command dispatched for deleting a category.
 type CategoryCommand struct {
 	ID string
 }
 
-// NewCategoryCommand creates a new CategoryCommand instance.
 func NewCategoryCommand(id string) CategoryCommand {
 	return CategoryCommand{
 		ID: id,
 	}
 }
 
-// Type returns the type of the command.
 func (c CategoryCommand) Type() command.Type {
 	return CategoryCommandType
 }
 
-// CategoryCommandHandler handles the deletion of a category.
 type CategoryCommandHandler struct {
 	service CategoryService
 }
 
-// NewCategoryCommandHandler creates a new CategoryCommandHandler.
 func NewCategoryCommandHandler(service CategoryService) CategoryCommandHandler {
 	return CategoryCommandHandler{
 		service: service,
 	}
 }
 
-// Handle processes the CategoryCommand.
 func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
 	categoryCmd, ok := cmd.(CategoryCommand)
 	if !ok {
@@ -144,36 +128,30 @@ func (h CategoryCommandHandler) Handle(ctx context.Context, cmd command.Command)
 	return h.service.DeleteCategory(ctx, categoryID)
 }
 
-// TrackCommand is the command dispatched for deleting a track.
 type TrackCommand struct {
 	ID string
 }
 
-// NewTrackCommand creates a new TrackCommand.
 func NewTrackCommand(id string) TrackCommand {
 	return TrackCommand{
 		ID: id,
 	}
 }
 
-// Type returns the type of the command.
 func (c TrackCommand) Type() command.Type {
 	return TrackCommandType
 }
 
-// TrackCommandHandler handles the deletion of a track.
 type TrackCommandHandler struct {
 	service TrackService
 }
 
-// NewTrackCommandHandler creates a new TrackCommandHandler.
 func NewTrackCommandHandler(service TrackService) TrackCommandHandler {
 	return TrackCommandHandler{
 		service: service,
 	}
 }
 
-// Handle processes the TrackCommand.
 func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
 	trackCmd, ok := cmd.(TrackCommand)
 	if !ok {
@@ -187,36 +165,30 @@ func (h TrackCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 	return h.service.DeleteTrack(ctx, trackID)
 }
 
-// ThemeCommand is the command dispatched for deleting a theme.
 type ThemeCommand struct {
 	ID string
 }
 
-// NewThemeCommand creates a new ThemeCommand instance.
 func NewThemeCommand(id string) ThemeCommand {
 	return ThemeCommand{
 		ID: id,
 	}
 }
 
-// Type returns the type of the command.
 func (c ThemeCommand) Type() command.Type {
 	return ThemeCommandType
 }
 
-// ThemeCommandHandler handles the deletion of a theme.
 type ThemeCommandHandler struct {
 	service ThemeService
 }
 
-// NewThemeCommandHandler creates a new ThemeCommandHandler.
 func NewThemeCommandHandler(service ThemeService) ThemeCommandHandler {
 	return ThemeCommandHandler{
 		service: service,
 	}
 }
 
-// Handle processes the ThemeCommand.
 func (h ThemeCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
 	themeCmd, ok := cmd.(ThemeCommand)
 	if !ok {
@@ -228,4 +200,52 @@ func (h ThemeCommandHandler) Handle(ctx context.Context, cmd command.Command) er
 		return err
 	}
 	return h.service.DeleteTheme(ctx, themeID)
+}
+
+type TrackThemeCommand struct {
+	dto dto.TrackThemeDeleteRequest
+}
+
+func NewTrackThemeCommand(dto dto.TrackThemeDeleteRequest) TrackThemeCommand {
+	return TrackThemeCommand{
+		dto: dto,
+	}
+}
+
+func (c TrackThemeCommand) Type() command.Type {
+	return TrackThemeCommandType
+}
+
+type TrackThemeCommandHandler struct {
+	service TrackThemeService
+}
+
+func NewTrackThemeCommandHandler(service TrackThemeService) TrackThemeCommandHandler {
+	return TrackThemeCommandHandler{
+		service: service,
+	}
+}
+
+func (h TrackThemeCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	trackThemeCmd, ok := cmd.(TrackThemeCommand)
+	if !ok {
+		return nil
+	}
+
+	trackID, err := domain.NewTrackIDFromString(trackThemeCmd.dto.TrackID)
+	if err != nil {
+		return err
+	}
+
+	themeID, err := domain.NewThemeIDFromString(trackThemeCmd.dto.ThemeID)
+	if err != nil {
+		return err
+	}
+
+	startSecond, err := domain.NewStartSecond(trackThemeCmd.dto.StartSecond)
+	if err != nil {
+		return err
+	}
+
+	return h.service.DeleteTrackTheme(ctx, trackID, themeID, startSecond)
 }

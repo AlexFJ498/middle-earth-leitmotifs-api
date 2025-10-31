@@ -16,7 +16,6 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// LoginHandler handles user login requests.
 func LoginHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req LoginRequest

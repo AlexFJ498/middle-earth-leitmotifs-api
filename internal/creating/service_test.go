@@ -248,3 +248,41 @@ func TestThemeServiceCreateThemeSuccess(t *testing.T) {
 	err := service.CreateTheme(context.Background(), dto)
 	assert.NoError(t, err)
 }
+
+func TestTrackThemeServiceCreateTrackThemeRepositoryError(t *testing.T) {
+	dto := dto.TrackThemeCreateRequest{
+		TrackID:     "456e7890-e89b-12d3-a456-426614174117",
+		ThemeID:     "456e7890-e89b-12d3-a456-426614174118",
+		StartSecond: 30,
+		EndSecond:   90,
+		IsVariant:   false,
+	}
+
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	trackThemeRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("domain.TrackTheme")).Return(errors.New(repositoryErrorMsg)).Once()
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackThemeService(trackThemeRepositoryMock)
+
+	err := service.CreateTrackTheme(context.Background(), dto)
+	assert.Error(t, err)
+}
+
+func TestTrackThemeServiceCreateTrackThemeSuccess(t *testing.T) {
+	dto := dto.TrackThemeCreateRequest{
+		TrackID:     "456e7890-e89b-12d3-a456-426614174119",
+		ThemeID:     "456e7890-e89b-12d3-a456-426614174120",
+		StartSecond: 30,
+		EndSecond:   90,
+		IsVariant:   false,
+	}
+
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	trackThemeRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("domain.TrackTheme")).Return(nil).Once()
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	service := NewTrackThemeService(trackThemeRepositoryMock)
+
+	err := service.CreateTrackTheme(context.Background(), dto)
+	assert.NoError(t, err)
+}

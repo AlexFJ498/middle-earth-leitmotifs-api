@@ -8,19 +8,16 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/getting"
 )
 
-// UserService is the default implementation of the UserService interface
 type UserService struct {
 	userRepository domain.UserRepository
 }
 
-// NewUserService returns a new UserService instance.
 func NewUserService(userRepository domain.UserRepository) UserService {
 	return UserService{
 		userRepository: userRepository,
 	}
 }
 
-// ListUsers implements the UserService interface for listing all users.
 func (s UserService) ListUsers(ctx context.Context) ([]dto.UserResponse, error) {
 	users, err := s.userRepository.FindAll(ctx)
 	if err != nil {
@@ -35,19 +32,16 @@ func (s UserService) ListUsers(ctx context.Context) ([]dto.UserResponse, error) 
 	return userResponses, nil
 }
 
-// MovieService is the service for managing movies.
 type MovieService struct {
 	movieRepository domain.MovieRepository
 }
 
-// NewMovieService returns a new MovieService instance.
 func NewMovieService(movieRepository domain.MovieRepository) MovieService {
 	return MovieService{
 		movieRepository: movieRepository,
 	}
 }
 
-// ListMovies implements the MovieService interface for listing all movies.
 func (s MovieService) ListMovies(ctx context.Context) ([]dto.MovieResponse, error) {
 	movies, err := s.movieRepository.FindAll(ctx)
 	if err != nil {
@@ -62,19 +56,16 @@ func (s MovieService) ListMovies(ctx context.Context) ([]dto.MovieResponse, erro
 	return movieResponses, nil
 }
 
-// GroupService is the service for managing groups.
 type GroupService struct {
 	groupRepository domain.GroupRepository
 }
 
-// NewGroupService returns a new GroupService instance.
 func NewGroupService(groupRepository domain.GroupRepository) GroupService {
 	return GroupService{
 		groupRepository: groupRepository,
 	}
 }
 
-// ListGroups implements the GroupService interface for listing all groups.
 func (s GroupService) ListGroups(ctx context.Context) ([]dto.GroupResponse, error) {
 	groups, err := s.groupRepository.FindAll(ctx)
 	if err != nil {
@@ -89,19 +80,16 @@ func (s GroupService) ListGroups(ctx context.Context) ([]dto.GroupResponse, erro
 	return groupResponses, nil
 }
 
-// CategoryService is the service for managing categories.
 type CategoryService struct {
 	categoryRepository domain.CategoryRepository
 }
 
-// NewCategoryService returns a new CategoryService instance.
 func NewCategoryService(categoryRepository domain.CategoryRepository) CategoryService {
 	return CategoryService{
 		categoryRepository: categoryRepository,
 	}
 }
 
-// ListCategories implements the CategoryService interface for listing all categories.
 func (s CategoryService) ListCategories(ctx context.Context) ([]dto.CategoryResponse, error) {
 	categories, err := s.categoryRepository.FindAll(ctx)
 	if err != nil {
@@ -116,14 +104,12 @@ func (s CategoryService) ListCategories(ctx context.Context) ([]dto.CategoryResp
 	return categoryResponses, nil
 }
 
-// TrackService is the service for managing tracks.
 type TrackService struct {
 	trackRepository     domain.TrackRepository
 	MovieService        MovieService
 	GettingMovieService getting.MovieService
 }
 
-// NewTrackService returns a new TrackService instance.
 func NewTrackService(trackRepository domain.TrackRepository, movieService MovieService, gettingMovieService getting.MovieService) TrackService {
 	return TrackService{
 		trackRepository:     trackRepository,
@@ -132,7 +118,6 @@ func NewTrackService(trackRepository domain.TrackRepository, movieService MovieS
 	}
 }
 
-// ListTracks implements the TrackService interface for listing all tracks.
 func (s TrackService) ListTracks(ctx context.Context) ([]dto.TrackResponse, error) {
 	tracks, err := s.trackRepository.FindAll(ctx)
 	if err != nil {
@@ -153,7 +138,6 @@ func (s TrackService) ListTracks(ctx context.Context) ([]dto.TrackResponse, erro
 	return trackResponses, nil
 }
 
-// ThemeService is the service for managing themes.
 type ThemeService struct {
 	themeRepository        domain.ThemeRepository
 	trackService           TrackService
@@ -164,7 +148,6 @@ type ThemeService struct {
 	GettingCategoryService getting.CategoryService
 }
 
-// NewThemeService returns a new ThemeService instance.
 func NewThemeService(themeRepository domain.ThemeRepository, trackService TrackService, groupService GroupService, categoryService CategoryService, gettingGroupService getting.GroupService, gettingTrackService getting.TrackService, gettingCategoryService getting.CategoryService) ThemeService {
 	return ThemeService{
 		themeRepository:        themeRepository,
@@ -177,7 +160,6 @@ func NewThemeService(themeRepository domain.ThemeRepository, trackService TrackS
 	}
 }
 
-// ListThemes implements the ThemeService interface for listing all themes.
 func (s ThemeService) ListThemes(ctx context.Context) ([]dto.ThemeResponse, error) {
 	themes, err := s.themeRepository.FindAll(ctx)
 	if err != nil {
@@ -211,7 +193,6 @@ func (s ThemeService) ListThemes(ctx context.Context) ([]dto.ThemeResponse, erro
 	return themeResponses, nil
 }
 
-// ListThemesByGroup implements the ThemeService interface for listing all themes by group.
 func (s ThemeService) ListThemesByGroup(ctx context.Context, groupID string) ([]dto.ThemeResponse, error) {
 	groupIDObj, err := domain.NewGroupIDFromString(groupID)
 	if err != nil {
@@ -248,4 +229,32 @@ func (s ThemeService) ListThemesByGroup(ctx context.Context, groupID string) ([]
 	}
 
 	return themeResponses, nil
+}
+
+type TrackThemeService struct {
+	trackThemeRepository domain.TrackThemeRepository
+}
+
+func NewTrackThemeService(trackThemeRepository domain.TrackThemeRepository) TrackThemeService {
+	return TrackThemeService{
+		trackThemeRepository: trackThemeRepository,
+	}
+}
+
+func (s TrackThemeService) ListTracksThemesByTrack(ctx context.Context, trackID string) ([]dto.TrackThemeResponse, error) {
+	trackIDObj, err := domain.NewTrackIDFromString(trackID)
+	if err != nil {
+		return nil, err
+	}
+
+	trackThemes, err := s.trackThemeRepository.FindByTrack(ctx, trackIDObj)
+	if err != nil {
+		return []dto.TrackThemeResponse{}, err
+	}
+
+	trackThemeResponses := make([]dto.TrackThemeResponse, 0, len(trackThemes))
+	for _, trackTheme := range trackThemes {
+		trackThemeResponses = append(trackThemeResponses, dto.NewTrackThemeResponse(trackTheme))
+	}
+	return trackThemeResponses, nil
 }

@@ -171,3 +171,46 @@ func TestThemeServiceDeleteThemeSuccess(t *testing.T) {
 
 	mockRepo.AssertExpectations(t)
 }
+
+func TestTrackThemeServiceDeleteTrackThemeRepositoryError(t *testing.T) {
+	trackIDObj, err := domain.NewTrackIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	themeIDObj, err := domain.NewThemeIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	startSecondObj, err := domain.NewStartSecond(0)
+	require.NoError(t, err)
+
+	mockRepo := new(storagemocks.TrackThemeRepository)
+	mockRepo.On("Delete", mock.Anything, trackIDObj, themeIDObj, startSecondObj).Return(fmt.Errorf("%s", databaseErrorMsg))
+
+	service := NewTrackThemeService(mockRepo)
+
+	err = service.DeleteTrackTheme(context.Background(), trackIDObj, themeIDObj, startSecondObj)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), databaseErrorMsg)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestTrackThemeServiceDeleteTrackThemeSuccess(t *testing.T) {
+	trackIDObj, err := domain.NewTrackIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	themeIDObj, err := domain.NewThemeIDFromString(uuidStr)
+	require.NoError(t, err)
+
+	startSecondObj, err := domain.NewStartSecond(0)
+	require.NoError(t, err)
+
+	mockRepo := new(storagemocks.TrackThemeRepository)
+	mockRepo.On("Delete", mock.Anything, trackIDObj, themeIDObj, startSecondObj).Return(nil)
+
+	service := NewTrackThemeService(mockRepo)
+
+	err = service.DeleteTrackTheme(context.Background(), trackIDObj, themeIDObj, startSecondObj)
+	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}

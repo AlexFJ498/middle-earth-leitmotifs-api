@@ -1,4 +1,4 @@
-package categories
+package tracks_themes
 
 import (
 	"net/http"
@@ -8,14 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ListHandler(queryBus query.Bus) gin.HandlerFunc {
+func ListByTrackHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		categories, err := queryBus.Ask(ctx, listing.NewCategoriesQuery())
+		trackID := ctx.Param("id")
+		tracksThemes, err := queryBus.Ask(ctx, listing.NewTracksThemesByTrackQuery(trackID))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, categories)
+		ctx.JSON(http.StatusOK, tracksThemes)
 	}
 }

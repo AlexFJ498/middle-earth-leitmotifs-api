@@ -96,3 +96,21 @@ func (s *ThemeService) UpdateTheme(ctx context.Context, id string, dto dto.Theme
 	}
 	return s.themeRepository.Update(ctx, theme)
 }
+
+type TrackThemeService struct {
+	trackThemeRepository domain.TrackThemeRepository
+}
+
+func NewTrackThemeService(trackThemeRepository domain.TrackThemeRepository) TrackThemeService {
+	return TrackThemeService{
+		trackThemeRepository: trackThemeRepository,
+	}
+}
+
+func (s *TrackThemeService) UpdateTrackTheme(ctx context.Context, dto dto.TrackThemeUpdateRequest) error {
+	trackTheme, err := domain.NewTrackTheme(dto.TrackID, dto.ThemeID, dto.StartSecond, dto.EndSecond, dto.IsVariant)
+	if err != nil {
+		return err
+	}
+	return s.trackThemeRepository.Update(ctx, trackTheme)
+}

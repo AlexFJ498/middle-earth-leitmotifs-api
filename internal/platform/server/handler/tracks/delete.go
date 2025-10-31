@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// DeleteHandler returns the handler that deletes tracks.
 func DeleteHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

@@ -22,7 +22,7 @@ type ThemeDB struct {
 	CategoryID      *string `db:"category_id"`
 }
 
-var fkMap = map[string]error{
+var themeFKMap = map[string]error{
 	"themes_category_id_fkey": domain.ErrCategoryNotFound,
 	"themes_group_id_fkey":    domain.ErrGroupNotFound,
 	"themes_first_heard_fkey": domain.ErrCategoryNotFound,
@@ -87,7 +87,7 @@ func (r *ThemeRepository) Save(ctx context.Context, theme domain.Theme) error {
 		constraint := extractConstraintName(err)
 		err = mapSQLError(extractSQLErrorCode(err))
 		if errors.Is(err, ErrForeignKeyViolation) {
-			if fkErr, ok := fkMap[constraint]; ok {
+			if fkErr, ok := themeFKMap[constraint]; ok {
 				return fkErr
 			}
 		}

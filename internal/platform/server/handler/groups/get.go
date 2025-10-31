@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetHandler handles the getting of a group.
 func GetHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		groupIDParam := ctx.Param("id")

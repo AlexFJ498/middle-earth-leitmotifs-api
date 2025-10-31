@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// UpdateHandler returns the handler that updates tracks.
 func UpdateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		trackIDParam := ctx.Param("id")

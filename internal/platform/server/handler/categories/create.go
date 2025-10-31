@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateHandler returns a handler function that processes category creation requests.
 func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var dto dto.CategoryCreateRequest

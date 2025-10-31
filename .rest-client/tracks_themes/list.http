@@ -1,0 +1,5 @@
+@trackId = 939be34d-455b-4127-8e53-723ecc10d366
+
+GET {{host}}/tracks/{{trackId}}/themes
+Accept: application/json
+Authorization: Bearer {{token}}
