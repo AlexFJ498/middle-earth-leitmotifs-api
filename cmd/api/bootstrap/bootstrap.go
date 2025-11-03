@@ -119,7 +119,7 @@ func Run() error {
 	listingCategoryService := listing.NewCategoryService(categoryRepository)
 	listingTrackService := listing.NewTrackService(trackRepository, listingMovieService, gettingMovieService)
 	listingThemeService := listing.NewThemeService(themeRepository, listingTrackService, listingGroupService, listingCategoryService, gettingGroupService, gettingTrackService, gettingCategoryService)
-	listingTrackThemeService := listing.NewTrackThemeService(trackThemeRepository)
+	listingTrackThemeService := listing.NewTrackThemeService(trackThemeRepository, gettingTrackService, gettingThemeService)
 	queryBus.Register(listing.UsersQueryType, listing.NewUsersQueryHandler(listingUserService))
 	queryBus.Register(listing.MoviesQueryType, listing.NewMoviesQueryHandler(listingMovieService))
 	queryBus.Register(listing.GroupsQueryType, listing.NewGroupsQueryHandler(listingGroupService))

@@ -233,11 +233,15 @@ func (s ThemeService) ListThemesByGroup(ctx context.Context, groupID string) ([]
 
 type TrackThemeService struct {
 	trackThemeRepository domain.TrackThemeRepository
+	GettingTrackService  getting.TrackService
+	GettingThemeService  getting.ThemeService
 }
 
-func NewTrackThemeService(trackThemeRepository domain.TrackThemeRepository) TrackThemeService {
+func NewTrackThemeService(trackThemeRepository domain.TrackThemeRepository, gettingTrackService getting.TrackService, gettingThemeService getting.ThemeService) TrackThemeService {
 	return TrackThemeService{
 		trackThemeRepository: trackThemeRepository,
+		GettingTrackService:  gettingTrackService,
+		GettingThemeService:  gettingThemeService,
 	}
 }
 
@@ -254,7 +258,17 @@ func (s TrackThemeService) ListTracksThemesByTrack(ctx context.Context, trackID 
 
 	trackThemeResponses := make([]dto.TrackThemeResponse, 0, len(trackThemes))
 	for _, trackTheme := range trackThemes {
-		trackThemeResponses = append(trackThemeResponses, dto.NewTrackThemeResponse(trackTheme))
+		trackDTO, err := s.GettingTrackService.GetTrack(ctx, trackTheme.TrackID().String())
+		if err != nil {
+			return nil, err
+		}
+
+		themeDTO, err := s.GettingThemeService.GetTheme(ctx, trackTheme.ThemeID().String())
+		if err != nil {
+			return nil, err
+		}
+
+		trackThemeResponses = append(trackThemeResponses, dto.NewTrackThemeResponse(trackTheme, trackDTO, themeDTO))
 	}
 	return trackThemeResponses, nil
 }

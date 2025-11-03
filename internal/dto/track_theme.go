@@ -25,17 +25,17 @@ type TrackThemeDeleteRequest struct {
 }
 
 type TrackThemeResponse struct {
-	TrackID     string `json:"track_id"`
-	ThemeID     string `json:"theme_id"`
-	StartSecond int    `json:"start_second"`
-	EndSecond   int    `json:"end_second"`
-	IsVariant   bool   `json:"is_variant"`
+	Track       TrackResponse `json:"track"`
+	Theme       ThemeResponse `json:"theme"`
+	StartSecond int           `json:"start_second"`
+	EndSecond   int           `json:"end_second"`
+	IsVariant   bool          `json:"is_variant"`
 }
 
-func NewTrackThemeResponse(TrackTheme domain.TrackTheme) TrackThemeResponse {
+func NewTrackThemeResponse(TrackTheme domain.TrackTheme, track TrackResponse, theme ThemeResponse) TrackThemeResponse {
 	return TrackThemeResponse{
-		TrackID:     TrackTheme.TrackID().String(),
-		ThemeID:     TrackTheme.ThemeID().String(),
+		Track:       track,
+		Theme:       theme,
 		StartSecond: TrackTheme.StartSecond().Int(),
 		EndSecond:   TrackTheme.EndSecond().Int(),
 		IsVariant:   TrackTheme.IsVariant().Bool(),
