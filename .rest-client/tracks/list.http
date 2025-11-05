@@ -1,3 +1,9 @@
 GET {{host}}/tracks
 Accept: application/json
 Authorization: Bearer {{token}}
+
+### List tracks by movie
+@movie_id = "28712a55-04dd-4200-9316-4d6a1e399128"
+GET {{host}}/movies/{{movie_id}}/tracks
+Accept: application/json
+Authorization: Bearer {{token}}

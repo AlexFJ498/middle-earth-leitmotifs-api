@@ -12,6 +12,7 @@ const (
 	GroupsQueryType              = "query.listing.groups"
 	CategoriesQueryType          = "query.listing.categories"
 	TracksQueryType              = "query.listing.tracks"
+	TracksByMovieQueryType       = "query.listing.tracks.by_movie"
 	ThemesQueryType              = "query.listing.themes"
 	ThemesByGroupQueryType       = "query.listing.themes.by_group"
 	TracksThemesByTrackQueryType = "query.listing.track_themes.by_track"
@@ -160,6 +161,39 @@ func (h TracksQueryHandler) Handle(ctx context.Context, query query.Query) (any,
 	}
 
 	return h.trackService.ListTracks(ctx)
+}
+
+type TracksByMovieQuery struct {
+	MovieID string
+}
+
+func NewTracksByMovieQuery(movieID string) TracksByMovieQuery {
+	return TracksByMovieQuery{
+		MovieID: movieID,
+	}
+}
+
+func (q TracksByMovieQuery) Type() query.Type {
+	return TracksByMovieQueryType
+}
+
+type TracksByMovieQueryHandler struct {
+	trackService TrackService
+}
+
+func NewTracksByMovieQueryHandler(trackService TrackService) TracksByMovieQueryHandler {
+	return TracksByMovieQueryHandler{
+		trackService: trackService,
+	}
+}
+
+func (h TracksByMovieQueryHandler) Handle(ctx context.Context, query query.Query) (any, error) {
+	q, ok := query.(TracksByMovieQuery)
+	if !ok {
+		return nil, nil
+	}
+
+	return h.trackService.ListTracksByMovie(ctx, q.MovieID)
 }
 
 type ThemesQuery struct{}

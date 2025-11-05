@@ -216,6 +216,48 @@ func TestTrackServiceListTracksSuccess(t *testing.T) {
 	assert.Equal(t, "The Shire", tracksDTO[1].Name)
 }
 
+func TestTrackServiceListTracksByMovieRepositoryError(t *testing.T) {
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	trackRepositoryMock.On("FindByMovie", mock.Anything, mock.Anything).Return(nil, errors.New(repositoryErrorMsg)).Once()
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	movieService := NewMovieService(movieRepositoryMock)
+	gettingMovieService := getting.NewMovieService(movieRepositoryMock)
+
+	trackService := NewTrackService(trackRepositoryMock, movieService, gettingMovieService)
+
+	ctx := context.Background()
+	_, err := trackService.ListTracksByMovie(ctx, "12345678-1234-1234-1234-123456789012")
+	assert.Error(t, err)
+}
+
+func TestTrackServiceListTracksByMovieSuccess(t *testing.T) {
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	tracks := []domain.Track{}
+	track1, err := domain.NewTrack("Track name", "b6c1d5ae-bf3b-419e-ba8f-09c8ce39d9bc", nil)
+	assert.NoError(t, err)
+	tracks = append(tracks, track1)
+	track2, err := domain.NewTrack("Track 2 name", "22712a55-04dd-4200-9316-4d6a1e399128", nil)
+	assert.NoError(t, err)
+	tracks = append(tracks, track2)
+	trackRepositoryMock.On("FindByMovie", mock.Anything, mock.Anything).Return(tracks, nil).Once()
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	movieRepositoryMock.On("Find", mock.Anything, mock.Anything).Return(domain.Movie{}, nil).Twice()
+	movieService := NewMovieService(movieRepositoryMock)
+	gettingMovieService := getting.NewMovieService(movieRepositoryMock)
+
+	trackService := NewTrackService(trackRepositoryMock, movieService, gettingMovieService)
+
+	tracksDTO, err := trackService.ListTracksByMovie(context.Background(), "12345678-1234-1234-1234-123456789012")
+	assert.NoError(t, err)
+	assert.Len(t, tracksDTO, 2)
+	assert.Equal(t, "Track name", tracksDTO[0].Name)
+	assert.Equal(t, "Track 2 name", tracksDTO[1].Name)
+}
+
 func TestThemeServiceListThemesRepositoryError(t *testing.T) {
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
 	themeRepositoryMock.On("FindAll", mock.Anything).Return(nil, errors.New(repositoryErrorMsg)).Once()

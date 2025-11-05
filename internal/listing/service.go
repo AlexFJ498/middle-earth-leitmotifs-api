@@ -138,6 +138,30 @@ func (s TrackService) ListTracks(ctx context.Context) ([]dto.TrackResponse, erro
 	return trackResponses, nil
 }
 
+func (s TrackService) ListTracksByMovie(ctx context.Context, movieID string) ([]dto.TrackResponse, error) {
+	movieIDObj, err := domain.NewMovieIDFromString(movieID)
+	if err != nil {
+		return nil, err
+	}
+
+	tracks, err := s.trackRepository.FindByMovie(ctx, movieIDObj)
+	if err != nil {
+		return []dto.TrackResponse{}, err
+	}
+
+	trackResponses := make([]dto.TrackResponse, 0, len(tracks))
+	for _, track := range tracks {
+		movieDTO, err := s.GettingMovieService.GetMovie(ctx, track.MovieID().String())
+		if err != nil {
+			return []dto.TrackResponse{}, err
+		}
+
+		trackResponses = append(trackResponses, dto.NewTrackResponse(track, movieDTO))
+	}
+
+	return trackResponses, nil
+}
+
 type ThemeService struct {
 	themeRepository        domain.ThemeRepository
 	trackService           TrackService

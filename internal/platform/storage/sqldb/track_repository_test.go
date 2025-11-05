@@ -243,3 +243,42 @@ func TestTrackRepositoryUpdateSuccess(t *testing.T) {
 	assert.NoError(t, sqlMock.ExpectationsWereMet())
 	assert.NoError(t, err)
 }
+
+func TestTrackRepositoryFindByMovieError(t *testing.T) {
+	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+
+	sqlMock.ExpectQuery("SELECT tracks.id, tracks.name, tracks.movie_id, tracks.spotify_url FROM tracks WHERE movie_id = $1").
+		WillReturnError(errors.New(connectionErrorMsg))
+
+	repo := NewTrackRepository(db, 1*time.Second)
+
+	movieIDVO, err := domain.NewMovieIDFromString(trackMovieID)
+	require.NoError(t, err)
+
+	_, err = repo.FindByMovie(context.Background(), movieIDVO)
+
+	assert.NoError(t, sqlMock.ExpectationsWereMet())
+	assert.Error(t, err)
+}
+
+func TestTrackRepositoryFindByMovieSuccess(t *testing.T) {
+	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+
+	sqlMock.ExpectQuery("SELECT tracks.id, tracks.name, tracks.movie_id, tracks.spotify_url FROM tracks WHERE movie_id = $1").
+		WithArgs(trackMovieID).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "movie_id", "spotify_url"}).
+			AddRow(trackID, trackName, trackMovieID, nil).
+			AddRow("789e1011-e89b-12d3-a456-426614174222", "Concerning Hobbits", trackMovieID, nil))
+
+	repo := NewTrackRepository(db, 1*time.Second)
+
+	movieIDVO, err := domain.NewMovieIDFromString(trackMovieID)
+	require.NoError(t, err)
+
+	_, err = repo.FindByMovie(context.Background(), movieIDVO)
+
+	assert.NoError(t, sqlMock.ExpectationsWereMet())
+	assert.NoError(t, err)
+}

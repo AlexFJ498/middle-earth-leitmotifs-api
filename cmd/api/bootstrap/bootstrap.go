@@ -125,6 +125,7 @@ func Run() error {
 	queryBus.Register(listing.GroupsQueryType, listing.NewGroupsQueryHandler(listingGroupService))
 	queryBus.Register(listing.CategoriesQueryType, listing.NewCategoriesQueryHandler(listingCategoryService))
 	queryBus.Register(listing.TracksQueryType, listing.NewTracksQueryHandler(listingTrackService))
+	queryBus.Register(listing.TracksByMovieQueryType, listing.NewTracksByMovieQueryHandler(listingTrackService))
 	queryBus.Register(listing.ThemesQueryType, listing.NewThemesQueryHandler(listingThemeService))
 	queryBus.Register(listing.ThemesByGroupQueryType, listing.NewThemesByGroupQueryHandler(listingThemeService))
 	queryBus.Register(listing.TracksThemesByTrackQueryType, listing.NewTracksThemesByTrackQueryHandler(listingTrackThemeService))

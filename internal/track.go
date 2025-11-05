@@ -93,6 +93,7 @@ type TrackRepository interface {
 	Save(ctx context.Context, track Track) error
 	Find(ctx context.Context, id TrackID) (Track, error)
 	FindAll(ctx context.Context) ([]Track, error)
+	FindByMovie(ctx context.Context, movieID MovieID) ([]Track, error)
 	Delete(ctx context.Context, id TrackID) error
 	Update(ctx context.Context, track Track) error
 }
