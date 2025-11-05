@@ -21,7 +21,7 @@ func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 
 func ListByGroupHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		groupID := ctx.Param("group_id")
+		groupID := ctx.Param("id")
 		themes, err := queryBus.Ask(ctx, listing.NewThemesByGroupQuery(groupID))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})

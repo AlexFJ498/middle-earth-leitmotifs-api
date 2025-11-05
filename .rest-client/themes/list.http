@@ -5,6 +5,6 @@ Authorization: Bearer {{token}}
 
 ### List themes by group
 @group_id = "a751aa05-6290-4e27-bd20-04a22382fa32"
-GET {{host}}/themes/group/{{group_id}}
+GET {{host}}/groups/{{group_id}}/themes
 Accept: application/json
 Authorization: Bearer {{token}}

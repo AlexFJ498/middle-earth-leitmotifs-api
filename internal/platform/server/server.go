@@ -87,6 +87,9 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) registerRoutes() {
+	const themesRoute = "/themes"
+	const tracksThemesRoute = "/tracks-themes"
+
 	const movieIDRoute = "/movies/:id"
 	const groupIDRoute = "/groups/:id"
 	const categoryIDRoute = "/categories/:id"
@@ -116,16 +119,16 @@ func (s *Server) registerRoutes() {
 
 	s.engine.GET("/groups", groups.ListHandler(s.queryBus))
 	s.engine.GET(groupIDRoute, groups.GetHandler(s.queryBus))
-	s.engine.GET(groupIDRoute+"/themes", themes.ListByGroupHandler(s.queryBus))
+	s.engine.GET(groupIDRoute+themesRoute, themes.ListByGroupHandler(s.queryBus))
 
 	s.engine.GET("/categories", categories.ListHandler(s.queryBus))
 	s.engine.GET(categoryIDRoute, categories.GetHandler(s.queryBus))
 
 	s.engine.GET("/tracks", tracks.ListHandler(s.queryBus))
 	s.engine.GET(trackIDRoute, tracks.GetHandler(s.queryBus))
-	s.engine.GET(trackIDRoute+"/themes", tracks_themes.ListByTrackHandler(s.queryBus))
+	s.engine.GET(trackIDRoute+themesRoute, tracks_themes.ListByTrackHandler(s.queryBus))
 
-	s.engine.GET("/themes", themes.ListHandler(s.queryBus))
+	s.engine.GET(themesRoute, themes.ListHandler(s.queryBus))
 	s.engine.GET(themeIDRoute, themes.GetHandler(s.queryBus))
 
 	// Protected routes
@@ -151,13 +154,13 @@ func (s *Server) registerRoutes() {
 		auth.PUT(trackIDRoute, tracks.UpdateHandler(s.commandBus))
 		auth.DELETE(trackIDRoute, tracks.DeleteHandler(s.commandBus))
 
-		auth.POST("/themes", themes.CreateHandler(s.commandBus))
+		auth.POST(themesRoute, themes.CreateHandler(s.commandBus))
 		auth.PUT(themeIDRoute, themes.UpdateHandler(s.commandBus))
 		auth.DELETE(themeIDRoute, themes.DeleteHandler(s.commandBus))
 
-		auth.POST("/tracks-themes", tracks_themes.CreateHandler(s.commandBus))
-		auth.PUT("/tracks-themes", tracks_themes.UpdateHandler(s.commandBus))
-		auth.DELETE("/tracks-themes", tracks_themes.DeleteHandler(s.commandBus))
+		auth.POST(tracksThemesRoute, tracks_themes.CreateHandler(s.commandBus))
+		auth.PUT(tracksThemesRoute, tracks_themes.UpdateHandler(s.commandBus))
+		auth.DELETE(tracksThemesRoute, tracks_themes.DeleteHandler(s.commandBus))
 
 	}
 }
