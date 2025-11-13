@@ -14,6 +14,7 @@ services:
       MELA_DBPORT: ${MELA_DBPORT}
       MELA_DBNAME: ${MELA_DBNAME}
       MELA_DBTIMEOUT: ${MELA_DBTIMEOUT}
+      MELA_FRONTENDURL: ${MELA_FRONTENDURL}
     container_name: middle-earth-leitmotifs-api
     depends_on:
       - postgres
