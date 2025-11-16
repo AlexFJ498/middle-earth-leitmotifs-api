@@ -45,7 +45,7 @@ func trackThemeToDTO(tt domain.TrackTheme) TrackThemeDB {
 		ThemeID:     tt.ThemeID().String(),
 		StartSecond: tt.StartSecond().Int(),
 		EndSecond:   tt.EndSecond().Int(),
-		IsVariant:   tt.IsVariant().Bool(),
+		IsVariant:   tt.IsVariant(),
 	}
 }
 

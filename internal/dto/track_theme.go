@@ -38,6 +38,6 @@ func NewTrackThemeResponse(TrackTheme domain.TrackTheme, track TrackResponse, th
 		Theme:       theme,
 		StartSecond: TrackTheme.StartSecond().Int(),
 		EndSecond:   TrackTheme.EndSecond().Int(),
-		IsVariant:   TrackTheme.IsVariant().Bool(),
+		IsVariant:   TrackTheme.IsVariant(),
 	}
 }

@@ -18,10 +18,6 @@ type EndSecond struct {
 	value int
 }
 
-type isVariant struct {
-	value bool
-}
-
 func NewStartSecond(value int) (StartSecond, error) {
 	if value < 0 {
 		return StartSecond{}, ErrInvalidStartSecond
@@ -46,14 +42,6 @@ func (e EndSecond) Int() int {
 	return e.value
 }
 
-func NewIsVariant(value bool) isVariant {
-	return isVariant{value: value}
-}
-
-func (i isVariant) Bool() bool {
-	return i.value
-}
-
 type TrackThemeRepository interface {
 	Save(ctx context.Context, trackTheme TrackTheme) error
 	Find(ctx context.Context, trackID TrackID, themeID ThemeID, startSecond StartSecond) (TrackTheme, error)
@@ -69,7 +57,7 @@ type TrackTheme struct {
 	themeID     ThemeID
 	startSecond StartSecond
 	endSecond   EndSecond
-	isVariant   isVariant
+	isVariant   bool
 }
 
 func NewTrackTheme(trackID, themeID string, startSecond, endSecond int, isVariant bool) (TrackTheme, error) {
@@ -97,14 +85,12 @@ func NewTrackTheme(trackID, themeID string, startSecond, endSecond int, isVarian
 		return TrackTheme{}, ErrEndSecondMustBeGreaterThanStartSecond
 	}
 
-	isVariantVO := NewIsVariant(isVariant)
-
 	return TrackTheme{
 		trackID:     trackIDVO,
 		themeID:     themeIDVO,
 		startSecond: startSecondVO,
 		endSecond:   endSecondVO,
-		isVariant:   isVariantVO,
+		isVariant:   isVariant,
 	}, nil
 }
 
@@ -124,6 +110,6 @@ func (tt TrackTheme) EndSecond() EndSecond {
 	return tt.endSecond
 }
 
-func (tt TrackTheme) IsVariant() isVariant {
+func (tt TrackTheme) IsVariant() bool {
 	return tt.isVariant
 }

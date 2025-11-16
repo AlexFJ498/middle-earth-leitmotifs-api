@@ -2,7 +2,6 @@ package tracks_themes
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
