@@ -82,6 +82,7 @@ func (r *MovieRepository) Find(ctx context.Context, id domain.MovieID) (domain.M
 
 func (r *MovieRepository) FindAll(ctx context.Context) ([]domain.Movie, error) {
 	sb := movieSQLStruct.SelectFrom(sqlMovieTable)
+	sb.OrderBy("created_at ASC")
 	query, args := sb.Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)

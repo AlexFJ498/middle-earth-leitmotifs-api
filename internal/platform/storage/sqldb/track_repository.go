@@ -120,6 +120,7 @@ func (r *TrackRepository) FindAll(ctx context.Context) ([]domain.Track, error) {
 func (r *TrackRepository) FindByMovie(ctx context.Context, movieID domain.MovieID) ([]domain.Track, error) {
 	sb := trackSQLStruct.SelectFrom(sqlTrackTable)
 	sb.Where(sb.Equal("movie_id", movieID.String()))
+	sb.OrderBy("created_at ASC")
 	query, args := sb.Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
