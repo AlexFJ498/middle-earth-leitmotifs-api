@@ -7,6 +7,7 @@ import (
 
 var ErrInvalidStartSecond = fmt.Errorf("invalid start second")
 var ErrInvalidEndSecond = fmt.Errorf("invalid end second")
+var ErrEndSecondMustBeGreaterThanStartSecond = fmt.Errorf("end second must be greater than start second")
 var ErrTrackThemeNotFound = fmt.Errorf("track theme not found")
 
 type StartSecond struct {
@@ -90,6 +91,10 @@ func NewTrackTheme(trackID, themeID string, startSecond, endSecond int, isVarian
 	endSecondVO, err := NewEndSecond(endSecond)
 	if err != nil {
 		return TrackTheme{}, err
+	}
+
+	if endSecond <= startSecond {
+		return TrackTheme{}, ErrEndSecondMustBeGreaterThanStartSecond
 	}
 
 	isVariantVO := NewIsVariant(isVariant)
