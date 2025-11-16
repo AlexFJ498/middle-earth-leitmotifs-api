@@ -152,7 +152,7 @@ func (s *Server) registerRoutes() {
 		auth.PUT(categoryIDRoute, categories.UpdateHandler(s.commandBus))
 		auth.DELETE(categoryIDRoute, categories.DeleteHandler(s.commandBus))
 
-		auth.POST(trackIDRoute, tracks.CreateHandler(s.commandBus))
+		auth.POST(tracksRoute, tracks.CreateHandler(s.commandBus))
 		auth.PUT(trackIDRoute, tracks.UpdateHandler(s.commandBus))
 		auth.DELETE(trackIDRoute, tracks.DeleteHandler(s.commandBus))
 
