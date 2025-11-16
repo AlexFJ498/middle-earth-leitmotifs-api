@@ -1,1 +1,1 @@
-    DROP TABLE IF EXISTS tracks_themes;
+DROP TABLE IF EXISTS tracks_themes;
