@@ -1,0 +1,12 @@
+POST {{host}}/tracks-themes
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "track_id": "939be34d-455b-4127-8e53-723ecc10d366",
+    "theme_id": "0bc12fee-74fa-4def-9ad6-05b9ac809c90",
+    "start_second": 20,
+    "end_second": 30,
+    "is_variant": true
+}

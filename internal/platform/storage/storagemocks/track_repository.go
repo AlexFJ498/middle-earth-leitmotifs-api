@@ -90,6 +90,36 @@ func (_m *TrackRepository) FindAll(ctx context.Context) ([]domain.Track, error) 
 	return r0, r1
 }
 
+// FindByMovie provides a mock function with given fields: ctx, movieID
+func (_m *TrackRepository) FindByMovie(ctx context.Context, movieID domain.MovieID) ([]domain.Track, error) {
+	ret := _m.Called(ctx, movieID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindByMovie")
+	}
+
+	var r0 []domain.Track
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.MovieID) ([]domain.Track, error)); ok {
+		return rf(ctx, movieID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, domain.MovieID) []domain.Track); ok {
+		r0 = rf(ctx, movieID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Track)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, domain.MovieID) error); ok {
+		r1 = rf(ctx, movieID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Save provides a mock function with given fields: ctx, track
 func (_m *TrackRepository) Save(ctx context.Context, track domain.Track) error {
 	ret := _m.Called(ctx, track)

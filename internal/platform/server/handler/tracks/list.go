@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListHandler returns the handler that lists all tracks.
 func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		tracks, err := queryBus.Ask(ctx, listing.NewTracksQuery())
@@ -17,6 +16,18 @@ func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 			return
 		}
 
+		ctx.JSON(http.StatusOK, tracks)
+	}
+}
+
+func ListByMovieHandler(queryBus query.Bus) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		movieID := ctx.Param("id")
+		tracks, err := queryBus.Ask(ctx, listing.NewTracksByMovieQuery(movieID))
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
 		ctx.JSON(http.StatusOK, tracks)
 	}
 }

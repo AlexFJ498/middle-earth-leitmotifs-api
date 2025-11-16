@@ -1,4 +1,4 @@
-package themes
+package tracks_themes
 
 import (
 	"errors"
@@ -13,25 +13,23 @@ import (
 
 func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var dto dto.ThemeCreateRequest
+		var dto dto.TrackThemeCreateRequest
 		if err := ctx.ShouldBindJSON(&dto); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		err := commandBus.Dispatch(ctx, creating.NewThemeCommand(dto))
+		err := commandBus.Dispatch(ctx, creating.NewTrackThemeCommand(dto))
 		if err != nil {
 			switch {
-			case errors.Is(err, domain.ErrInvalidThemeID),
-				errors.Is(err, domain.ErrInvalidThemeName),
-				errors.Is(err, domain.ErrInvalidGroupID),
-				errors.Is(err, domain.ErrInvalidCategoryID),
-				errors.Is(err, domain.ErrInvalidTrackID):
+			case errors.Is(err, domain.ErrInvalidTrackID),
+				errors.Is(err, domain.ErrInvalidThemeID),
+				errors.Is(err, domain.ErrInvalidStartSecond),
+				errors.Is(err, domain.ErrInvalidEndSecond):
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
-			case errors.Is(err, domain.ErrGroupNotFound),
-				errors.Is(err, domain.ErrCategoryNotFound),
-				errors.Is(err, domain.ErrTrackNotFound):
+			case errors.Is(err, domain.ErrTrackNotFound),
+				errors.Is(err, domain.ErrThemeNotFound):
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			default:

@@ -17,6 +17,7 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/session"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/themes"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/tracks"
+	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/tracks_themes"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/handler/users"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/admin"
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/platform/server/middleware/jwt"
@@ -86,6 +87,10 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) registerRoutes() {
+	const tracksRoute = "/tracks"
+	const themesRoute = "/themes"
+	const tracksThemesRoute = "/tracks-themes"
+
 	const movieIDRoute = "/movies/:id"
 	const groupIDRoute = "/groups/:id"
 	const categoryIDRoute = "/categories/:id"
@@ -112,19 +117,21 @@ func (s *Server) registerRoutes() {
 
 	s.engine.GET("/movies", movies.ListHandler(s.queryBus))
 	s.engine.GET(movieIDRoute, movies.GetHandler(s.queryBus))
+	s.engine.GET(movieIDRoute+tracksRoute, tracks.ListByMovieHandler(s.queryBus))
 
 	s.engine.GET("/groups", groups.ListHandler(s.queryBus))
 	s.engine.GET(groupIDRoute, groups.GetHandler(s.queryBus))
+	s.engine.GET(groupIDRoute+themesRoute, themes.ListByGroupHandler(s.queryBus))
 
 	s.engine.GET("/categories", categories.ListHandler(s.queryBus))
 	s.engine.GET(categoryIDRoute, categories.GetHandler(s.queryBus))
 
-	s.engine.GET("/tracks", tracks.ListHandler(s.queryBus))
+	s.engine.GET(tracksRoute, tracks.ListHandler(s.queryBus))
 	s.engine.GET(trackIDRoute, tracks.GetHandler(s.queryBus))
+	s.engine.GET(trackIDRoute+themesRoute, tracks_themes.ListByTrackHandler(s.queryBus))
 
-	s.engine.GET("/themes", themes.ListHandler(s.queryBus))
+	s.engine.GET(themesRoute, themes.ListHandler(s.queryBus))
 	s.engine.GET(themeIDRoute, themes.GetHandler(s.queryBus))
-	s.engine.GET("/themes/group/:group_id", themes.ListByGroupHandler(s.queryBus))
 
 	// Protected routes
 	auth := s.engine.Group("")
@@ -145,13 +152,18 @@ func (s *Server) registerRoutes() {
 		auth.PUT(categoryIDRoute, categories.UpdateHandler(s.commandBus))
 		auth.DELETE(categoryIDRoute, categories.DeleteHandler(s.commandBus))
 
-		auth.POST("/tracks", tracks.CreateHandler(s.commandBus))
+		auth.POST(tracksRoute, tracks.CreateHandler(s.commandBus))
 		auth.PUT(trackIDRoute, tracks.UpdateHandler(s.commandBus))
 		auth.DELETE(trackIDRoute, tracks.DeleteHandler(s.commandBus))
 
-		auth.POST("/themes", themes.CreateHandler(s.commandBus))
+		auth.POST(themesRoute, themes.CreateHandler(s.commandBus))
 		auth.PUT(themeIDRoute, themes.UpdateHandler(s.commandBus))
 		auth.DELETE(themeIDRoute, themes.DeleteHandler(s.commandBus))
+
+		auth.POST(tracksThemesRoute, tracks_themes.CreateHandler(s.commandBus))
+		auth.PUT(tracksThemesRoute, tracks_themes.UpdateHandler(s.commandBus))
+		auth.DELETE(tracksThemesRoute, tracks_themes.DeleteHandler(s.commandBus))
+
 	}
 }
 

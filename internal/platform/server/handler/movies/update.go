@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// UpdateHandler handles the update of a movie.
 func UpdateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		movieIDParam := ctx.Param("id")

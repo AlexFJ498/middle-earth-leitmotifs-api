@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListHandler handles the listing of movies.
 func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		movies, err := queryBus.Ask(ctx, listing.NewMoviesQuery())

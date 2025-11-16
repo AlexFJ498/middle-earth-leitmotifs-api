@@ -14,6 +14,32 @@ import (
 
 const repositoryErrorMsg = "repository error"
 
+func getGettingMovieServiceMock(movieRepositoryMock *storagemocks.MovieRepository) getting.MovieService {
+	return getting.NewMovieService(movieRepositoryMock)
+}
+
+func getGettingTrackServiceMock(trackRepositoryMock *storagemocks.TrackRepository, movieRepositoryMock *storagemocks.MovieRepository) getting.TrackService {
+	gettingMovieService := getGettingMovieServiceMock(movieRepositoryMock)
+	return getting.NewTrackService(trackRepositoryMock, gettingMovieService)
+}
+
+func getGettingGroupServiceMock(groupRepositoryMock *storagemocks.GroupRepository) getting.GroupService {
+	return getting.NewGroupService(groupRepositoryMock)
+}
+
+func getGettingCategoryServiceMock(categoryRepositoryMock *storagemocks.CategoryRepository) getting.CategoryService {
+	return getting.NewCategoryService(categoryRepositoryMock)
+}
+
+func getGettingThemeServiceMock(themeRepositoryMock *storagemocks.ThemeRepository, trackRepositoryMock *storagemocks.TrackRepository, groupRepositoryMock *storagemocks.GroupRepository, movieRepositoryMock *storagemocks.MovieRepository, categoryRepositoryMock *storagemocks.CategoryRepository) getting.ThemeService {
+	return getting.NewThemeService(
+		themeRepositoryMock,
+		getGettingTrackServiceMock(trackRepositoryMock, movieRepositoryMock),
+		getGettingGroupServiceMock(groupRepositoryMock),
+		getGettingCategoryServiceMock(categoryRepositoryMock),
+	)
+}
+
 func TestUserServiceListUsersRepositoryError(t *testing.T) {
 	userRepositoryMock := new(storagemocks.UserRepository)
 	userRepositoryMock.On("FindAll", mock.Anything).Return(nil, errors.New(repositoryErrorMsg)).Once()
@@ -190,6 +216,48 @@ func TestTrackServiceListTracksSuccess(t *testing.T) {
 	assert.Equal(t, "The Shire", tracksDTO[1].Name)
 }
 
+func TestTrackServiceListTracksByMovieRepositoryError(t *testing.T) {
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	trackRepositoryMock.On("FindByMovie", mock.Anything, mock.Anything).Return(nil, errors.New(repositoryErrorMsg)).Once()
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	movieService := NewMovieService(movieRepositoryMock)
+	gettingMovieService := getting.NewMovieService(movieRepositoryMock)
+
+	trackService := NewTrackService(trackRepositoryMock, movieService, gettingMovieService)
+
+	ctx := context.Background()
+	_, err := trackService.ListTracksByMovie(ctx, "12345678-1234-1234-1234-123456789012")
+	assert.Error(t, err)
+}
+
+func TestTrackServiceListTracksByMovieSuccess(t *testing.T) {
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	tracks := []domain.Track{}
+	track1, err := domain.NewTrack("Track name", "b6c1d5ae-bf3b-419e-ba8f-09c8ce39d9bc", nil)
+	assert.NoError(t, err)
+	tracks = append(tracks, track1)
+	track2, err := domain.NewTrack("Track 2 name", "22712a55-04dd-4200-9316-4d6a1e399128", nil)
+	assert.NoError(t, err)
+	tracks = append(tracks, track2)
+	trackRepositoryMock.On("FindByMovie", mock.Anything, mock.Anything).Return(tracks, nil).Once()
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	movieRepositoryMock.On("Find", mock.Anything, mock.Anything).Return(domain.Movie{}, nil).Twice()
+	movieService := NewMovieService(movieRepositoryMock)
+	gettingMovieService := getting.NewMovieService(movieRepositoryMock)
+
+	trackService := NewTrackService(trackRepositoryMock, movieService, gettingMovieService)
+
+	tracksDTO, err := trackService.ListTracksByMovie(context.Background(), "12345678-1234-1234-1234-123456789012")
+	assert.NoError(t, err)
+	assert.Len(t, tracksDTO, 2)
+	assert.Equal(t, "Track name", tracksDTO[0].Name)
+	assert.Equal(t, "Track 2 name", tracksDTO[1].Name)
+}
+
 func TestThemeServiceListThemesRepositoryError(t *testing.T) {
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
 	themeRepositoryMock.On("FindAll", mock.Anything).Return(nil, errors.New(repositoryErrorMsg)).Once()
@@ -221,12 +289,14 @@ func TestThemeServiceListThemesRepositoryError(t *testing.T) {
 func TestThemeServiceListThemesSuccess(t *testing.T) {
 	categoryID1 := "40929ca6-ed89-4548-a1d9-54b604ea50b5"
 	categoryID2 := "40929ca6-ed89-4548-a1d9-54b604ea50b6"
+	trackID := "6a4f86e4-4fef-4151-9c60-e467007dd213"
+	groupID := "40929ca6-ed89-4548-a1d9-54b604ea50b2"
 	themeRepositoryMock := new(storagemocks.ThemeRepository)
 	themes := []domain.Theme{}
-	theme1, err := domain.NewTheme("The History of the Ring", "6a4f86e4-4fef-4151-9c60-e467007dd213", "40929ca6-ed89-4548-a1d9-54b604ea50b2", "Description", 0, 1, &categoryID1)
+	theme1, err := domain.NewTheme("The History of the Ring", trackID, groupID, "Description", 0, 1, &categoryID1)
 	assert.NoError(t, err)
 	themes = append(themes, theme1)
-	theme2, err := domain.NewTheme("The Rohan Fanfare", "6a4f86e4-4fef-4151-9c60-e467007dd213", "40929ca6-ed89-4548-a1d9-54b604ea50b2", "Description", 0, 1, &categoryID2)
+	theme2, err := domain.NewTheme("The Rohan Fanfare", trackID, groupID, "Description", 0, 1, &categoryID2)
 	assert.NoError(t, err)
 	themes = append(themes, theme2)
 	themeRepositoryMock.On("FindAll", mock.Anything).Return(themes, nil).Once()
@@ -236,7 +306,7 @@ func TestThemeServiceListThemesSuccess(t *testing.T) {
 	movieService := NewMovieService(movieRepositoryMock)
 	gettingMovieService := getting.NewMovieService(movieRepositoryMock)
 
-	track, err := domain.NewTrack("Track", "28712a55-04dd-4200-9316-4d6a1e399128", nil)
+	track, err := domain.NewTrack("Track", "28712a55-04dd-4200-9316-4d6a1e399122", nil)
 	assert.NoError(t, err)
 
 	trackRepositoryMock := new(storagemocks.TrackRepository)
@@ -267,4 +337,74 @@ func TestThemeServiceListThemesSuccess(t *testing.T) {
 	assert.Len(t, themesDTO, 2)
 	assert.Equal(t, "The History of the Ring", themesDTO[0].Name)
 	assert.Equal(t, "The Rohan Fanfare", themesDTO[1].Name)
+}
+
+func TestTrackThemeServiceListTrackThemesRepositoryError(t *testing.T) {
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	trackThemeRepositoryMock.On("FindByTrack", mock.Anything, mock.Anything).Return(nil, errors.New(repositoryErrorMsg)).Once()
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+
+	themeRepositoryMock := new(storagemocks.ThemeRepository)
+	groupRepositoryMock := new(storagemocks.GroupRepository)
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+
+	trackThemeService := NewTrackThemeService(trackThemeRepositoryMock, getGettingTrackServiceMock(trackRepositoryMock, movieRepositoryMock), getGettingThemeServiceMock(themeRepositoryMock, trackRepositoryMock, groupRepositoryMock, movieRepositoryMock, categoryRepositoryMock))
+
+	ctx := context.Background()
+	_, err := trackThemeService.ListTracksThemesByTrack(ctx, "28712a55-04dd-4200-9316-4d6a1e399128")
+	assert.Error(t, err)
+	assert.Equal(t, repositoryErrorMsg, err.Error())
+}
+
+func TestTrackThemeServiceListTrackThemesSuccess(t *testing.T) {
+	trackID := "28712a55-04dd-4200-9316-4d6a1e399121"
+	themeID := "6a4f86e4-4fef-4151-9c60-e467007dd213"
+	trackTheme1, err := domain.NewTrackTheme(trackID, themeID, 0, 10, false)
+	assert.NoError(t, err)
+
+	trackThemes := []domain.TrackTheme{}
+	trackThemes = append(trackThemes, trackTheme1)
+
+	movie, err := domain.NewMovie("The Return of the King")
+	assert.NoError(t, err)
+
+	group, err := domain.NewGroup("Gondor", "Description of Gondor", "http://example.com/gondor.jpg")
+	assert.NoError(t, err)
+
+	track, err := domain.NewTrack("Track", trackID, nil)
+	assert.NoError(t, err)
+
+	theme, err := domain.NewTheme("Theme 1", themeID, "40929ca6-ed89-4548-a1d9-54b604ea50b2", "Description", 0, 1, nil)
+	assert.NoError(t, err)
+
+	trackThemeRepositoryMock := new(storagemocks.TrackThemeRepository)
+	trackThemeRepositoryMock.On("FindByTrack", mock.Anything, mock.Anything).Return(trackThemes, nil).Once()
+	defer trackThemeRepositoryMock.AssertExpectations(t)
+
+	trackRepositoryMock := new(storagemocks.TrackRepository)
+	trackRepositoryMock.On("Find", mock.Anything, mock.Anything).Return(track, nil).Twice()
+	defer trackRepositoryMock.AssertExpectations(t)
+
+	movieRepositoryMock := new(storagemocks.MovieRepository)
+	movieRepositoryMock.On("Find", mock.Anything, mock.Anything).Return(movie, nil).Twice()
+	defer movieRepositoryMock.AssertExpectations(t)
+
+	themeRepositoryMock := new(storagemocks.ThemeRepository)
+	themeRepositoryMock.On("Find", mock.Anything, mock.Anything).Return(theme, nil).Once()
+	defer themeRepositoryMock.AssertExpectations(t)
+
+	groupRepositoryMock := new(storagemocks.GroupRepository)
+	groupRepositoryMock.On("Find", mock.Anything, mock.Anything).Return(group, nil).Once()
+	defer groupRepositoryMock.AssertExpectations(t)
+
+	categoryRepositoryMock := new(storagemocks.CategoryRepository)
+
+	trackThemeService := NewTrackThemeService(trackThemeRepositoryMock, getGettingTrackServiceMock(trackRepositoryMock, movieRepositoryMock), getGettingThemeServiceMock(themeRepositoryMock, trackRepositoryMock, groupRepositoryMock, movieRepositoryMock, categoryRepositoryMock))
+
+	themesDTO, err := trackThemeService.ListTracksThemesByTrack(context.Background(), trackID)
+	assert.NoError(t, err)
+	assert.Len(t, themesDTO, 1)
 }

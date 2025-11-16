@@ -35,13 +35,13 @@ func NewMovieIDFromString(id string) (MovieID, error) {
 		return MovieID{}, ErrInvalidMovieID
 	}
 
-	_, err := uuid.Parse(id)
+	v, err := uuid.Parse(id)
 	if err != nil {
 		return MovieID{}, ErrInvalidMovieID
 	}
 
 	return MovieID{
-		value: id,
+		value: v.String(),
 	}, nil
 }
 

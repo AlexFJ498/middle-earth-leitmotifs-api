@@ -7,19 +7,16 @@ import (
 	"github.com/AlexFJ498/middle-earth-leitmotifs-api/internal/dto"
 )
 
-// MovieService is the service for managing movies.
 type MovieService struct {
 	movieRepository domain.MovieRepository
 }
 
-// NewMovieService returns a new MovieService instance.
 func NewMovieService(movieRepository domain.MovieRepository) MovieService {
 	return MovieService{
 		movieRepository: movieRepository,
 	}
 }
 
-// GetMovie implements the MovieService interface for getting a movie by ID.
 func (s MovieService) GetMovie(ctx context.Context, id string) (dto.MovieResponse, error) {
 	movieID, err := domain.NewMovieIDFromString(id)
 	if err != nil {
@@ -34,19 +31,16 @@ func (s MovieService) GetMovie(ctx context.Context, id string) (dto.MovieRespons
 	return dto.NewMovieResponse(movie), nil
 }
 
-// GroupService is the service for managing groups.
 type GroupService struct {
 	groupRepository domain.GroupRepository
 }
 
-// NewGroupService returns a new GroupService instance.
 func NewGroupService(groupRepository domain.GroupRepository) GroupService {
 	return GroupService{
 		groupRepository: groupRepository,
 	}
 }
 
-// GetGroup implements the GroupService interface for getting a group by ID.
 func (s GroupService) GetGroup(ctx context.Context, id string) (dto.GroupResponse, error) {
 	groupID, err := domain.NewGroupIDFromString(id)
 	if err != nil {
@@ -61,19 +55,16 @@ func (s GroupService) GetGroup(ctx context.Context, id string) (dto.GroupRespons
 	return dto.NewGroupResponse(group), nil
 }
 
-// CategoryService is the service for managing categories.
 type CategoryService struct {
 	categoryRepository domain.CategoryRepository
 }
 
-// NewCategoryService returns a new CategoryService instance.
 func NewCategoryService(categoryRepository domain.CategoryRepository) CategoryService {
 	return CategoryService{
 		categoryRepository: categoryRepository,
 	}
 }
 
-// GetCategory implements the CategoryService interface for getting a category by ID.
 func (s CategoryService) GetCategory(ctx context.Context, id string) (dto.CategoryResponse, error) {
 	categoryID, err := domain.NewCategoryIDFromString(id)
 	if err != nil {
@@ -88,13 +79,11 @@ func (s CategoryService) GetCategory(ctx context.Context, id string) (dto.Catego
 	return dto.NewCategoryResponse(category), nil
 }
 
-// TrackService is the service for managing tracks.
 type TrackService struct {
 	trackRepository domain.TrackRepository
 	MovieService    MovieService
 }
 
-// NewTrackService returns a new TrackService instance.
 func NewTrackService(trackRepository domain.TrackRepository, movieService MovieService) TrackService {
 	return TrackService{
 		trackRepository: trackRepository,
@@ -102,7 +91,6 @@ func NewTrackService(trackRepository domain.TrackRepository, movieService MovieS
 	}
 }
 
-// GetTrack implements the TrackService interface for getting a track by ID.
 func (s TrackService) GetTrack(ctx context.Context, id string) (dto.TrackResponse, error) {
 	trackID, err := domain.NewTrackIDFromString(id)
 	if err != nil {
@@ -123,7 +111,6 @@ func (s TrackService) GetTrack(ctx context.Context, id string) (dto.TrackRespons
 	return dto.NewTrackResponse(track, movieDTO), nil
 }
 
-// ThemeService is the service for managing themes.
 type ThemeService struct {
 	themeRepository domain.ThemeRepository
 	trackService    TrackService
@@ -131,7 +118,6 @@ type ThemeService struct {
 	categoryService CategoryService
 }
 
-// NewThemeService returns a new ThemeService instance.
 func NewThemeService(themeRepository domain.ThemeRepository, trackService TrackService, groupService GroupService, categoryService CategoryService) ThemeService {
 	return ThemeService{
 		themeRepository: themeRepository,
@@ -141,7 +127,6 @@ func NewThemeService(themeRepository domain.ThemeRepository, trackService TrackS
 	}
 }
 
-// GetTheme implements the ThemeService interface for getting a theme by ID.
 func (s ThemeService) GetTheme(ctx context.Context, id string) (dto.ThemeResponse, error) {
 	themeID, err := domain.NewThemeIDFromString(id)
 	if err != nil {

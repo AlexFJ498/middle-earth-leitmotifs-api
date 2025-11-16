@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListHandler handles the listing of groups.
 func ListHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		groups, err := queryBus.Ask(ctx, listing.NewGroupsQuery())

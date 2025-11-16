@@ -117,6 +117,37 @@ func (r *TrackRepository) FindAll(ctx context.Context) ([]domain.Track, error) {
 	return tracks, nil
 }
 
+func (r *TrackRepository) FindByMovie(ctx context.Context, movieID domain.MovieID) ([]domain.Track, error) {
+	sb := trackSQLStruct.SelectFrom(sqlTrackTable)
+	sb.Where(sb.Equal("movie_id", movieID.String()))
+	query, args := sb.Build()
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer cancel()
+
+	rows, err := r.db.QueryContext(ctxTimeout, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find tracks by movie: %v", err)
+	}
+	defer rows.Close()
+
+	var tracks []domain.Track
+	for rows.Next() {
+		var trackDTO TrackDB
+		err := rows.Scan(trackSQLStruct.Addr(&trackDTO)...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan track: %v", err)
+		}
+		track, err := trackToDomain(trackDTO)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert track: %v", err)
+		}
+		tracks = append(tracks, track)
+	}
+
+	return tracks, nil
+}
+
 func (r *TrackRepository) Delete(ctx context.Context, id domain.TrackID) error {
 	sb := trackSQLStruct.DeleteFrom(sqlTrackTable)
 	sb.Where(sb.Equal("id", id.String()))
