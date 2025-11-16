@@ -34,7 +34,6 @@ func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			default:
-				log.Printf("[CREATE TRACK_THEME ERROR] %v", err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 				return
 			}
