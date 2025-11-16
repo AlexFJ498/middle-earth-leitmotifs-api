@@ -18,7 +18,7 @@ type EndSecond struct {
 	value int
 }
 
-type isVariant struct {
+type IsVariant struct {
 	value bool
 }
 
@@ -46,11 +46,11 @@ func (e EndSecond) Int() int {
 	return e.value
 }
 
-func NewIsVariant(value bool) isVariant {
-	return isVariant{value: value}
+func NewIsVariant(value bool) IsVariant {
+	return IsVariant{value: value}
 }
 
-func (i isVariant) Bool() bool {
+func (i IsVariant) Bool() bool {
 	return i.value
 }
 
@@ -69,7 +69,7 @@ type TrackTheme struct {
 	themeID     ThemeID
 	startSecond StartSecond
 	endSecond   EndSecond
-	isVariant   isVariant
+	isVariant   IsVariant
 }
 
 func NewTrackTheme(trackID, themeID string, startSecond, endSecond int, isVariant bool) (TrackTheme, error) {
@@ -124,6 +124,6 @@ func (tt TrackTheme) EndSecond() EndSecond {
 	return tt.endSecond
 }
 
-func (tt TrackTheme) IsVariant() isVariant {
+func (tt TrackTheme) IsVariant() IsVariant {
 	return tt.isVariant
 }
