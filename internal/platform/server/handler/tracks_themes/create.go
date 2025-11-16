@@ -2,7 +2,7 @@ package tracks_themes
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
 
 	domain "github.com/AlexFJ498/middle-earth-leitmotifs-api/internal"
@@ -34,7 +34,6 @@ func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			default:
-				fmt.Println(err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 				return
 			}
